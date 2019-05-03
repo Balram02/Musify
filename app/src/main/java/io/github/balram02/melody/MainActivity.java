@@ -1,22 +1,34 @@
 package io.github.balram02.melody;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.provider.MediaStore;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    private RecyclerView recyclerView;
+    private TextView totalSongs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +36,15 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        recyclerView = findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+//        recyclerView.setHasFixedSize(true);
+        List<SongListModel> listModels = getAllSongsList();
+        totalSongs = findViewById(R.id.total_songs);
+        totalSongs.setText("Total songs - " + listModels.size());
+        SongListAdapater songListAdapater = new SongListAdapater(listModels);
+        recyclerView.setAdapter(songListAdapater);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -42,6 +63,50 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+    }
+
+    private List<SongListModel> getAllSongsList() {
+        try {
+            return new SongsAsyncTask(this).execute().get();
+        } catch (Exception e) {
+            Log.d("TAGGG", e.toString());
+            return null;
+        }
+    }
+
+    static class SongsAsyncTask extends AsyncTask<Void, Void, List<SongListModel>> {
+
+        private WeakReference<MainActivity> weakReference;
+
+        SongsAsyncTask(MainActivity activity) {
+            this.weakReference = new WeakReference<>(activity);
+        }
+
+        @Override
+        protected List<SongListModel> doInBackground(Void... voids) {
+
+            List<SongListModel> songs = new ArrayList<>();
+            Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+
+//            String[] strings = {MediaStore.Audio.AudioColumns.DATA, MediaStore.Audio.AudioColumns.DISPLAY_NAME, MediaStore.Audio.AudioColumns.ARTIST};
+            Cursor cursor = weakReference.get().getContentResolver().query(uri, null, null, null, null);
+            if (cursor != null && cursor.moveToNext()) {
+
+                int title = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
+                int artist = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+                int data = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
+                do {
+                    String songTitle = cursor.getString(title);
+                    String songArtist = cursor.getString(artist);
+                    String songData = cursor.getString(data);
+                    SongListModel listModel = new SongListModel(songTitle, songArtist, songData);
+                    Log.d("TAGGG", "" + title + artist + data);
+                    songs.add(listModel);
+                } while (cursor.moveToNext());
+            }
+            return songs;
+        }
     }
 
     @Override
