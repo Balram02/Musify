@@ -34,6 +34,8 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListView
 
         SongsModel model = songs.get(i);
         holder.songName.setText(model.getTitle());
+        holder.songArtist.setText(model.getArtist());
+        holder.songDuration.setText(getDurationInMinutes(model.getDuration()));
     }
 
     @Override
@@ -45,13 +47,24 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListView
         this.songs = songs;
     }
 
+//    TODO: complete below method
+
+    public String getDurationInMinutes(long miliseconds) {
+
+        return "02:59";
+    }
+
     class SongListViewHolder extends RecyclerView.ViewHolder {
 
         private TextView songName;
+        private TextView songArtist;
+        private TextView songDuration;
 
         public SongListViewHolder(@NonNull View itemView) {
             super(itemView);
             songName = itemView.findViewById(R.id.song_name);
+            songArtist = itemView.findViewById(R.id.song_artist);
+            songDuration = itemView.findViewById(R.id.song_duration);
         }
     }
 }
