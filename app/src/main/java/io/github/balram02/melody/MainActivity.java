@@ -1,34 +1,33 @@
 package io.github.balram02.melody;
 
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.List;
+
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private RecyclerView recyclerView;
+    private SongsAdapter songsAdapter;
     private TextView totalSongs;
+    private SongsViewModel songsViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,12 +38,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        recyclerView.setHasFixedSize(true);
-        List<SongListModel> listModels = getAllSongsList();
+        recyclerView.setHasFixedSize(true);
         totalSongs = findViewById(R.id.total_songs);
-        totalSongs.setText("Total songs - " + listModels.size());
-        SongListAdapater songListAdapater = new SongListAdapater(listModels);
-        recyclerView.setAdapter(songListAdapater);
+        songsAdapter = new SongsAdapter();
+
+        songsViewModel = ViewModelProviders.of(this).get(SongsViewModel.class);
+        songsViewModel.getAllSongs().observe(this, new Observer<List<SongsModel>>() {
+            @Override
+            public void onChanged(List<SongsModel> songsModels) {
+                totalSongs.setText("Total songs - " + songsModels.size());
+                songsAdapter.setSongs(songsModels);
+                recyclerView.setAdapter(songsAdapter);
+            }
+        });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -64,49 +70,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-    }
-
-    private List<SongListModel> getAllSongsList() {
-        try {
-            return new SongsAsyncTask(this).execute().get();
-        } catch (Exception e) {
-            Log.d("TAGGG", e.toString());
-            return null;
-        }
-    }
-
-    static class SongsAsyncTask extends AsyncTask<Void, Void, List<SongListModel>> {
-
-        private WeakReference<MainActivity> weakReference;
-
-        SongsAsyncTask(MainActivity activity) {
-            this.weakReference = new WeakReference<>(activity);
-        }
-
-        @Override
-        protected List<SongListModel> doInBackground(Void... voids) {
-
-            List<SongListModel> songs = new ArrayList<>();
-            Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-
-//            String[] strings = {MediaStore.Audio.AudioColumns.DATA, MediaStore.Audio.AudioColumns.DISPLAY_NAME, MediaStore.Audio.AudioColumns.ARTIST};
-            Cursor cursor = weakReference.get().getContentResolver().query(uri, null, null, null, null);
-            if (cursor != null && cursor.moveToNext()) {
-
-                int title = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
-                int artist = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-                int data = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
-                do {
-                    String songTitle = cursor.getString(title);
-                    String songArtist = cursor.getString(artist);
-                    String songData = cursor.getString(data);
-                    SongListModel listModel = new SongListModel(songTitle, songArtist, songData);
-                    Log.d("TAGGG", "" + title + artist + data);
-                    songs.add(listModel);
-                } while (cursor.moveToNext());
-            }
-            return songs;
-        }
     }
 
     @Override

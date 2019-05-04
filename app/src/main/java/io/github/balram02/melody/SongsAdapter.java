@@ -1,8 +1,5 @@
 package io.github.balram02.melody;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,13 +7,19 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class SongListAdapater extends RecyclerView.Adapter<SongListAdapater.SongListViewHolder> {
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
-    List<SongListModel> songs;
+public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListViewHolder> {
 
-    public SongListAdapater(List<SongListModel> songs) {
+    List<SongsModel> songs;
+
+    public SongsAdapter() {
+    }
+
+    public SongsAdapter(List<SongsModel> songs) {
         this.songs = songs;
-        Log.d("TAGGG", this.songs.size() + " = size");
+//        Log.d("TAGGG", this.songs.size() + " = size");
     }
 
     @NonNull
@@ -29,13 +32,17 @@ public class SongListAdapater extends RecyclerView.Adapter<SongListAdapater.Song
     @Override
     public void onBindViewHolder(@NonNull SongListViewHolder holder, int i) {
 
-        SongListModel model = songs.get(i);
-        holder.songName.setText(model.getName());
+        SongsModel model = songs.get(i);
+        holder.songName.setText(model.getTitle());
     }
 
     @Override
     public int getItemCount() {
         return songs.size();
+    }
+
+    public void setSongs(List<SongsModel> songs) {
+        this.songs = songs;
     }
 
     class SongListViewHolder extends RecyclerView.ViewHolder {
