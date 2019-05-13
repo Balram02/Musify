@@ -1,66 +1,49 @@
 package io.github.balram02.melody;
 
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
-
-import java.util.List;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private RecyclerView recyclerView;
-    private SongsAdapter songsAdapter;
-    private TextView totalSongs;
+    private CardView totalSongsCard;
     private SongsViewModel songsViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         recyclerView = findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         recyclerView.setHasFixedSize(true);
-        totalSongs = findViewById(R.id.total_songs);
-        songsAdapter = new SongsAdapter();
+        totalSongsCard = findViewById(R.id.card_view);
+        SongsAdapter songsAdapter = new SongsAdapter();
 
         songsViewModel = ViewModelProviders.of(this).get(SongsViewModel.class);
-        songsViewModel.getAllSongs().observe(this, new Observer<List<SongsModel>>() {
-            @Override
-            public void onChanged(List<SongsModel> songsModels) {
-                totalSongs.setText("Total songs - " + songsModels.size());
-                songsAdapter.setSongs(songsModels);
-                recyclerView.setAdapter(songsAdapter);
-            }
-        });
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
+        songsViewModel.getAllSongs().observe(this, songsModels -> {
+            ((TextView) findViewById(R.id.total_songs)).setText(songsModels.size() + " Songs found");
+            songsAdapter.setSongs(songsModels);
+            recyclerView.setAdapter(songsAdapter);
+            animateTotalSongsCard();
         });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -71,7 +54,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
 
+    private void animateTotalSongsCard() {
+        ObjectAnimator animatorOut = ObjectAnimator.ofFloat(totalSongsCard, "translationY", -100f);
+        animatorOut.setStartDelay(3000);
+        animatorOut.setDuration(5000);
+        animatorOut.start();
     }
 
     @Override

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dark_gray"
+    android:orientation="vertical"
+    app:behavior_hideable="false"
+    app:behavior_peekHeight="70dp"
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
+    <!--TODO : Design this layout for song playing-->
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@color/spotifyGreen"
+        android:gravity="center"
+        android:text="Design of current song"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="Further Details"
+        android:textColor="@android:color/white" />
+
+</LinearLayout>
