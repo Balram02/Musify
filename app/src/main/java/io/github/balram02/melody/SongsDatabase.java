@@ -13,9 +13,6 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import static io.github.balram02.melody.Constants.PREFERENCES_DETAILS;
-import static io.github.balram02.melody.Constants.REFRESH_SONG_LIST;
-
 @Database(entities = {SongsModel.class}, version = 1)
 public abstract class SongsDatabase extends RoomDatabase {
 
@@ -34,13 +31,13 @@ public abstract class SongsDatabase extends RoomDatabase {
                             new PopulateAsyncTask(instance).execute(context);
                         }
 
-                        @Override
+/*                        @Override
                         public void onOpen(@NonNull SupportSQLiteDatabase db) {
                             super.onOpen(db);
                             if (context.getSharedPreferences(PREFERENCES_DETAILS, Context.MODE_PRIVATE).getBoolean(REFRESH_SONG_LIST, false)) {
                                 new PopulateAsyncTask(instance).execute(context);
                             }
-                        }
+                        }*/
                     }).build();
         }
 
@@ -85,11 +82,11 @@ public abstract class SongsDatabase extends RoomDatabase {
                         songsDao.update(songsModel);
                         Log.d("TAGGG", "updating database");
                     } else {*/
-                        songsDao.insert(songsModel);
+                    songsDao.insert(songsModel);
 /*                        Log.d("TAGGG", "inserting database");
                     }*/
                 } while (cursor.moveToNext());
-                contexts[0].getSharedPreferences(PREFERENCES_DETAILS, Context.MODE_PRIVATE).edit().putBoolean(REFRESH_SONG_LIST, false).apply();
+//                contexts[0].getSharedPreferences(PREFERENCES_DETAILS, Context.MODE_PRIVATE).edit().putBoolean(REFRESH_SONG_LIST, false).apply();
             }
             if (cursor != null)
                 cursor.close();
