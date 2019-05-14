@@ -13,6 +13,9 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import static io.github.balram02.melody.Constants.PREFERENCES_DETAILS;
+import static io.github.balram02.melody.Constants.REFRESH_SONG_LIST;
+
 @Database(entities = {SongsModel.class}, version = 1)
 public abstract class SongsDatabase extends RoomDatabase {
 
@@ -30,8 +33,15 @@ public abstract class SongsDatabase extends RoomDatabase {
                             super.onCreate(db);
                             new PopulateAsyncTask(instance).execute(context);
                         }
-                    })
-                    .build();
+
+                        @Override
+                        public void onOpen(@NonNull SupportSQLiteDatabase db) {
+                            super.onOpen(db);
+                            if (context.getSharedPreferences(PREFERENCES_DETAILS, Context.MODE_PRIVATE).getBoolean(REFRESH_SONG_LIST, false)) {
+                                new PopulateAsyncTask(instance).execute(context);
+                            }
+                        }
+                    }).build();
         }
 
 //        Log.d("TAGGG", "2 instance = " + instance);
@@ -51,12 +61,9 @@ public abstract class SongsDatabase extends RoomDatabase {
 
             Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 
-//            String[] strings = {MediaStore.Audio.AudioColumns.DATA, MediaStore.Audio.AudioColumns.DISPLAY_NAME, MediaStore.Audio.AudioColumns.ARTIST};
             Cursor cursor = contexts[0].getContentResolver().query(uri, null, null, null, null);
-//            Log.d("TAGGG", "Got here");
             if (cursor != null && cursor.moveToNext()) {
 
-//                Log.d("TAGGG", "Got it");
                 int title = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
                 int album = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
                 int artist = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
@@ -64,6 +71,8 @@ public abstract class SongsDatabase extends RoomDatabase {
                 int path = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
                 int duration = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
                 SongsModel songsModel;
+/*                boolean refresh = contexts[0]
+                        .getSharedPreferences(PREFERENCES_DETAILS, Context.MODE_PRIVATE).getBoolean(REFRESH_SONG_LIST, false);*/
                 do {
                     String songTitle = cursor.getString(title);
                     String songAlbum = cursor.getString(album);
@@ -72,9 +81,15 @@ public abstract class SongsDatabase extends RoomDatabase {
                     String songPath = cursor.getString(path);
                     long songDuration = cursor.getLong(duration);
                     songsModel = new SongsModel(songTitle, songAlbum, songArtist, "", songPath, songDuration);
-                    songsDao.insert(songsModel);
-//                    Log.d("TAGGG", "" + title + artist + songsModel.toString());
+/*                    if (refresh) {
+                        songsDao.update(songsModel);
+                        Log.d("TAGGG", "updating database");
+                    } else {*/
+                        songsDao.insert(songsModel);
+/*                        Log.d("TAGGG", "inserting database");
+                    }*/
                 } while (cursor.moveToNext());
+                contexts[0].getSharedPreferences(PREFERENCES_DETAILS, Context.MODE_PRIVATE).edit().putBoolean(REFRESH_SONG_LIST, false).apply();
             }
             if (cursor != null)
                 cursor.close();

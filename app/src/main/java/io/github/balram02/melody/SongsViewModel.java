@@ -2,11 +2,11 @@ package io.github.balram02.melody;
 
 import android.app.Application;
 
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+
+import java.util.List;
 
 public class SongsViewModel extends AndroidViewModel {
 

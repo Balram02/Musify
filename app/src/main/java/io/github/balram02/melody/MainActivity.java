@@ -1,28 +1,47 @@
 package io.github.balram02.melody;
 
+import android.Manifest;
 import android.animation.ObjectAnimator;
+import android.app.AlertDialog;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.navigation.NavigationView;
+
+import static io.github.balram02.melody.Constants.PREFERENCES_DETAILS;
+import static io.github.balram02.melody.Constants.REFRESH_SONG_LIST;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private RecyclerView recyclerView;
     private CardView totalSongsCard;
     private SongsViewModel songsViewModel;
+
+    private SwipeRefreshLayout refreshLayout;
+
+    private SongsAdapter songsAdapter;
+
+    public final String TAG = MainActivity.this.getClass().getSimpleName();
+    private final int PERMISSION_REQUEST_CODE = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,19 +51,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        refreshLayout = findViewById(R.id.refresh_layout);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.spotifyBlack), getResources().getColor(R.color.spotifyGreen));
+
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         recyclerView.setHasFixedSize(true);
         totalSongsCard = findViewById(R.id.card_view);
-        SongsAdapter songsAdapter = new SongsAdapter();
 
-        songsViewModel = ViewModelProviders.of(this).get(SongsViewModel.class);
-        songsViewModel.getAllSongs().observe(this, songsModels -> {
-            ((TextView) findViewById(R.id.total_songs)).setText(songsModels.size() + " Songs found");
-            songsAdapter.setSongs(songsModels);
-            recyclerView.setAdapter(songsAdapter);
-            animateTotalSongsCard();
-        });
+        songsAdapter = new SongsAdapter();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -54,6 +69,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        askRequiredPermissions();
+
+        refreshLayout.setOnRefreshListener(() -> {
+            getSharedPreferences(PREFERENCES_DETAILS, MODE_PRIVATE).edit().putBoolean(REFRESH_SONG_LIST, true).apply();
+            songsViewModel.getAllSongs();
+            new Handler().postDelayed(() -> refreshLayout.setRefreshing(false), 4000);
+
+        });
+    }
+
+    private void askRequiredPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (ActivityCompat
+                    .checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                    || ActivityCompat
+                    .checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "asking permissions... ");
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+            } else {
+                setRecyclerViewObserver();
+            }
+        } else {
+            setRecyclerViewObserver();
+        }
+    }
+
+    private void setRecyclerViewObserver() {
+        songsViewModel = ViewModelProviders.of(this).get(SongsViewModel.class);
+        songsViewModel.getAllSongs().observe(this, songsModels -> {
+            ((TextView) findViewById(R.id.total_songs)).setText(songsModels.size() + " Songs found");
+            songsAdapter.setSongs(songsModels);
+            recyclerView.setAdapter(songsAdapter);
+            animateTotalSongsCard();
+        });
     }
 
     private void animateTotalSongsCard() {
@@ -61,6 +112,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         animatorOut.setStartDelay(3000);
         animatorOut.setDuration(5000);
         animatorOut.start();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == PERMISSION_REQUEST_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            setRecyclerViewObserver();
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Permission denied");
+            builder.setMessage("Storage permissions are needed for this app to work properly.\nApp will close if canceled");
+            builder.setNegativeButton("Cancel", (dialog, which) -> {
+                finish();
+            });
+            builder.setPositiveButton("Ok", (dialog, which) -> {
+                askRequiredPermissions();
+            });
+            builder.show();
+        }
     }
 
     @Override
