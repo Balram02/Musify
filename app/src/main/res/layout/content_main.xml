@@ -49,6 +49,4 @@
         </LinearLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <include layout="@layout/player_bottom_layout" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

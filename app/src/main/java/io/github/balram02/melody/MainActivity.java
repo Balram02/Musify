@@ -6,12 +6,12 @@ import android.app.AlertDialog;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -36,12 +37,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SongsViewModel songsViewModel;
 
     private SwipeRefreshLayout refreshLayout;
-    private LinearLayout container;
 
     private SongsAdapter songsAdapter;
 
     public final String TAG = MainActivity.this.getClass().getSimpleName();
     private final int PERMISSION_REQUEST_CODE = 101;
+
+    private BottomSheetBehavior bottomSheetBehavior;
+    private LinearLayout innerContainer;
+    private LinearLayout outerContainer;
+    private RelativeLayout bottomPeek;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +56,49 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        container = findViewById(R.id.main_container);
+        outerContainer = findViewById(R.id.outer_container);
+        innerContainer = findViewById(R.id.inner_container);
+        bottomPeek = findViewById(R.id.bottom_peek);
+
+        bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
+
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+//                Log.d("TAGGG", slideOffset + "");
+
+                innerContainer.setTranslationY(-bottomSheet.getHeight() * slideOffset);
+                if (slideOffset >= 0.0f && slideOffset <= 0.1) {
+                    bottomPeek.setAlpha(0.9f);
+                } else if (slideOffset > 0.1f && slideOffset <= 0.2f) {
+                    bottomPeek.setAlpha(0.8f);
+                } else if (slideOffset > 0.2f && slideOffset <= 0.3f) {
+                    bottomPeek.setAlpha(0.7f);
+                } else if (slideOffset > 0.3f && slideOffset <= 0.4f) {
+                    bottomPeek.setAlpha(0.6f);
+                } else if (slideOffset > 0.4f && slideOffset <= 0.5f) {
+                    bottomPeek.setAlpha(0.5f);
+                } else if (slideOffset > 0.5f && slideOffset <= 0.6f) {
+                    bottomPeek.setAlpha(0.4f);
+                } else if (slideOffset > 0.6f && slideOffset <= 0.7f) {
+                    bottomPeek.setAlpha(0.3f);
+                } else if (slideOffset > 0.7f && slideOffset <= 0.8f) {
+                    bottomPeek.setAlpha(0.2f);
+                } else if (slideOffset > 0.8f && slideOffset <= 0.9f) {
+                    bottomPeek.setAlpha(0.1f);
+//                    bottomPeek.setVisibility(View.VISIBLE);
+//                } else if (slideOffset > 0.9f && slideOffset <= 1.0f) {
+//                    bottomPeek.setAlpha(0.1f);
+                } else {
+                    bottomPeek.setAlpha(0);
+//                    bottomPeek.setVisibility(View.GONE);
+                }
+            }
+        });
 
         refreshLayout = findViewById(R.id.refresh_layout);
         refreshLayout.setColorSchemeColors(getResources().getColor(R.color.spotifyBlack), getResources().getColor(R.color.spotifyGreen));
@@ -72,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-                container.setTranslationX(drawerView.getWidth() * slideOffset);
+                outerContainer.setTranslationX(drawerView.getWidth() * slideOffset);
             }
 
             @Override
@@ -96,8 +143,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         refreshLayout.setOnRefreshListener(() -> {
 //            getSharedPreferences(PREFERENCES_DETAILS, MODE_PRIVATE).edit().putBoolean(REFRESH_SONG_LIST, true).apply();
 //            songsViewModel.getAllSongs();
-            new Handler().postDelayed(() -> refreshLayout.setRefreshing(false), 4000);
-
+/*            new Handler().postDelayed(() -> {
+                refreshLayout.setRefreshing(false);
+            }, 4000);*/
         });
     }
 
