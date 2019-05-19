@@ -5,14 +5,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.List;
+
 public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListViewHolder> {
 
-    List<SongsModel> songs;
+    private List<SongsModel> songs;
+    private OnItemClickListener listener;
 
     public SongsAdapter() {
     }
@@ -65,6 +66,20 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListView
             songName = itemView.findViewById(R.id.song_name);
             songArtist = itemView.findViewById(R.id.song_artist);
             songDuration = itemView.findViewById(R.id.song_duration);
+
+            itemView.setOnClickListener(v -> {
+                if (listener != null && getAdapterPosition() != 0) {
+                    listener.onItemClick(songs.get(getAdapterPosition()));
+                }
+            });
         }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(SongsModel model);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 }

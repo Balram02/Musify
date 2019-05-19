@@ -3,6 +3,7 @@ package io.github.balram02.melody;
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,6 +30,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.navigation.NavigationView;
+
+import static io.github.balram02.melody.Constants.IS_PLAYING;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -109,6 +112,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         totalSongsCard = findViewById(R.id.card_view);
 
         songsAdapter = new SongsAdapter();
+
+        songsAdapter.setOnItemClickListener(model -> {
+            Intent intent = new Intent(this, PlayerService.class);
+            intent.putExtra("song_path", model.getPath());
+            if (IS_PLAYING) {
+                stopService(intent);
+                IS_PLAYING = true;
+                startService(intent);
+            } else {
+                IS_PLAYING = true;
+                startService(intent);
+            }
+        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
