@@ -15,7 +15,7 @@ import io.github.balram02.melody.Models.SongsModel;
 @Dao
 public interface SongsDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     void insert(SongsModel songsModel);
 
     @Update(onConflict = OnConflictStrategy.REPLACE)

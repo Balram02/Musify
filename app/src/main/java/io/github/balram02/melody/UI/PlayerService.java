@@ -43,6 +43,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
             player.prepare();
             player.setLooping(false);
             player.start();
+            player.setOnCompletionListener(this);
 
 //            createNotificationBuilder();
 
@@ -79,6 +80,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
             player.stop();
             player.release();
         }
+        stopForeground(true);
     }
 
     @Override

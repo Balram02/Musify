@@ -1,5 +1,6 @@
 package io.github.balram02.melody.UI;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,14 +9,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import io.github.balram02.melody.R;
 import io.github.balram02.melody.Models.SongsModel;
+import io.github.balram02.melody.R;
 
 public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListViewHolder> {
 
-    private List<SongsModel> songs;
+    private List<SongsModel> songs = new ArrayList<>();
     private OnItemClickListener listener;
 
     public SongsAdapter() {
@@ -23,7 +25,6 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListView
 
     public SongsAdapter(List<SongsModel> songs) {
         this.songs = songs;
-//        Log.d("TAGGG", this.songs.size() + " = size");
     }
 
     @NonNull
@@ -47,8 +48,9 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListView
         return songs.size();
     }
 
-    public void setSongs(List<SongsModel> songs) {
+    void setSongs(List<SongsModel> songs) {
         this.songs = songs;
+        notifyDataSetChanged();
     }
 
 //    TODO: complete below method

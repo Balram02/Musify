@@ -22,4 +22,16 @@ public class AllSongsViewModel extends AndroidViewModel {
         songs = repository.getAllSongs();
     }
 
+    public void update(SongsModel songsModel) {
+        repository.update(songsModel);
+    }
+
+    public void delete(SongsModel songsModel) {
+        repository.delete(songsModel);
+    }
+
+    public LiveData<List<SongsModel>> getAllSongs() {
+        return songs;
+    }
+
 }

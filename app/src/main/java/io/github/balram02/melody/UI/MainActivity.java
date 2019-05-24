@@ -11,145 +11,31 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener;
 
 import io.github.balram02.melody.R;
 
-public class MainActivity extends AppCompatActivity {
-
-/*
-    private RecyclerView recyclerView;
-    //    private CardView totalSongsCard;
-    private SongsViewModel songsViewModel;
-
-    private SwipeRefreshLayout refreshLayout;
-
-    private SongsAdapter songsAdapter;
+public class MainActivity extends AppCompatActivity implements OnNavigationItemSelectedListener {
 
     public final String TAG = MainActivity.this.getClass().getSimpleName();
     private final int PERMISSION_REQUEST_CODE = 101;
-
-    private BottomSheetBehavior bottomSheetBehavior;
-    private LinearLayout innerContainer;
-    private LinearLayout outerContainer;
-    private RelativeLayout bottomPeek;
-
-    private ImageButton prev, play, next;
-*/
-
-    public final String TAG = MainActivity.this.getClass().getSimpleName();
-    private final int PERMISSION_REQUEST_CODE = 101;
+    private FragmentManager fragmentManager;
+    private BottomNavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-/*
-        outerContainer = findViewById(R.id.outer_container);
-        innerContainer = findViewById(R.id.inner_container);
-        bottomPeek = findViewById(R.id.bottom_peek);
-
-        prev = findViewById(R.id.prev_sheet);
-        play = findViewById(R.id.play_sheet);
-        next = findViewById(R.id.next_sheet);
-
-        play.setOnClickListener(v -> {
-            if (IS_PLAYING) {
-                stopService(new Intent(this, PlayerService.class));
-                IS_PLAYING = false;
-                play.setImageDrawable(getResources().getDrawable(R.drawable.play_icon_black_24dp));
-//                play.setImageDrawable(getResources().getDrawable(R.drawable.pause_icon_black_24dp));
-            }
-//            else
-        });
-
-        bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
-
-        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-                    bottomPeek.setVisibility(View.GONE);
-                } else {
-                    if (bottomPeek.getVisibility() == View.GONE)
-                        bottomPeek.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-//                Log.d("TAGGG", slideOffset + "");
-
-                innerContainer.setTranslationY(-bottomSheet.getHeight() * slideOffset);
-                if (slideOffset >= 0.0f && slideOffset <= 0.1) {
-                    bottomPeek.setAlpha(0.9f);
-                } else if (slideOffset > 0.1f && slideOffset <= 0.2f) {
-                    bottomPeek.setAlpha(0.8f);
-                } else if (slideOffset > 0.2f && slideOffset <= 0.3f) {
-                    bottomPeek.setAlpha(0.7f);
-                } else if (slideOffset > 0.3f && slideOffset <= 0.4f) {
-                    bottomPeek.setAlpha(0.6f);
-                } else if (slideOffset > 0.4f && slideOffset <= 0.5f) {
-                    bottomPeek.setAlpha(0.5f);
-                } else if (slideOffset > 0.5f && slideOffset <= 0.6f) {
-                    bottomPeek.setAlpha(0.4f);
-                } else if (slideOffset > 0.6f && slideOffset <= 0.7f) {
-                    bottomPeek.setAlpha(0.3f);
-                } else if (slideOffset > 0.7f && slideOffset <= 0.8f) {
-                    bottomPeek.setAlpha(0.2f);
-                } else if (slideOffset > 0.8f && slideOffset <= 0.9f) {
-                    bottomPeek.setAlpha(0.1f);
-//                    bottomPeek.setVisibility(View.VISIBLE);
-//                } else if (slideOffset > 0.9f && slideOffset <= 1.0f) {
-//                    bottomPeek.setAlpha(0.1f);
-                } else {
-                    bottomPeek.setAlpha(0);
-//                    bottomPeek.setVisibility(View.GONE);
-                }
-            }
-        });
-
-        refreshLayout = findViewById(R.id.refresh_layout);
-        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.spotifyGreen), getResources().getColor(R.color.spotifyBlack));
-
-        recyclerView = findViewById(R.id.recycler_view);
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        recyclerView.setHasFixedSize(true);
-//        totalSongsCard = findViewById(R.id.card_view);
-
-        songsAdapter = new SongsAdapter();
-
-        songsAdapter.setOnItemClickListener(model -> {
-            Intent intent = new Intent(this, PlayerService.class);
-            intent.putExtra("song_name", model.getTitle());
-            intent.putExtra("song_artist", model.getArtist());
-            intent.putExtra("song_path", model.getPath());
-            if (IS_PLAYING) {
-                stopService(intent);
-                IS_PLAYING = true;
-                startService(intent);
-                play.setImageDrawable(getResources().getDrawable(R.drawable.pause_icon_black_24dp));
-            } else {
-                IS_PLAYING = true;
-                play.setImageDrawable(getResources().getDrawable(R.drawable.pause_icon_black_24dp));
-                startService(intent);
-            }
-        });
-*/
+        setSupportActionBar(findViewById(R.id.toolbar));
+        navigationView = findViewById(R.id.bottom_nav_view);
+        navigationView.setOnNavigationItemSelectedListener(this::onNavigationItemSelected);
+        fragmentManager = getSupportFragmentManager();
         askRequiredPermissions();
-
-        /*        refreshLayout.setOnRefreshListener(() -> {
-         *//*          getSharedPreferences(PREFERENCES_DETAILS, MODE_PRIVATE).edit().putBoolean(REFRESH_SONG_LIST, true).apply();
-            songsViewModel.getAllSongs();
-            new Handler().postDelayed(() -> {
-                refreshLayout.setRefreshing(false);
-            }, 4000);*//*
-        });*/
     }
 
     private void askRequiredPermissions() {
@@ -162,22 +48,18 @@ public class MainActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
             } else {
-//                setRecyclerViewObserver();
+                setFragment();
             }
         } else {
-//            setRecyclerViewObserver();
+            setFragment();
         }
     }
 
-/*    private void setRecyclerViewObserver() {
-        songsViewModel = ViewModelProviders.of(this).get(SongsViewModel.class);
-        songsViewModel.getAllSongs().observe(this, songsModels -> {
-            ((TextView) findViewById(R.id.total_songs)).setText(songsModels.size() + " Songs found");
-            songsAdapter.setSongs(songsModels);
-            recyclerView.setAdapter(songsAdapter);
-            startTotalSongsCardAnimation();
-        });
-    }*/
+    private void setFragment() {
+        new Thread(() -> runOnUiThread(() -> {
+            fragmentManager.beginTransaction().replace(R.id.fragment_container, new AllSongsFragment()).commitNow();
+        })).start();
+    }
 
     private void startTotalSongsCardAnimation() {
 /*
@@ -193,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == PERMISSION_REQUEST_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//            setRecyclerViewObserver();
+            setFragment();
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Permission denied")
@@ -207,37 +89,31 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-/*    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else if (bottomSheetBehavior != null && bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        } else
-            super.onBackPressed();
-    }*/
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.music:
+                if (!(fragmentManager.findFragmentById(R.id.fragment_container) instanceof AllSongsFragment)) {
+//                    replace fragment
+                }
+        }
+
+        return true;
+    }
 }

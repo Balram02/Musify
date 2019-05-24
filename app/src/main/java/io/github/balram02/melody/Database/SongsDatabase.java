@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
@@ -32,18 +33,8 @@ public abstract class SongsDatabase extends RoomDatabase {
                             super.onCreate(db);
                             new PopulateAsyncTask(instance).execute(context);
                         }
-
-/*                        @Override
-                        public void onOpen(@NonNull SupportSQLiteDatabase db) {
-                            super.onOpen(db);
-                            if (context.getSharedPreferences(PREFERENCES_DETAILS, Context.MODE_PRIVATE).getBoolean(REFRESH_SONG_LIST, false)) {
-                                new PopulateAsyncTask(instance).execute(context);
-                            }
-                        }*/
                     }).build();
         }
-
-//        Log.d("TAGGG", "2 instance = " + instance);
         return instance;
     }
 
@@ -70,8 +61,6 @@ public abstract class SongsDatabase extends RoomDatabase {
                 int path = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
                 int duration = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
                 SongsModel songsModel;
-/*                boolean refresh = contexts[0]
-                        .getSharedPreferences(PREFERENCES_DETAILS, Context.MODE_PRIVATE).getBoolean(REFRESH_SONG_LIST, false);*/
                 do {
                     String songTitle = cursor.getString(title);
                     String songAlbum = cursor.getString(album);
@@ -80,15 +69,9 @@ public abstract class SongsDatabase extends RoomDatabase {
                     String songPath = cursor.getString(path);
                     long songDuration = cursor.getLong(duration);
                     songsModel = new SongsModel(songTitle, songAlbum, songArtist, "", songPath, songDuration);
-/*                    if (refresh) {
-                        songsDao.update(songsModel);
-                        Log.d("TAGGG", "updating database");
-                    } else {*/
+
                     songsDao.insert(songsModel);
-/*                        Log.d("TAGGG", "inserting database");
-                    }*/
                 } while (cursor.moveToNext());
-//                contexts[0].getSharedPreferences(PREFERENCES_DETAILS, Context.MODE_PRIVATE).edit().putBoolean(REFRESH_SONG_LIST, false).apply();
             }
             if (cursor != null)
                 cursor.close();
