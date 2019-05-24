@@ -1,4 +1,4 @@
-package io.github.balram02.melody;
+package io.github.balram02.melody.UI;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+
+import io.github.balram02.melody.R;
+import io.github.balram02.melody.Models.SongsModel;
 
 public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListViewHolder> {
 

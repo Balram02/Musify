@@ -1,4 +1,4 @@
-package io.github.balram02.melody;
+package io.github.balram02.melody.Database;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -10,13 +10,15 @@ import androidx.room.Update;
 
 import java.util.List;
 
+import io.github.balram02.melody.Models.SongsModel;
+
 @Dao
 public interface SongsDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(SongsModel songsModel);
 
-    @Update(onConflict = OnConflictStrategy.IGNORE)
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     void update(SongsModel songsModel);
 
     @Delete

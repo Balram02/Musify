@@ -1,6 +1,6 @@
-package io.github.balram02.melody;
+package io.github.balram02.melody.constants;
 
-class Constants {
+public class Constants {
 
     public static final String PREFERENCES_DETAILS = "updating_list";
 

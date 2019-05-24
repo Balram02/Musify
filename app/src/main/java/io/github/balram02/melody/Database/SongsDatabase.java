@@ -1,4 +1,4 @@
-package io.github.balram02.melody;
+package io.github.balram02.melody.Database;
 
 
 import android.content.Context;
@@ -13,6 +13,8 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import io.github.balram02.melody.Models.SongsModel;
+
 @Database(entities = {SongsModel.class}, version = 1)
 public abstract class SongsDatabase extends RoomDatabase {
 
@@ -20,7 +22,7 @@ public abstract class SongsDatabase extends RoomDatabase {
 
     public abstract SongsDao songDao();
 
-    static synchronized SongsDatabase getInstance(Context context) {
+    public static synchronized SongsDatabase getInstance(Context context) {
 
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(), SongsDatabase.class, "songs_database")

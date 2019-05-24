@@ -1,42 +1,26 @@
-package io.github.balram02.melody;
+package io.github.balram02.melody.UI;
 
 import android.Manifest;
-import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.navigation.NavigationView;
+import io.github.balram02.melody.R;
 
-import static io.github.balram02.melody.Constants.IS_PLAYING;
+public class MainActivity extends AppCompatActivity {
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-
+/*
     private RecyclerView recyclerView;
-    private CardView totalSongsCard;
+    //    private CardView totalSongsCard;
     private SongsViewModel songsViewModel;
 
     private SwipeRefreshLayout refreshLayout;
@@ -51,6 +35,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private LinearLayout outerContainer;
     private RelativeLayout bottomPeek;
 
+    private ImageButton prev, play, next;
+*/
+
+    public final String TAG = MainActivity.this.getClass().getSimpleName();
+    private final int PERMISSION_REQUEST_CODE = 101;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,15 +49,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+/*
         outerContainer = findViewById(R.id.outer_container);
         innerContainer = findViewById(R.id.inner_container);
         bottomPeek = findViewById(R.id.bottom_peek);
+
+        prev = findViewById(R.id.prev_sheet);
+        play = findViewById(R.id.play_sheet);
+        next = findViewById(R.id.next_sheet);
+
+        play.setOnClickListener(v -> {
+            if (IS_PLAYING) {
+                stopService(new Intent(this, PlayerService.class));
+                IS_PLAYING = false;
+                play.setImageDrawable(getResources().getDrawable(R.drawable.play_icon_black_24dp));
+//                play.setImageDrawable(getResources().getDrawable(R.drawable.pause_icon_black_24dp));
+            }
+//            else
+        });
 
         bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
 
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                    bottomPeek.setVisibility(View.GONE);
+                } else {
+                    if (bottomPeek.getVisibility() == View.GONE)
+                        bottomPeek.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -104,65 +115,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
         refreshLayout = findViewById(R.id.refresh_layout);
-        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.spotifyBlack), getResources().getColor(R.color.spotifyGreen));
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.spotifyGreen), getResources().getColor(R.color.spotifyBlack));
 
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         recyclerView.setHasFixedSize(true);
-        totalSongsCard = findViewById(R.id.card_view);
+//        totalSongsCard = findViewById(R.id.card_view);
 
         songsAdapter = new SongsAdapter();
 
         songsAdapter.setOnItemClickListener(model -> {
             Intent intent = new Intent(this, PlayerService.class);
+            intent.putExtra("song_name", model.getTitle());
+            intent.putExtra("song_artist", model.getArtist());
             intent.putExtra("song_path", model.getPath());
             if (IS_PLAYING) {
                 stopService(intent);
                 IS_PLAYING = true;
                 startService(intent);
+                play.setImageDrawable(getResources().getDrawable(R.drawable.pause_icon_black_24dp));
             } else {
                 IS_PLAYING = true;
+                play.setImageDrawable(getResources().getDrawable(R.drawable.pause_icon_black_24dp));
                 startService(intent);
             }
         });
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-                outerContainer.setTranslationX(drawerView.getWidth() * slideOffset);
-            }
-
-            @Override
-            public void onDrawerOpened(@NonNull View drawerView) {
-            }
-
-            @Override
-            public void onDrawerClosed(@NonNull View drawerView) {
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-            }
-        });
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
+*/
         askRequiredPermissions();
 
-        refreshLayout.setOnRefreshListener(() -> {
-//            getSharedPreferences(PREFERENCES_DETAILS, MODE_PRIVATE).edit().putBoolean(REFRESH_SONG_LIST, true).apply();
-//            songsViewModel.getAllSongs();
-/*            new Handler().postDelayed(() -> {
+        /*        refreshLayout.setOnRefreshListener(() -> {
+         *//*          getSharedPreferences(PREFERENCES_DETAILS, MODE_PRIVATE).edit().putBoolean(REFRESH_SONG_LIST, true).apply();
+            songsViewModel.getAllSongs();
+            new Handler().postDelayed(() -> {
                 refreshLayout.setRefreshing(false);
-            }, 4000);*/
-        });
+            }, 4000);*//*
+        });*/
     }
 
     private void askRequiredPermissions() {
@@ -175,28 +162,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
             } else {
-                setRecyclerViewObserver();
+//                setRecyclerViewObserver();
             }
         } else {
-            setRecyclerViewObserver();
+//            setRecyclerViewObserver();
         }
     }
 
-    private void setRecyclerViewObserver() {
+/*    private void setRecyclerViewObserver() {
         songsViewModel = ViewModelProviders.of(this).get(SongsViewModel.class);
         songsViewModel.getAllSongs().observe(this, songsModels -> {
             ((TextView) findViewById(R.id.total_songs)).setText(songsModels.size() + " Songs found");
             songsAdapter.setSongs(songsModels);
             recyclerView.setAdapter(songsAdapter);
-            animateTotalSongsCard();
+            startTotalSongsCardAnimation();
         });
-    }
+    }*/
 
-    private void animateTotalSongsCard() {
+    private void startTotalSongsCardAnimation() {
+/*
         ObjectAnimator animatorOut = ObjectAnimator.ofFloat(totalSongsCard, "translationY", -100f);
         animatorOut.setStartDelay(3000);
         animatorOut.setDuration(5000);
         animatorOut.start();
+*/
     }
 
     @Override
@@ -204,35 +193,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == PERMISSION_REQUEST_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            setRecyclerViewObserver();
+//            setRecyclerViewObserver();
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Permission denied");
-            builder.setMessage("Storage permissions are needed for this app to work properly.\nApp will close if canceled");
-            builder.setNegativeButton("Cancel", (dialog, which) -> {
-                finish();
-            });
-            builder.setPositiveButton("Ok", (dialog, which) -> {
+            builder.setTitle("Permission denied")
+                    .setMessage("Storage permissions are needed for this app to work properly.\nApp will close if canceled")
+                    .setNegativeButton("Cancel", (dialog, which) -> {
+                        finish();
+                    }).setPositiveButton("Ok", (dialog, which) -> {
                 askRequiredPermissions();
             });
             builder.show();
         }
     }
 
-    @Override
+/*    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        } else if (bottomSheetBehavior != null && bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        } else
             super.onBackPressed();
-        }
-    }
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 
@@ -251,28 +240,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
 }
