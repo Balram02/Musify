@@ -3,6 +3,7 @@ package io.github.balram02.melody.UI;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +60,12 @@ public class AllSongsFragment extends Fragment {
                 IS_PLAYING = true;
                 context.startService(intent);
             }
+        });
+
+        refreshLayout.setOnRefreshListener(() -> {
+            new Handler().postDelayed(() -> {
+                refreshLayout.setRefreshing(false);
+            }, 1500);
         });
 
         return v;

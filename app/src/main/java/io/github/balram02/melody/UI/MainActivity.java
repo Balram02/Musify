@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -24,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     public final String TAG = MainActivity.this.getClass().getSimpleName();
     private final int PERMISSION_REQUEST_CODE = 101;
     private FragmentManager fragmentManager;
-    private BottomNavigationView navigationView;
+    public static BottomNavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,16 +49,16 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
             } else {
-                setFragment();
+                setFragment(new AllSongsFragment());
             }
         } else {
-            setFragment();
+            setFragment(new AllSongsFragment());
         }
     }
 
-    private void setFragment() {
+    private void setFragment(Fragment fragment) {
         new Thread(() -> runOnUiThread(() -> {
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, new AllSongsFragment()).commitNow();
+            fragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commitNow();
         })).start();
     }
 
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == PERMISSION_REQUEST_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            setFragment();
+            setFragment(new AllSongsFragment());
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Permission denied")
@@ -109,9 +110,13 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
         switch (item.getItemId()) {
             case R.id.music:
-                if (!(fragmentManager.findFragmentById(R.id.fragment_container) instanceof AllSongsFragment)) {
-//                    replace fragment
-                }
+                if (!(fragmentManager.findFragmentById(R.id.fragment_container) instanceof AllSongsFragment))
+                    setFragment(new AllSongsFragment());
+                break;
+            case R.id.library:
+                if (!(fragmentManager.findFragmentById(R.id.fragment_container) instanceof LibraryFragment))
+                    setFragment(new LibraryFragment());
+                break;
         }
 
         return true;
