@@ -1,4 +1,4 @@
-package io.github.balram02.melody.UI;
+package io.github.balram02.melody.ui;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -56,20 +56,21 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         }
     }
 
-    private void setFragment(Fragment fragment) {
+    public void setFragment(Fragment fragment) {
         new Thread(() -> runOnUiThread(() -> {
             fragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commitNow();
         })).start();
     }
-
-    private void startTotalSongsCardAnimation() {
 /*
+    private void startTotalSongsCardAnimation() {
+
         ObjectAnimator animatorOut = ObjectAnimator.ofFloat(totalSongsCard, "translationY", -100f);
         animatorOut.setStartDelay(3000);
         animatorOut.setDuration(5000);
         animatorOut.start();
-*/
+
     }
+    */
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

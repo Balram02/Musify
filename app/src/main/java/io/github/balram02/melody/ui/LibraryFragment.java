@@ -1,4 +1,4 @@
-package io.github.balram02.melody.UI;
+package io.github.balram02.melody.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,22 +14,27 @@ import androidx.lifecycle.ViewModelProviders;
 import io.github.balram02.melody.R;
 import io.github.balram02.melody.ViewModels.LibraryViewModel;
 
-import static io.github.balram02.melody.UI.MainActivity.navigationView;
+import static io.github.balram02.melody.ui.MainActivity.navigationView;
 
 public class LibraryFragment extends Fragment {
 
     private LibraryViewModel mViewModel;
-    private CardView songsCardView;
+    private CardView songsCardView, albumsCardView;
 
     public static LibraryFragment newInstance() {
         return new LibraryFragment();
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.library_fragment, container, false);
         songsCardView = v.findViewById(R.id.songs_card_view);
+        albumsCardView = v.findViewById(R.id.albums_card_view);
+
+        albumsCardView.setOnClickListener(v1 -> {
+            ((MainActivity) getActivity()).setFragment(new AlbumsFragment());
+        });
+
         songsCardView.setOnClickListener(v1 -> {
             navigationView.setSelectedItemId(R.id.music);
         });

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".UI.MainActivity">
+    tools:context=".ui.MainActivity">
 
 <!--    <androidx.cardview.widget.CardView
         android:id="@+id/card_view"

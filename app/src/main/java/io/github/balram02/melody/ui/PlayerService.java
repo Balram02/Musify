@@ -1,4 +1,4 @@
-package io.github.balram02.melody.UI;
+package io.github.balram02.melody.ui;
 
 import android.app.Notification;
 import android.app.NotificationChannel;

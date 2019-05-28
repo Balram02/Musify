@@ -1,6 +1,5 @@
-package io.github.balram02.melody.UI;
+package io.github.balram02.melody.ui;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,35 +11,33 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.balram02.melody.Models.SongsModel;
+import io.github.balram02.melody.Models.AlbumsModel;
 import io.github.balram02.melody.R;
 
-public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListViewHolder> {
+public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SongListViewHolder> {
 
-    private List<SongsModel> songs = new ArrayList<>();
+    private List<AlbumsModel> songs = new ArrayList<>();
     private OnItemClickListener listener;
 
-    public SongsAdapter() {
+    public AlbumsAdapter() {
     }
 
-    public SongsAdapter(List<SongsModel> songs) {
+    public AlbumsAdapter(List<AlbumsModel> songs) {
         this.songs = songs;
     }
 
     @NonNull
     @Override
     public SongListViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recycler_view_item, viewGroup, false);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recycler_view_albums_item, viewGroup, false);
         return new SongListViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull SongListViewHolder holder, int i) {
 
-        SongsModel model = songs.get(i);
-        holder.songName.setText(model.getTitle());
-        holder.songArtist.setText(model.getArtist());
-        holder.songDuration.setText(getDurationInMinutes(model.getDuration()));
+        AlbumsModel model = songs.get(i);
+        holder.songName.setText(model.getAlbum());
     }
 
     @Override
@@ -48,7 +45,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListView
         return songs.size();
     }
 
-    void setSongs(List<SongsModel> songs) {
+    void setSongs(List<AlbumsModel> songs) {
         this.songs = songs;
         notifyDataSetChanged();
     }
@@ -63,14 +60,12 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListView
     class SongListViewHolder extends RecyclerView.ViewHolder {
 
         private TextView songName;
-        private TextView songArtist;
-        private TextView songDuration;
+/*        private TextView songArtist;
+        private TextView songDuration;*/
 
         public SongListViewHolder(@NonNull View itemView) {
             super(itemView);
             songName = itemView.findViewById(R.id.song_name);
-            songArtist = itemView.findViewById(R.id.song_artist);
-            songDuration = itemView.findViewById(R.id.song_duration);
 
             itemView.setOnClickListener(v -> {
                 if (listener != null && getAdapterPosition() != 0) {
@@ -81,7 +76,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListView
     }
 
     public interface OnItemClickListener {
-        void onItemClick(SongsModel model);
+        void onItemClick(AlbumsModel model);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
