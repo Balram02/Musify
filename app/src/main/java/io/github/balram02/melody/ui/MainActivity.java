@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
     public void setFragment(Fragment fragment) {
         new Thread(() -> runOnUiThread(() -> {
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commitNow();
+            fragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commitAllowingStateLoss();
         })).start();
     }
 /*

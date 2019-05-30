@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#364755</color>
-    <color name="colorPrimaryDark">#000000</color>
-    <color name="colorAccent">#ffaa16</color>
+    <color name="colorPrimary">#000000</color>
+    <color name="colorPrimaryDark">#121212</color>
+    <color name="colorAccent">#00D6C3</color>
 
     <!--Standard android colors-->
     <color name="white">@android:color/white</color>
@@ -16,8 +16,10 @@
     <color name="spotifyGreen">#1DB954</color>
     <color name="spotifyWhite">#FFFFFF</color>
 
-    <color name="transparent">#00272727</color>
+    <color name="transparent">#00000000</color>
 
     <color name="transparentBlack">#9A000000</color>
+
+    <color name="whiteOverlay">#0EFFFFFF</color>
 
 </resources>
