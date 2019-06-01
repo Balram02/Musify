@@ -1,4 +1,4 @@
-package io.github.balram02.melody.ui;
+package io.github.balram02.melody.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,7 +47,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListView
         return songs.size();
     }
 
-    void setSongs(List<SongsModel> songs) {
+    public void updateSongsList(List<SongsModel> songs) {
         this.songs = songs;
         notifyDataSetChanged();
     }

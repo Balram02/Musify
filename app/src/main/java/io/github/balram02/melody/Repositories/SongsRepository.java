@@ -21,11 +21,13 @@ public class SongsRepository {
     private SongsDatabase songsDB;
     private SongsDao songsDao;
     private LiveData<List<SongsModel>> songs;
+    private LiveData<List<SongsModel>> songsQueue;
 
     public SongsRepository(Application application) {
         songsDB = SongsDatabase.getInstance(application);
         songsDao = songsDB.songDao();
         songs = songsDao.getAllSongs();
+        songsQueue = songsDao.getSongsQueue();
     }
 
     public void insert(SongsModel songsModel) {
@@ -42,6 +44,10 @@ public class SongsRepository {
 
     public LiveData<List<SongsModel>> getAllSongs() {
         return songs;
+    }
+
+    public LiveData<List<SongsModel>> getSongsQueue() {
+        return songsQueue;
     }
 
     private void performTask(int operation, SongsModel songsModel) {

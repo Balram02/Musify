@@ -15,11 +15,13 @@ public class AllSongsViewModel extends AndroidViewModel {
 
     private SongsRepository repository;
     private LiveData<List<SongsModel>> songs;
+    private LiveData<List<SongsModel>> songsQueue;
 
     public AllSongsViewModel(@NonNull Application application) {
         super(application);
         repository = new SongsRepository(application);
         songs = repository.getAllSongs();
+        songsQueue = repository.getSongsQueue();
     }
 
     public void update(SongsModel songsModel) {
@@ -32,6 +34,10 @@ public class AllSongsViewModel extends AndroidViewModel {
 
     public LiveData<List<SongsModel>> getAllSongs() {
         return songs;
+    }
+
+    public LiveData<List<SongsModel>> getSongsQueue() {
+        return songsQueue;
     }
 
 }

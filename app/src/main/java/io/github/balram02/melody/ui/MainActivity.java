@@ -2,9 +2,14 @@ package io.github.balram02.melody.ui;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,18 +19,39 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.AndroidViewModel;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener;
 
+import io.github.balram02.melody.Models.SongsModel;
 import io.github.balram02.melody.R;
+import io.github.balram02.melody.constants.Constants;
 
-public class MainActivity extends AppCompatActivity implements OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements OnNavigationItemSelectedListener, MusicPlayerServiceListener {
 
-    public final String TAG = MainActivity.this.getClass().getSimpleName();
-    private final int PERMISSION_REQUEST_CODE = 101;
+    public final String TAG = Constants.TAG;
+
     private FragmentManager fragmentManager;
     public static BottomNavigationView navigationView;
+
+    private boolean isBound;
+
+    public MusicPlayerService musicPlayerService;
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder iBinder) {
+            Log.d(TAG, "onServiceConnected: ");
+            isBound = true;
+            musicPlayerService = ((MusicPlayerService.PlayerServiceBinder) iBinder).getBoundedService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d(TAG, "onServiceDisconnected: ");
+            isBound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +60,8 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
         setSupportActionBar(findViewById(R.id.toolbar));
         navigationView = findViewById(R.id.bottom_nav_view);
-        navigationView.setOnNavigationItemSelectedListener(this::onNavigationItemSelected);
+        navigationView.setOnNavigationItemSelectedListener(this);
+
         fragmentManager = getSupportFragmentManager();
         askRequiredPermissions();
     }
@@ -47,13 +74,20 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                     .checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "asking permissions... ");
                 ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.STORAGE_PERMISSION_REQUEST_CODE);
             } else {
+                startService();
                 setFragment(new AllSongsFragment());
             }
         } else {
+            startService();
             setFragment(new AllSongsFragment());
         }
+    }
+
+    private void startService() {
+        Intent serviceIntent = new Intent(this, MusicPlayerService.class);
+        startService(serviceIntent);
     }
 
     public void setFragment(Fragment fragment) {
@@ -61,34 +95,43 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             fragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commitAllowingStateLoss();
         })).start();
     }
-/*
-    private void startTotalSongsCardAnimation() {
-
-        ObjectAnimator animatorOut = ObjectAnimator.ofFloat(totalSongsCard, "translationY", -100f);
-        animatorOut.setStartDelay(3000);
-        animatorOut.setDuration(5000);
-        animatorOut.start();
-
-    }
-    */
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    public void onUpdateService(SongsModel model, AndroidViewModel mViewModel) {
 
-        if (requestCode == PERMISSION_REQUEST_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            setFragment(new AllSongsFragment());
+        musicPlayerService.setSongDetails(model.getTitle(), model.getArtist(), model.getPath());
+        musicPlayerService.startPlayer();
+
+/*        if (musicPlayerService.isPlaying()) {
+            musicPlayerService.pause();
         } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Permission denied")
-                    .setMessage("Storage permissions are needed for this app to work properly.\nApp will close if canceled")
-                    .setNegativeButton("Cancel", (dialog, which) -> {
-                        finish();
-                    }).setPositiveButton("Ok", (dialog, which) -> {
-                askRequiredPermissions();
-            });
-            builder.show();
+
+            musicPlayerService.start();
+
+            if (!musicPlayerService.isPaused()) {
+                musicPlayerService.setSongDetails(model.getTitle(), model.getArtist(), model.getPath());
+
+                if (mViewModel instanceof AllSongsViewModel)
+                    musicPlayerService.setSongsQueueList(((AllSongsViewModel) mViewModel).getSongsQueue().getValue());
+            }
+        }*/
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.music:
+                if (!(fragmentManager.findFragmentById(R.id.fragment_container) instanceof AllSongsFragment))
+                    setFragment(new AllSongsFragment());
+                break;
+            case R.id.library:
+                if (!(fragmentManager.findFragmentById(R.id.fragment_container) instanceof LibraryFragment))
+                    setFragment(new LibraryFragment());
+                break;
         }
+
+        return true;
     }
 
     @Override
@@ -107,19 +150,37 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    protected void onStart() {
+        super.onStart();
+        Intent playerServiceIntent = new Intent(this, MusicPlayerService.class);
+        bindService(playerServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
+    }
 
-        switch (item.getItemId()) {
-            case R.id.music:
-                if (!(fragmentManager.findFragmentById(R.id.fragment_container) instanceof AllSongsFragment))
-                    setFragment(new AllSongsFragment());
-                break;
-            case R.id.library:
-                if (!(fragmentManager.findFragmentById(R.id.fragment_container) instanceof LibraryFragment))
-                    setFragment(new LibraryFragment());
-                break;
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (isBound) {
+            unbindService(mServiceConnection);
+            isBound = false;
         }
+    }
 
-        return true;
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == Constants.STORAGE_PERMISSION_REQUEST_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            setFragment(new AllSongsFragment());
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Permission denied")
+                    .setMessage("Storage permissions are needed for this app to work properly.\nApp will close if canceled")
+                    .setNegativeButton("Cancel", (dialog, which) -> {
+                        finish();
+                    }).setPositiveButton("Ok", (dialog, which) -> {
+                askRequiredPermissions();
+            });
+            builder.show();
+        }
     }
 }

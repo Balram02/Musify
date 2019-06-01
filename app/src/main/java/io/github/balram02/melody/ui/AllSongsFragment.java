@@ -2,13 +2,14 @@ package io.github.balram02.melody.ui;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,8 +22,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import io.github.balram02.melody.R;
 import io.github.balram02.melody.ViewModels.AllSongsViewModel;
+import io.github.balram02.melody.adapters.SongsAdapter;
 
-import static io.github.balram02.melody.constants.Constants.IS_PLAYING;
+import static androidx.constraintlayout.widget.Constraints.TAG;
+
 
 public class AllSongsFragment extends Fragment {
 
@@ -34,9 +37,18 @@ public class AllSongsFragment extends Fragment {
     private TextView totalSongs;
     private CardView totalSongsCard;
 
+    private MusicPlayerServiceListener musicPlayerServiceListener;
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        try {
+            musicPlayerServiceListener = (MusicPlayerServiceListener) context;
+        } catch (Exception e) {
+            Log.d(TAG, "onAttach: " + e.toString());
+            Toast.makeText(context, "Must Implement Service Listener", Toast.LENGTH_SHORT).show();
+        }
+
         this.context = context;
     }
 
@@ -55,18 +67,7 @@ public class AllSongsFragment extends Fragment {
         recyclerView.setAdapter(songsAdapter);
 
         songsAdapter.setOnItemClickListener(model -> {
-            Intent intent = new Intent(getActivity(), PlayerService.class);
-            intent.putExtra("song_name", model.getTitle());
-            intent.putExtra("song_artist", model.getArtist());
-            intent.putExtra("song_path", model.getPath());
-            if (IS_PLAYING) {
-                context.stopService(intent);
-                IS_PLAYING = true;
-                context.startService(intent);
-            } else {
-                IS_PLAYING = true;
-                context.startService(intent);
-            }
+            musicPlayerServiceListener.onUpdateService(model, mViewModel);
         });
 
         refreshLayout.setOnRefreshListener(() -> {
@@ -84,7 +85,7 @@ public class AllSongsFragment extends Fragment {
 
         mViewModel = ViewModelProviders.of(this).get(AllSongsViewModel.class);
         mViewModel.getAllSongs().observe(getViewLifecycleOwner(), songsModels -> {
-            songsAdapter.setSongs(songsModels);
+            songsAdapter.updateSongsList(songsModels);
             totalSongs.setText(getString(R.string.songs_found_text, songsModels.size()));
         });
         startTotalSongsCardAnimation();
@@ -100,6 +101,7 @@ public class AllSongsFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        musicPlayerServiceListener = null;
         context = null;
     }
 }
