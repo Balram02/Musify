@@ -1,4 +1,4 @@
-package io.github.balram02.melody.Models;
+package io.github.balram02.musify.Models;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;

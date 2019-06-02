@@ -1,4 +1,4 @@
-package io.github.balram02.melody.ViewModels;
+package io.github.balram02.musify.ViewModels;
 
 import android.app.Application;
 

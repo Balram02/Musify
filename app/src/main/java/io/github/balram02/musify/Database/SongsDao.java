@@ -1,4 +1,4 @@
-package io.github.balram02.melody.Database;
+package io.github.balram02.musify.Database;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -10,8 +10,8 @@ import androidx.room.Update;
 
 import java.util.List;
 
-import io.github.balram02.melody.Models.AlbumsModel;
-import io.github.balram02.melody.Models.SongsModel;
+import io.github.balram02.musify.Models.AlbumsModel;
+import io.github.balram02.musify.Models.SongsModel;
 
 @Dao
 public interface SongsDao {

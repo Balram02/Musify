@@ -1,4 +1,4 @@
-package io.github.balram02.melody.ui;
+package io.github.balram02.musify.ui;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -24,9 +24,9 @@ import androidx.lifecycle.AndroidViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener;
 
-import io.github.balram02.melody.Models.SongsModel;
-import io.github.balram02.melody.R;
-import io.github.balram02.melody.constants.Constants;
+import io.github.balram02.musify.Models.SongsModel;
+import io.github.balram02.musify.R;
+import io.github.balram02.musify.constants.Constants;
 
 public class MainActivity extends AppCompatActivity implements OnNavigationItemSelectedListener, MusicPlayerServiceListener {
 

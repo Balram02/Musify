@@ -1,4 +1,4 @@
-package io.github.balram02.melody.ViewModels;
+package io.github.balram02.musify.ViewModels;
 
 import android.app.Application;
 
@@ -8,8 +8,8 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
-import io.github.balram02.melody.Models.SongsModel;
-import io.github.balram02.melody.Repositories.SongsRepository;
+import io.github.balram02.musify.Models.SongsModel;
+import io.github.balram02.musify.Repositories.SongsRepository;
 
 public class AllSongsViewModel extends AndroidViewModel {
 

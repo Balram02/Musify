@@ -1,4 +1,4 @@
-package io.github.balram02.melody.ui;
+package io.github.balram02.musify.ui;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -19,9 +19,9 @@ import androidx.core.app.NotificationCompat;
 
 import java.util.List;
 
-import io.github.balram02.melody.Models.SongsModel;
-import io.github.balram02.melody.R;
-import io.github.balram02.melody.constants.Constants;
+import io.github.balram02.musify.Models.SongsModel;
+import io.github.balram02.musify.R;
+import io.github.balram02.musify.constants.Constants;
 
 public class MusicPlayerService extends Service implements MediaPlayer.OnCompletionListener, MediaController.MediaPlayerControl {
 

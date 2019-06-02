@@ -1,4 +1,4 @@
-package io.github.balram02.melody.ui;
+package io.github.balram02.musify.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,10 +11,10 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
-import io.github.balram02.melody.R;
-import io.github.balram02.melody.ViewModels.LibraryViewModel;
+import io.github.balram02.musify.R;
+import io.github.balram02.musify.ViewModels.LibraryViewModel;
 
-import static io.github.balram02.melody.ui.MainActivity.navigationView;
+import static io.github.balram02.musify.ui.MainActivity.navigationView;
 
 public class LibraryFragment extends Fragment {
 

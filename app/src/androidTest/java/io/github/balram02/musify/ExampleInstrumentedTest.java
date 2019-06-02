@@ -1,4 +1,4 @@
-package io.github.balram02.melody;
+package io.github.balram02.musify;
 
 import android.content.Context;
 import androidx.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("io.github.balram02.melody", appContext.getPackageName());
+        assertEquals("io.github.balram02.musify", appContext.getPackageName());
     }
 }

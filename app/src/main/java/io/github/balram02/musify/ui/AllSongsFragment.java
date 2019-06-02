@@ -1,4 +1,4 @@
-package io.github.balram02.melody.ui;
+package io.github.balram02.musify.ui;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
@@ -20,9 +20,9 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import io.github.balram02.melody.R;
-import io.github.balram02.melody.ViewModels.AllSongsViewModel;
-import io.github.balram02.melody.adapters.SongsAdapter;
+import io.github.balram02.musify.R;
+import io.github.balram02.musify.ViewModels.AllSongsViewModel;
+import io.github.balram02.musify.adapters.SongsAdapter;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 

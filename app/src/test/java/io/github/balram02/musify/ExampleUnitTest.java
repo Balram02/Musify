@@ -1,4 +1,4 @@
-package io.github.balram02.melody;
+package io.github.balram02.musify;
 
 import org.junit.Test;
 

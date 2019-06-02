@@ -1,4 +1,4 @@
-package io.github.balram02.melody.Repositories;
+package io.github.balram02.musify.Repositories;
 
 import android.app.Application;
 import android.os.AsyncTask;
@@ -8,9 +8,9 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
-import io.github.balram02.melody.Database.SongsDao;
-import io.github.balram02.melody.Database.SongsDatabase;
-import io.github.balram02.melody.Models.SongsModel;
+import io.github.balram02.musify.Database.SongsDao;
+import io.github.balram02.musify.Database.SongsDatabase;
+import io.github.balram02.musify.Models.SongsModel;
 
 public class SongsRepository {
 

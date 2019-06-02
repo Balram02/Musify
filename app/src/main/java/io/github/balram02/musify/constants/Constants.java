@@ -1,4 +1,4 @@
-package io.github.balram02.melody.constants;
+package io.github.balram02.musify.constants;
 
 public class Constants {
 

@@ -1,4 +1,4 @@
-package io.github.balram02.melody.ui;
+package io.github.balram02.musify.ui;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -13,8 +13,8 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import io.github.balram02.melody.R;
-import io.github.balram02.melody.ViewModels.AlbumsViewModel;
+import io.github.balram02.musify.R;
+import io.github.balram02.musify.ViewModels.AlbumsViewModel;
 
 public class AlbumsFragment extends Fragment {
 
