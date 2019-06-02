@@ -13,7 +13,6 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.MediaController;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 
@@ -27,6 +26,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
     public static final String CHANNEL_ID = "512";
     private boolean wasPaused;
+    private boolean isRunning;
 
     private MediaPlayer player;
     private String TAG = Constants.TAG;
@@ -51,9 +51,6 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         }
     }
 
-    public MusicPlayerService() {
-    }
-
     @Override
     public IBinder onBind(Intent intent) {
         Log.d(TAG, "onBind: ");
@@ -64,67 +61,98 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "onCreate: ");
+
+        isRunning = true;
+
+        player = new MediaPlayer();
+        player.setLooping(false);
+        player.setOnCompletionListener(this);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand: ");
-        try {
 
-//            if (!isServiceRunning) {
-            player = new MediaPlayer();
-            player.setLooping(false);
-            player.setOnCompletionListener(this);
+        createNotificationChannel();
+        createNotification(false);
+        startNotification();
 
-//            createNotificationChannel();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "description", NotificationManager.IMPORTANCE_DEFAULT);
-                channel.setDescription("other description");
-                channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-                manager = getSystemService(NotificationManager.class);
-                manager.createNotificationChannel(channel);
-            }
+/*        if (!isRunning) {
 
-            RemoteViews notificationView = new RemoteViews(getPackageName(), R.layout.notification_layout);
-//                notificationView.addView();
+        }*/
 
-            notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
-                    .setCustomContentView(notificationView)
-                    .build();
+//        startForeground(2, notification);
 
-            Intent serviceIntent = new Intent(this, MusicPlayerService.class);
-//                serviceIntent.
-            PendingIntent pendingIntent = PendingIntent.getService(this, 0, serviceIntent, 0);
-
-//                notificationView.setOnClickPendingIntent(R.id.play_pause, pendingIntent);
-
-            startForeground(2, notification);
-//            isServiceRunning = true;
-//            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Error " + e, Toast.LENGTH_SHORT).show();
-            Log.d(TAG, e.toString());
-        }
         return START_NOT_STICKY;
     }
 
+    private void startNotification() {
+        startForeground(2, notification);
+    }
+
+    private void createNotification(boolean forPause) {
+
+        RemoteViews notificationCollapsed = new RemoteViews(getPackageName(), R.layout.notification_collapsed_layout);
+        RemoteViews notificationExpanded = new RemoteViews(getPackageName(), R.layout.notification_expanded_layout);
+
+        notificationCollapsed.setTextViewText(R.id.notification_song_name, title);
+        notificationExpanded.setTextViewText(R.id.notification_song_name, title);
+
+        notificationCollapsed.setTextViewText(R.id.notification_song_artist_name, artist);
+        notificationExpanded.setTextViewText(R.id.notification_song_artist_name, artist);
+
+        notificationCollapsed.setImageViewResource(R.id.notification_previous_icon, R.drawable.previous_icon_black_24dp);
+        notificationExpanded.setImageViewResource(R.id.notification_previous_icon, R.drawable.previous_icon_black_24dp);
+
+        notificationCollapsed.setImageViewResource(R.id.notification_play_pause_icon,
+                forPause ? R.drawable.pause_icon_black_24dp : R.drawable.play_icon_black_24dp);
+        notificationExpanded.setImageViewResource(R.id.notification_play_pause_icon,
+                forPause ? R.drawable.pause_icon_black_24dp : R.drawable.play_icon_black_24dp);
+
+        notificationCollapsed.setImageViewResource(R.id.notification_next_icon, R.drawable.next_icon_black_24dp);
+        notificationExpanded.setImageViewResource(R.id.notification_next_icon, R.drawable.next_icon_black_24dp);
+
+        notificationCollapsed.setImageViewResource(R.id.notification_close_icon, R.drawable.ic_close_white_24dp);
+        notificationExpanded.setImageViewResource(R.id.notification_close_icon, R.drawable.ic_close_white_24dp);
+
+        Intent previousIntent = new Intent(this, MusicPlayerService.class);
+        previousIntent.setAction(Constants.ACTION_PREVIOUS);
+        PendingIntent previousPendingIntent = PendingIntent.getService(this, 0, previousIntent, 0);
+
+        Intent playIntent = new Intent(this, MusicPlayerService.class);
+        playIntent.setAction(Constants.ACTION_PLAY);
+        PendingIntent playPendingIntent = PendingIntent.getService(this, 0, playIntent, 0);
+
+        Intent pauseIntent = new Intent(this, MusicPlayerService.class);
+        pauseIntent.setAction(Constants.ACTION_PAUSE);
+        PendingIntent pausePendingIntent = PendingIntent.getService(this, 0, pauseIntent, 0);
+
+        Intent nextIntent = new Intent(this, MusicPlayerService.class);
+        nextIntent.setAction(Constants.ACTION_NEXT);
+        PendingIntent nextPendingIntent = PendingIntent.getService(this, 0, nextIntent, 0);
+
+        notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setStyle(new androidx.media.app.NotificationCompat.DecoratedMediaCustomViewStyle())
+                .setCustomContentView(notificationCollapsed)
+                .setCustomBigContentView(notificationExpanded)
+                .build();
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "description", NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription("Music notification");
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+    }
 
     public void setSongDetails(String title, String artist, String path) {
         this.title = title;
         this.artist = artist;
         this.path = path;
-        try {
-            player.setDataSource(path);
-            player.prepare();
-        } catch (Exception e) {
-            Log.d(TAG, "setSongDetails: " + path);
-            Log.d(TAG, "setSongDetails: " + e);
-            Toast.makeText(this, "" + e, Toast.LENGTH_SHORT).show();
-        }
     }
 
     public void startPlayer() {

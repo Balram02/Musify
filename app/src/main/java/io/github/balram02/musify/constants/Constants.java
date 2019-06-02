@@ -11,4 +11,9 @@ public class Constants {
     public static final int STORAGE_PERMISSION_REQUEST_CODE = 101;
 
     public static final String TAG = "MyTag";
+
+    public static final String ACTION_PAUSE = "pause";
+    public static final String ACTION_PLAY = "play";
+    public static final String ACTION_PREVIOUS = "previous";
+    public static final String ACTION_NEXT = "next";
 }

@@ -26,6 +26,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavig
 
 import io.github.balram02.musify.Models.SongsModel;
 import io.github.balram02.musify.R;
+import io.github.balram02.musify.ViewModels.AllSongsViewModel;
 import io.github.balram02.musify.constants.Constants;
 
 public class MainActivity extends AppCompatActivity implements OnNavigationItemSelectedListener, MusicPlayerServiceListener {
@@ -76,11 +77,9 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.STORAGE_PERMISSION_REQUEST_CODE);
             } else {
-                startService();
                 setFragment(new AllSongsFragment());
             }
         } else {
-            startService();
             setFragment(new AllSongsFragment());
         }
     }
@@ -99,8 +98,10 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     @Override
     public void onUpdateService(SongsModel model, AndroidViewModel mViewModel) {
 
-        musicPlayerService.setSongDetails(model.getTitle(), model.getArtist(), model.getPath());
-        musicPlayerService.startPlayer();
+        if (mViewModel instanceof AllSongsViewModel) {
+            musicPlayerService.setSongDetails(model.getTitle(), model.getArtist(), model.getPath());
+        }
+        startService();
 
 /*        if (musicPlayerService.isPlaying()) {
             musicPlayerService.pause();
