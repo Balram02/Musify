@@ -16,4 +16,5 @@ public class Constants {
     public static final String ACTION_PLAY = "play";
     public static final String ACTION_PREVIOUS = "previous";
     public static final String ACTION_NEXT = "next";
+    public static final String ACTION_CLOSE = "close";
 }

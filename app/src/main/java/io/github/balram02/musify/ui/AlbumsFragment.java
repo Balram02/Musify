@@ -15,6 +15,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.ViewModels.AlbumsViewModel;
+import io.github.balram02.musify.adapters.AlbumsAdapter;
 
 public class AlbumsFragment extends Fragment {
 

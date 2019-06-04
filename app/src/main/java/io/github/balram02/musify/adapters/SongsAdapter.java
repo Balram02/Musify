@@ -73,7 +73,13 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListView
 
             itemView.setOnClickListener(v -> {
                 if (listener != null && getAdapterPosition() != 0) {
-                    listener.onItemClick(songs.get(getAdapterPosition()));
+                    int position = getAdapterPosition();
+                    listener.onItemClick(songs.get(position));
+                    listener.onItemClick(
+                            getAdapterPosition() == 0 ? songs.get(songs.size() - 1) : songs.get(position - 1),
+                            songs.get(position),
+                            songs.get(position + 1)
+                    );
                 }
             });
         }
@@ -81,6 +87,8 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListView
 
     public interface OnItemClickListener {
         void onItemClick(SongsModel model);
+
+        void onItemClick(SongsModel previousModel, SongsModel currentModel, SongsModel nextModel);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {

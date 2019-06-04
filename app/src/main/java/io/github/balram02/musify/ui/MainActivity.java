@@ -26,7 +26,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavig
 
 import io.github.balram02.musify.Models.SongsModel;
 import io.github.balram02.musify.R;
-import io.github.balram02.musify.ViewModels.AllSongsViewModel;
 import io.github.balram02.musify.constants.Constants;
 
 public class MainActivity extends AppCompatActivity implements OnNavigationItemSelectedListener, MusicPlayerServiceListener {
@@ -96,12 +95,14 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     }
 
     @Override
-    public void onUpdateService(SongsModel model, AndroidViewModel mViewModel) {
+    public void onUpdateService(SongsModel previousModel, SongsModel currentModel, SongsModel nextModel, AndroidViewModel mViewModel) {
 
-        if (mViewModel instanceof AllSongsViewModel) {
-            musicPlayerService.setSongDetails(model.getTitle(), model.getArtist(), model.getPath());
-        }
+//        if (mViewModel instanceof AllSongsViewModel) {
+//        musicPlayerService.setSongDetails(model.getTitle(), model.getArtist(), model.getPath());
+        musicPlayerService.setSongDetails(previousModel, currentModel, nextModel);
+//        }
         startService();
+//        musicPlayerService.startPlayer();
 
 /*        if (musicPlayerService.isPlaying()) {
             musicPlayerService.pause();
@@ -158,13 +159,14 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         if (isBound) {
             unbindService(mServiceConnection);
             isBound = false;
         }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import io.github.balram02.musify.Models.SongsModel;
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.ViewModels.AllSongsViewModel;
 import io.github.balram02.musify.adapters.SongsAdapter;
@@ -66,8 +67,16 @@ public class AllSongsFragment extends Fragment {
         songsAdapter = new SongsAdapter();
         recyclerView.setAdapter(songsAdapter);
 
-        songsAdapter.setOnItemClickListener(model -> {
-            musicPlayerServiceListener.onUpdateService(model, mViewModel);
+        songsAdapter.setOnItemClickListener(new SongsAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(SongsModel model) {
+            }
+
+            @Override
+            public void onItemClick(SongsModel previousModel, SongsModel currentModel, SongsModel nextModel) {
+                musicPlayerServiceListener.onUpdateService(previousModel, currentModel, nextModel, mViewModel);
+            }
+
         });
 
         refreshLayout.setOnRefreshListener(() -> {

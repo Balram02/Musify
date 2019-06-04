@@ -1,4 +1,4 @@
-package io.github.balram02.musify.ui;
+package io.github.balram02.musify.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,7 +45,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SongListVi
         return songs.size();
     }
 
-    void setSongs(List<AlbumsModel> songs) {
+    public void setSongs(List<AlbumsModel> songs) {
         this.songs = songs;
         notifyDataSetChanged();
     }
