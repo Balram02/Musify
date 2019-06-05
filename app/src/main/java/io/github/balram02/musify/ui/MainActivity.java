@@ -13,6 +13,10 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,6 +27,7 @@ import androidx.lifecycle.AndroidViewModel;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import io.github.balram02.musify.Models.SongsModel;
 import io.github.balram02.musify.R;
@@ -35,6 +40,13 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     private FragmentManager fragmentManager;
     public static BottomNavigationView navigationView;
 
+    private BottomSheetBehavior bottomSheet;
+    private LinearLayout bottomSheetLayout;
+    private LinearLayout bottomPeek;
+    private ImageView bottomFavorite;
+    private ImageButton bottomPlayPause;
+    private TextView songName;
+
     private boolean isBound;
 
     public MusicPlayerService musicPlayerService;
@@ -44,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             Log.d(TAG, "onServiceConnected: ");
             isBound = true;
             musicPlayerService = ((MusicPlayerService.PlayerServiceBinder) iBinder).getBoundedService();
+            songName.setText(musicPlayerService.getSongName());
+            setPlayPauseDrawable(true);
         }
 
         @Override
@@ -62,8 +76,28 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         navigationView = findViewById(R.id.bottom_nav_view);
         navigationView.setOnNavigationItemSelectedListener(this);
 
+        bottomSheetLayout = findViewById(R.id.bottom_sheet);
+        bottomSheet = BottomSheetBehavior.from(bottomSheetLayout);
+        bottomPeek = findViewById(R.id.bottom_peek);
+        bottomFavorite = findViewById(R.id.bottom_sheet_favorite);
+        bottomPlayPause = findViewById(R.id.bottom_sheet_play_pause);
+        songName = findViewById(R.id.bottom_sheet_song_name);
+        songName.setSelected(true);
+
         fragmentManager = getSupportFragmentManager();
         askRequiredPermissions();
+
+        bottomPlayPause.setOnClickListener(v -> {
+            if (musicPlayerService.isPlaying()) {
+                musicPlayerService.pause();
+                setPlayPauseDrawable(false);
+            } else {
+                musicPlayerService.startPlayer();
+                setPlayPauseDrawable(true);
+            }
+        });
+
+        bottomSheetLayout.setOnClickListener(v -> bottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED));
     }
 
     private void askRequiredPermissions() {
@@ -102,6 +136,8 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         musicPlayerService.setSongDetails(previousModel, currentModel, nextModel);
 //        }
         startService();
+        songName.setText(musicPlayerService.getSongName());
+        setPlayPauseDrawable(true);
 //        musicPlayerService.startPlayer();
 
 /*        if (musicPlayerService.isPlaying()) {
@@ -119,7 +155,12 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         }*/
     }
 
+    private void setPlayPauseDrawable(boolean isPlaying) {
+        bottomPlayPause.setImageResource(isPlaying ? R.drawable.pause_icon_white_24dp : R.drawable.play_icon_white_24dp);
+    }
+
     @Override
+
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
         switch (item.getItemId()) {

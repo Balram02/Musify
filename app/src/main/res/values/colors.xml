@@ -22,4 +22,6 @@
 
     <color name="whiteOverlay">#0EFFFFFF</color>
 
+    <color name="blackOverlay">#272727</color>
+
 </resources>

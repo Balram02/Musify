@@ -64,20 +64,20 @@
             android:id="@+id/notification_previous_icon"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            app:srcCompat="@drawable/previous_icon_black_24dp" />
+            app:srcCompat="@drawable/previous_icon_white_24dp" />
 
         <ImageView
             android:id="@+id/notification_play_pause_icon"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center_vertical"
-            app:srcCompat="@drawable/play_icon_black_24dp" />
+            app:srcCompat="@drawable/play_icon_white_24dp" />
 
         <ImageView
             android:id="@+id/notification_next_icon"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            app:srcCompat="@drawable/next_icon_black_24dp" />
+            app:srcCompat="@drawable/next_icon_white_24dp" />
 
     </LinearLayout>
 

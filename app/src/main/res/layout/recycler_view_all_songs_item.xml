@@ -17,10 +17,9 @@
             android:layout_height="35dp"
             android:layout_centerVertical="true"
             android:layout_margin="10dp"
-            android:background="@drawable/background_square_stroke"
+            android:background="@drawable/background_square_stroke_white_6dp"
             android:padding="5dp"
-            android:tint="@color/white"
-            app:srcCompat="@drawable/music_placeholder" />
+            app:srcCompat="@drawable/ic_music_placeholder_white" />
 
         <LinearLayout
             android:layout_width="wrap_content"
