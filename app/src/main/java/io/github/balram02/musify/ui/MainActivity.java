@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
     public void setFragment(Fragment fragment) {
         new Thread(() -> runOnUiThread(() -> {
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commitAllowingStateLoss();
+            fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out).replace(R.id.fragment_container, fragment).commitAllowingStateLoss();
         })).start();
     }
 
@@ -168,10 +168,19 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                 if (!(fragmentManager.findFragmentById(R.id.fragment_container) instanceof AllSongsFragment))
                     setFragment(new AllSongsFragment());
                 break;
+            case R.id.search:
+                if (!(fragmentManager.findFragmentById(R.id.fragment_container) instanceof SearchFragment))
+                    setFragment(new SearchFragment());
+                break;
             case R.id.library:
                 if (!(fragmentManager.findFragmentById(R.id.fragment_container) instanceof LibraryFragment))
                     setFragment(new LibraryFragment());
                 break;
+            case R.id.favorites:
+                if (!(fragmentManager.findFragmentById(R.id.fragment_container) instanceof FavoritesFragment))
+                    setFragment(new FavoritesFragment());
+                break;
+
         }
 
         return true;
