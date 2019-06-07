@@ -31,6 +31,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import io.github.balram02.musify.Models.SongsModel;
 import io.github.balram02.musify.R;
+import io.github.balram02.musify.ViewModels.AllSongsViewModel;
 import io.github.balram02.musify.constants.Constants;
 
 public class MainActivity extends AppCompatActivity implements OnNavigationItemSelectedListener, MusicPlayerServiceListener {
@@ -136,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         musicPlayerService.setSongDetails(previousModel, currentModel, nextModel);
 //        }
         startService();
+        musicPlayerService.setSongsQueueList(((AllSongsViewModel) mViewModel).getSongsQueue().getValue());
         songName.setText(musicPlayerService.getSongName());
         setPlayPauseDrawable(true);
 //        musicPlayerService.startPlayer();

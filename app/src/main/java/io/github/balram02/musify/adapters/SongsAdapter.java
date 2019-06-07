@@ -13,6 +13,7 @@ import java.util.List;
 
 import io.github.balram02.musify.Models.SongsModel;
 import io.github.balram02.musify.R;
+import io.github.balram02.musify.constants.Constants;
 
 public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListViewHolder> {
 
@@ -39,7 +40,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListView
         SongsModel model = songs.get(i);
         holder.songName.setText(model.getTitle());
         holder.songArtist.setText(model.getArtist());
-        holder.songDuration.setText(getDurationInMinutes(model.getDuration()));
+        holder.songDuration.setText(Constants.millisecondsToMinutesAndSeconds(model.getDuration()));
     }
 
     @Override
@@ -52,20 +53,14 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListView
         notifyDataSetChanged();
     }
 
-//    TODO: complete below method
 
-    public String getDurationInMinutes(long miliseconds) {
-
-        return "02:59";
-    }
-
-    class SongListViewHolder extends RecyclerView.ViewHolder {
+    public class SongListViewHolder extends RecyclerView.ViewHolder {
 
         private TextView songName;
         private TextView songArtist;
         private TextView songDuration;
 
-        public SongListViewHolder(@NonNull View itemView) {
+        SongListViewHolder(@NonNull View itemView) {
             super(itemView);
             songName = itemView.findViewById(R.id.song_name);
             songArtist = itemView.findViewById(R.id.song_artist);
@@ -82,6 +77,10 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListView
                     );
                 }
             });
+        }
+
+        public SongsModel getItem() {
+            return songs.get(getAdapterPosition());
         }
     }
 

@@ -1,6 +1,7 @@
 package io.github.balram02.musify.Models;
 
 import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -15,6 +16,8 @@ public class SongsModel {
     private String genre;
     private String path;
     private long duration;
+    @ColumnInfo(name = "is_favorite")
+    private boolean favorite = false;
 
     public SongsModel(String title, String album, String artist, String genre, String path, long duration) {
         this.title = title;
@@ -27,6 +30,10 @@ public class SongsModel {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
     }
 
     public int getId() {
@@ -55,6 +62,10 @@ public class SongsModel {
 
     public long getDuration() {
         return duration;
+    }
+
+    public boolean isFavorite() {
+        return favorite;
     }
 
     @NonNull

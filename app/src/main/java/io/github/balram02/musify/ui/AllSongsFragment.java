@@ -97,7 +97,7 @@ public class AllSongsFragment extends Fragment {
         favorite = drawableToBitmap(true);
         unFavorite = drawableToBitmap(false);
 
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.ACTION_STATE_SWIPE, ItemTouchHelper.START | ItemTouchHelper.END) {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.ACTION_STATE_DRAG, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
             @Override
             public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
@@ -134,11 +134,18 @@ public class AllSongsFragment extends Fragment {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+                if (direction == ItemTouchHelper.RIGHT) {
+                    SongsModel model = ((SongsAdapter.SongListViewHolder) viewHolder).getItem();
+                    model.setFavorite(true);
+                    mViewModel.update(model);
+                } else {
+                    SongsModel model = ((SongsAdapter.SongListViewHolder) viewHolder).getItem();
+                    model.setFavorite(false);
+                    mViewModel.update(model);
+                }
+
                 songsAdapter.notifyDataSetChanged();
-
-                /*                TODO: if swiped left to right add song in favorites, else remove from favorites
-
-                 */
             }
         }).attachToRecyclerView(recyclerView);
 

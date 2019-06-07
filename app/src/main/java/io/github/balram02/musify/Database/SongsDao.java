@@ -34,4 +34,7 @@ public interface SongsDao {
     @Query("SELECT * FROM songs_table WHERE id IN (SELECT id FROM songs_table ORDER BY RANDOM() LIMIT 70)")
     LiveData<List<SongsModel>> getSongsQueue();
 
+    @Query("SELECT * FROM songs_table WHERE is_favorite = 1 ORDER BY title ")
+    LiveData<List<SongsModel>> getFavoriteSongs();
+
 }
