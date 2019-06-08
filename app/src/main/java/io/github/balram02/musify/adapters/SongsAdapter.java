@@ -67,7 +67,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListView
             songDuration = itemView.findViewById(R.id.song_duration);
 
             itemView.setOnClickListener(v -> {
-                if (listener != null && getAdapterPosition() != 0) {
+                if (listener != null && getAdapterPosition() != -1) {
                     int position = getAdapterPosition();
                     listener.onItemClick(songs.get(position));
                     listener.onItemClick(

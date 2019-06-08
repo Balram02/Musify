@@ -16,6 +16,13 @@ public class Constants {
     public static final String ACTION_NEXT = "next";
     public static final String ACTION_CLOSE = "close";
 
+    //    Local Broadcast Actions
+    public static final String BROADCAST_ACTION_PLAY = "action_play";
+    public static final String BROADCAST_ACTION_PAUSE = "action_pause";
+
+
+    public static final String PREFERENCES_ACTIVITY_STATE = "isForeground";
+
     public static String millisecondsToMinutesAndSeconds(long milliseconds) {
 
         long minutes = (milliseconds / 1000) / 60;

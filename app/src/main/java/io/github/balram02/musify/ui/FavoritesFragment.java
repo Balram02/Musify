@@ -1,5 +1,6 @@
 package io.github.balram02.musify.ui;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
 import io.github.balram02.musify.R;
@@ -25,12 +27,26 @@ public class FavoritesFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private FavoritesAdapter favoritesAdapter;
+    private Context context;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.context = context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        context = null;
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.favorites_fragment, container, false);
         recyclerView = v.findViewById(R.id.favorites_recycler_view);
+        recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
         favoritesAdapter = new FavoritesAdapter();
         recyclerView.setAdapter(favoritesAdapter);
         return v;
