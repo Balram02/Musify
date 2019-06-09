@@ -24,6 +24,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Objects;
+
 import io.github.balram02.musify.Models.SongsModel;
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.ViewModels.AllSongsViewModel;
@@ -77,16 +79,8 @@ public class AllSongsFragment extends Fragment {
         songsAdapter = new SongsAdapter();
         recyclerView.setAdapter(songsAdapter);
 
-        songsAdapter.setOnItemClickListener(new SongsAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(SongsModel model) {
-            }
-
-            @Override
-            public void onItemClick(SongsModel previousModel, SongsModel currentModel, SongsModel nextModel) {
-                musicPlayerServiceListener.onUpdateService(previousModel, currentModel, nextModel, mViewModel);
-            }
-
+        songsAdapter.setOnItemClickListener(model -> {
+            musicPlayerServiceListener.onUpdateService(model, mViewModel);
         });
 
 /*        refreshLayout.setOnRefreshListener(() -> {
@@ -98,7 +92,7 @@ public class AllSongsFragment extends Fragment {
         favorite = drawableToBitmap(true);
         unFavorite = drawableToBitmap(false);
 
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.ACTION_STATE_DRAG, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.ACTION_STATE_IDLE, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
             @Override
             public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
@@ -175,6 +169,7 @@ public class AllSongsFragment extends Fragment {
             songsAdapter.updateSongsList(songsModels);
             totalSongs.setText(getString(R.string.songs_found_text, songsModels.size()));
         });
+        ((MainActivity) Objects.requireNonNull(getActivity())).setUpLastDetails();
         startTotalSongsCardAnimation();
     }
 

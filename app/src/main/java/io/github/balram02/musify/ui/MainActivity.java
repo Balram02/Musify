@@ -18,7 +18,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -30,6 +29,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -38,11 +38,16 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import io.github.balram02.musify.Models.SongsModel;
 import io.github.balram02.musify.R;
+import io.github.balram02.musify.ViewModels.AllSongsViewModel;
+import io.github.balram02.musify.ViewModels.FavoritesViewModel;
 import io.github.balram02.musify.background.MusicPlayerService;
 import io.github.balram02.musify.constants.Constants;
 import io.github.balram02.musify.listeners.MusicPlayerServiceListener;
 import io.github.balram02.musify.utils.Preferences;
 
+import static io.github.balram02.musify.constants.Constants.ACTION_NEW_SONG;
+import static io.github.balram02.musify.constants.Constants.ACTION_PAUSE;
+import static io.github.balram02.musify.constants.Constants.ACTION_PLAY;
 import static io.github.balram02.musify.constants.Constants.BROADCAST_ACTION_PAUSE;
 import static io.github.balram02.musify.constants.Constants.BROADCAST_ACTION_PLAY;
 import static io.github.balram02.musify.constants.Constants.PREFERENCES_ACTIVITY_STATE;
@@ -55,11 +60,11 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
     public TextView peekSongName;
     private ImageView peekFavorite;
-    public ImageButton peekPlayPause;
+    public ImageView peekPlayPause;
 
     public TextView bottomSheetSongName;
     public TextView bottomSheetSongArtist;
-    public ImageButton bottomSheetPlayPause;
+    public ImageView bottomSheetPlayPause;
     private ImageView bottomSheetFavorite;
     public SeekBar bottomSheetSeekbar;
 
@@ -79,24 +84,8 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.d(TAG, "onServiceConnected: ");
             isBound = true;
-            musicPlayerService = ((MusicPlayerService.PlayerServiceBinder) iBinder).getBoundedService();
-            if (musicPlayerService.isPlaying()) {
-                peekSongName.setText(musicPlayerService.getSongName());
-                bottomSheetSongName.setText(musicPlayerService.getSongName());
-                bottomSheetSongArtist.setText(musicPlayerService.getArtistName());
-                bottomSheetSeekbar.setMax(musicPlayerService.getDuration());
-                updateSeekBarProgress();
-                setPlayPauseDrawable(true);
-            } else {
-                String name = Preferences.SongDetails.getLastSongName(getApplicationContext());
-                if (name != null) {
-                    peekSongName.setText(name);
-                    bottomSheetSongName.setText(name);
-                    bottomSheetSongArtist.setText(musicPlayerService.getArtistName());
-                    bottomSheetSeekbar.setMax(Preferences.SongDetails.getLastSongCurrentPosition(getApplicationContext()));
-                }
-                setPlayPauseDrawable(false);
-            }
+            musicPlayerService = ((MusicPlayerService.PlayerServiceBinder) iBinder).getBoundService();
+//            setUpLastDetails();
         }
 
         @Override
@@ -131,13 +120,12 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         bottomSheetSongArtist = findViewById(R.id.bottom_sheet_song_artist);
         bottomSheetSongArtist.setSelected(true);
         bottomSheetSeekbar = findViewById(R.id.bottom_sheet_seek_bar);
-//        bottomSheetSeekbar.setMax(musicPlayerService != null musicPlayerService.isPlaying() ? musicPlayerService.getDuration() : 100);
 
         bottomSheetSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (musicPlayerService != null && fromUser)
-                    musicPlayerService.seekTo(progress * 1000);
+                    musicPlayerService.seekTo(progress);
             }
 
             @Override
@@ -153,16 +141,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
         fragmentManager = getSupportFragmentManager();
         askRequiredPermissions();
-
-        peekPlayPause.setOnClickListener(v -> {
-            if (musicPlayerService.isPlaying()) {
-                musicPlayerService.pause();
-                setPlayPauseDrawable(false);
-            } else {
-                musicPlayerService.startPlayer();
-                setPlayPauseDrawable(true);
-            }
-        });
 
         bottomSheetLayout.setOnClickListener(v -> bottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED));
 
@@ -180,14 +158,43 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         handler = new Handler();
     }
 
-    public void updateSeekBarProgress() {
+    public void setUpLastDetails() {
 
+        if (isBound && musicPlayerService != null && musicPlayerService.isPlaying()) {
+
+            peekSongName.setText(musicPlayerService.getSongName());
+            bottomSheetSongName.setText(musicPlayerService.getSongName());
+            bottomSheetSongArtist.setText(musicPlayerService.getArtistName());
+            bottomSheetSeekbar.setMax(musicPlayerService.getDuration());
+            updateSeekBarProgress();
+            setPlayPauseDrawable(true);
+        } else {
+            String name = Preferences.SongDetails.getLastSongName(getApplicationContext());
+            if (name != null) {
+                peekSongName.setText(name);
+                bottomSheetSongName.setText(name);
+                bottomSheetSongArtist.setText(Preferences.SongDetails.getLastSongArtist(getApplicationContext()));
+                bottomSheetSeekbar.setMax((int) Preferences.SongDetails.getLastSongMaxDuration(getApplicationContext()));
+                bottomSheetSeekbar.setProgress(Preferences.SongDetails.getLastSongCurrentPosition(getApplicationContext()));
+            } else {
+                SongsModel firstSongModel = ViewModelProviders.of(this).get(AllSongsViewModel.class).getFirstSong().getValue();
+                Log.d(TAG, "setUpLastDetails: " + firstSongModel);
+                if (firstSongModel != null) {
+                    peekSongName.setText(firstSongModel.getTitle());
+                    bottomSheetSongName.setText(firstSongModel.getTitle());
+                    bottomSheetSongArtist.setText(firstSongModel.getArtist());
+                    bottomSheetSeekbar.setMax((int) firstSongModel.getDuration());
+                }
+            }
+            setPlayPauseDrawable(false);
+        }
+    }
+
+
+    public void updateSeekBarProgress() {
         runOnUiThread(() -> {
             if (musicPlayerService != null && musicPlayerService.isPlaying()) {
                 int position = musicPlayerService.getCurrentPosition();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    bottomSheetSeekbar.setProgress(position, true);
-                }
                 bottomSheetSeekbar.setProgress(position);
             }
             handler.postDelayed(this::updateSeekBarProgress, 1000);
@@ -212,8 +219,9 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         }
     }
 
-    private void startService() {
+    private void startService(String action) {
         Intent serviceIntent = new Intent(this, MusicPlayerService.class);
+        serviceIntent.setAction(action);
         startService(serviceIntent);
     }
 
@@ -224,11 +232,10 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     }
 
     @Override
-    public void onUpdateService(SongsModel previousModel, SongsModel currentModel, SongsModel nextModel, AndroidViewModel mViewModel) {
-
-        musicPlayerService.setSongDetails(previousModel, currentModel, nextModel);
-        startService();
-        updateSeekBarProgress();
+    public void onUpdateService(SongsModel currentModel, AndroidViewModel mViewModel) {
+        if (mViewModel instanceof AllSongsViewModel || mViewModel instanceof FavoritesViewModel)
+            musicPlayerService.setSongDetails(currentModel, mViewModel);
+        startService(ACTION_NEW_SONG);
     }
 
     @Override
@@ -276,6 +283,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     @Override
     protected void onStart() {
         super.onStart();
+        Log.d(TAG, "onStart: ");
         localReceiver = new LocalReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(BROADCAST_ACTION_PLAY);
@@ -283,26 +291,26 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         LocalBroadcastManager.getInstance(this).registerReceiver(localReceiver, filter);
         Intent playerServiceIntent = new Intent(this, MusicPlayerService.class);
         bindService(playerServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
-        if (!Preferences.DefaultSettings.isFirstLaunch(this)) {
-            Preferences.DefaultSettings.setFirstLaunch(this);
-        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume: ");
         PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(PREFERENCES_ACTIVITY_STATE, true).apply();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        Log.d(TAG, "onPause: ");
         PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(PREFERENCES_ACTIVITY_STATE, false).apply();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, "onDestroy: MainActivity");
         if (isBound) {
             unbindService(mServiceConnection);
             isBound = false;
@@ -317,7 +325,9 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == Constants.STORAGE_PERMISSION_REQUEST_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//            Preferences.DefaultSettings.setFirstLaunch(this, true);
             setFragment(new AllSongsFragment());
+//            Preferences.DefaultSettings.setFirstLaunch(this, false);
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Permission denied")
@@ -331,6 +341,14 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         }
     }
 
+    public void onClickPlayPauseButton(View view) {
+        if (musicPlayerService.isPlaying()) {
+            startService(ACTION_PAUSE);
+        } else {
+            startService(ACTION_PLAY);
+        }
+    }
+
     private void setPlayPauseDrawable(boolean isPlaying) {
         peekPlayPause.setImageResource(isPlaying ? R.drawable.pause_icon_white_24dp : R.drawable.play_icon_white_24dp);
         bottomSheetPlayPause.setImageResource(isPlaying ? R.drawable.pause_icon_white_24dp : R.drawable.play_icon_white_24dp);
@@ -339,27 +357,24 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     public class LocalReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "onReceive: " + intent + "\n " + intent.getAction());
+
             if (intent.getAction() != null) {
                 switch (intent.getAction()) {
-                    case BROADCAST_ACTION_PLAY: {
+                    case BROADCAST_ACTION_PLAY:
 
-                        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(PREFERENCES_ACTIVITY_STATE, false)) {
-                            SongsModel model = (SongsModel) intent.getSerializableExtra("song_details");
-                            peekSongName.setText(model.getTitle());
-                            bottomSheetSongName.setText(model.getTitle());
-                            bottomSheetSongArtist.setText(model.getArtist());
-                            bottomSheetSeekbar.setMax(musicPlayerService.getDuration());
-                            setPlayPauseDrawable(true);
-                            musicPlayerService.createNotification(true);
-                        }
-                    }
-                    break;
-                    case BROADCAST_ACTION_PAUSE: {
+                        SongsModel model = (SongsModel) intent.getSerializableExtra("song_details");
+                        peekSongName.setText(model.getTitle());
+                        bottomSheetSongName.setText(model.getTitle());
+                        bottomSheetSongArtist.setText(model.getArtist());
+                        bottomSheetSeekbar.setMax(musicPlayerService.getDuration());
+                        updateSeekBarProgress();
                         setPlayPauseDrawable(true);
-                        musicPlayerService.createNotification(false);
-                    }
-                    break;
+                        break;
+
+                    case BROADCAST_ACTION_PAUSE:
+                        setPlayPauseDrawable(false);
+                        break;
+
                 }
             }
         }

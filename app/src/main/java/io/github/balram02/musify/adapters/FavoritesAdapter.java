@@ -14,10 +14,12 @@ import java.util.List;
 import io.github.balram02.musify.Models.SongsModel;
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.constants.Constants;
+import io.github.balram02.musify.listeners.OnAdapterItemClickListener;
 
 public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder> {
 
     private List<SongsModel> favorites = new ArrayList<>();
+    private OnAdapterItemClickListener listener;
 
     @NonNull
     @Override
@@ -57,18 +59,17 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
             songArtist = itemView.findViewById(R.id.song_artist);
             songDuration = itemView.findViewById(R.id.song_duration);
 
-/*            itemView.setOnClickListener(v -> {
-                if (listener != null && getAdapterPosition() != 0) {
+            itemView.setOnClickListener(v -> {
+                if (listener != null && getAdapterPosition() != -1) {
                     int position = getAdapterPosition();
-                    listener.onItemClick(songs.get(position));
-                    listener.onItemClick(
-                            getAdapterPosition() == 0 ? songs.get(songs.size() - 1) : songs.get(position - 1),
-                            songs.get(position),
-                            songs.get(position + 1)
-                    );
+                    listener.onItemClick(favorites.get(position));
                 }
-            });*/
+            });
         }
+    }
+
+    public void setOnItemClickerListsner(OnAdapterItemClickListener listener) {
+        this.listener = listener;
     }
 
 }

@@ -12,6 +12,8 @@ import io.github.balram02.musify.Database.SongsDao;
 import io.github.balram02.musify.Database.SongsDatabase;
 import io.github.balram02.musify.Models.SongsModel;
 
+import static io.github.balram02.musify.constants.Constants.TAG;
+
 public class SongsRepository {
 
     private final static int INSERT = 1;
@@ -56,11 +58,15 @@ public class SongsRepository {
         return favoriteSongs;
     }
 
+    public LiveData<SongsModel> getFirstSong() {
+        return songsDao.getFirstSong();
+    }
+
     private void performTask(int operation, SongsModel songsModel) {
         try {
             new DBAsyncTask(songsDao, operation).execute(songsModel).get();
         } catch (Exception e) {
-            Log.d("TAGGG", e.toString());
+            Log.d(TAG, e.toString());
         }
     }
 

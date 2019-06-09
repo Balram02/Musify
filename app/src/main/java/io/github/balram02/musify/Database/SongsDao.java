@@ -37,4 +37,6 @@ public interface SongsDao {
     @Query("SELECT * FROM songs_table WHERE is_favorite = 1 ORDER BY title ")
     LiveData<List<SongsModel>> getFavoriteSongs();
 
+    @Query("SELECT * FROM songs_table ORDER BY title ASC LIMIT 1")
+    LiveData<SongsModel> getFirstSong();
 }

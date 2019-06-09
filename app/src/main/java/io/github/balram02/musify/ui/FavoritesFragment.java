@@ -2,6 +2,7 @@ package io.github.balram02.musify.ui;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.ViewModels.FavoritesViewModel;
 import io.github.balram02.musify.adapters.FavoritesAdapter;
+import io.github.balram02.musify.listeners.MusicPlayerServiceListener;
+
+import static io.github.balram02.musify.constants.Constants.TAG;
 
 public class FavoritesFragment extends Fragment {
 
@@ -28,16 +32,23 @@ public class FavoritesFragment extends Fragment {
     private RecyclerView recyclerView;
     private FavoritesAdapter favoritesAdapter;
     private Context context;
+    private MusicPlayerServiceListener musicPlayerServiceListener;
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
+        try {
+            musicPlayerServiceListener = (MusicPlayerServiceListener) context;
+        } catch (Exception e) {
+            Log.e(TAG, "onAttach: " + e);
+        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        musicPlayerServiceListener = null;
         context = null;
     }
 
@@ -49,6 +60,9 @@ public class FavoritesFragment extends Fragment {
         recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
         favoritesAdapter = new FavoritesAdapter();
         recyclerView.setAdapter(favoritesAdapter);
+        favoritesAdapter.setOnItemClickerListsner(model -> {
+            musicPlayerServiceListener.onUpdateService(model, mViewModel);
+        });
         return v;
     }
 

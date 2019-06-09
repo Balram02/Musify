@@ -10,6 +10,8 @@ public class Constants {
 
     public static final String TAG = "MyTag";
 
+    public static final String ACTION_NEW_SONG = "new_song";
+
     public static final String ACTION_PAUSE = "pause";
     public static final String ACTION_PLAY = "play";
     public static final String ACTION_PREVIOUS = "previous";
