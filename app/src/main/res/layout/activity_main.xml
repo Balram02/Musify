@@ -20,8 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/colorPrimaryDark"
-            android:paddingTop="?attr/actionBarSize"
-            android:paddingBottom="47dp" />
+            android:paddingTop="?attr/actionBarSize" />
 
         <include layout="@layout/music_player_bottom_sheet_layout" />
 

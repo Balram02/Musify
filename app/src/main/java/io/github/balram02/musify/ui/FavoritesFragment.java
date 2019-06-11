@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
 import io.github.balram02.musify.R;
-import io.github.balram02.musify.ViewModels.FavoritesViewModel;
+import io.github.balram02.musify.viewModels.FavoritesViewModel;
 import io.github.balram02.musify.adapters.FavoritesAdapter;
 import io.github.balram02.musify.listeners.MusicPlayerServiceListener;
 

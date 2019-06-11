@@ -1,4 +1,4 @@
-package io.github.balram02.musify.Repositories;
+package io.github.balram02.musify.repositories;
 
 import android.app.Application;
 import android.os.AsyncTask;
@@ -8,9 +8,9 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
-import io.github.balram02.musify.Database.SongsDao;
-import io.github.balram02.musify.Database.SongsDatabase;
-import io.github.balram02.musify.Models.SongsModel;
+import io.github.balram02.musify.database.SongsDao;
+import io.github.balram02.musify.database.SongsDatabase;
+import io.github.balram02.musify.models.SongsModel;
 
 import static io.github.balram02.musify.constants.Constants.TAG;
 
@@ -56,10 +56,6 @@ public class SongsRepository {
 
     public LiveData<List<SongsModel>> getFavoriteSong() {
         return favoriteSongs;
-    }
-
-    public LiveData<SongsModel> getFirstSong() {
-        return songsDao.getFirstSong();
     }
 
     private void performTask(int operation, SongsModel songsModel) {

@@ -1,4 +1,4 @@
-package io.github.balram02.musify.Models;
+package io.github.balram02.musify.models;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;

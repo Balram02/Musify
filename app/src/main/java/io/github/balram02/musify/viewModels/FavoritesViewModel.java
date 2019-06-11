@@ -1,4 +1,4 @@
-package io.github.balram02.musify.ViewModels;
+package io.github.balram02.musify.viewModels;
 
 import android.app.Application;
 
@@ -8,8 +8,8 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
-import io.github.balram02.musify.Models.SongsModel;
-import io.github.balram02.musify.Repositories.SongsRepository;
+import io.github.balram02.musify.models.SongsModel;
+import io.github.balram02.musify.repositories.SongsRepository;
 
 public class FavoritesViewModel extends AndroidViewModel {
 

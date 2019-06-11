@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import io.github.balram02.musify.R;
-import io.github.balram02.musify.ViewModels.SearchViewModel;
+import io.github.balram02.musify.viewModels.SearchViewModel;
 
 public class SearchFragment extends Fragment {
 

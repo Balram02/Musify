@@ -10,18 +10,17 @@ public class Constants {
 
     public static final String TAG = "MyTag";
 
-    public static final String ACTION_NEW_SONG = "new_song";
-
-    public static final String ACTION_PAUSE = "pause";
-    public static final String ACTION_PLAY = "play";
-    public static final String ACTION_PREVIOUS = "previous";
-    public static final String ACTION_NEXT = "next";
-    public static final String ACTION_CLOSE = "close";
+    //    Service Intent actions
+    public static final String INTENT_ACTION_NEW_SONG = "intent_action_new_song";
+    public static final String INTENT_ACTION_PAUSE = "intent_action_pause";
+    public static final String INTENT_ACTION_PLAY = "intent_action_play";
+    public static final String INTENT_ACTION_PREVIOUS = "intent_action_previous";
+    public static final String INTENT_ACTION_NEXT = "intent_action_next";
+    public static final String INTENT_ACTION_CLOSE = "intent_action_close";
 
     //    Local Broadcast Actions
-    public static final String BROADCAST_ACTION_PLAY = "action_play";
-    public static final String BROADCAST_ACTION_PAUSE = "action_pause";
-
+    public static final String BROADCAST_ACTION_PLAY = "broadcast_action_play";
+    public static final String BROADCAST_ACTION_PAUSE = "broadcast_action_pause";
 
     public static final String PREFERENCES_ACTIVITY_STATE = "isForeground";
 

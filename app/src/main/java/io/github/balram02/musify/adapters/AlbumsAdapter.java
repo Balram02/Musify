@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.balram02.musify.Models.AlbumsModel;
+import io.github.balram02.musify.models.AlbumsModel;
 import io.github.balram02.musify.R;
 
 public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SongListViewHolder> {

@@ -29,27 +29,26 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
-import io.github.balram02.musify.Models.SongsModel;
 import io.github.balram02.musify.R;
-import io.github.balram02.musify.ViewModels.AllSongsViewModel;
-import io.github.balram02.musify.ViewModels.FavoritesViewModel;
 import io.github.balram02.musify.background.MusicPlayerService;
 import io.github.balram02.musify.constants.Constants;
 import io.github.balram02.musify.listeners.MusicPlayerServiceListener;
+import io.github.balram02.musify.models.SongsModel;
 import io.github.balram02.musify.utils.Preferences;
+import io.github.balram02.musify.viewModels.AllSongsViewModel;
+import io.github.balram02.musify.viewModels.FavoritesViewModel;
 
-import static io.github.balram02.musify.constants.Constants.ACTION_NEW_SONG;
-import static io.github.balram02.musify.constants.Constants.ACTION_PAUSE;
-import static io.github.balram02.musify.constants.Constants.ACTION_PLAY;
 import static io.github.balram02.musify.constants.Constants.BROADCAST_ACTION_PAUSE;
 import static io.github.balram02.musify.constants.Constants.BROADCAST_ACTION_PLAY;
+import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_NEW_SONG;
+import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_PAUSE;
+import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_PLAY;
 import static io.github.balram02.musify.constants.Constants.PREFERENCES_ACTIVITY_STATE;
 
 public class MainActivity extends AppCompatActivity implements OnNavigationItemSelectedListener, MusicPlayerServiceListener {
@@ -58,17 +57,22 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
     private LocalReceiver localReceiver;
 
-    public TextView peekSongName;
+    private TextView peekSongName;
     private ImageView peekFavorite;
-    public ImageView peekPlayPause;
+    private ImageView peekPlayPause;
 
-    public TextView bottomSheetSongName;
-    public TextView bottomSheetSongArtist;
-    public ImageView bottomSheetPlayPause;
+    private TextView bottomSheetSongName;
+    private TextView bottomSheetSongArtist;
+    private ImageView bottomSheetPlayPause;
     private ImageView bottomSheetFavorite;
-    public SeekBar bottomSheetSeekbar;
+    private SeekBar bottomSheetSeekbar;
 
     private FragmentManager fragmentManager;
+    private AllSongsFragment allSongsFragment = new AllSongsFragment();
+    private SearchFragment searchFragment = new SearchFragment();
+    private LibraryFragment libraryFragment = new LibraryFragment();
+    private FavoritesFragment favoritesFragment = new FavoritesFragment();
+    //    private Fragment activeFragment = allSongsFragment;
     public static BottomNavigationView navigationView;
 
     private BottomSheetBehavior bottomSheet;
@@ -85,7 +89,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             Log.d(TAG, "onServiceConnected: ");
             isBound = true;
             musicPlayerService = ((MusicPlayerService.PlayerServiceBinder) iBinder).getBoundService();
-//            setUpLastDetails();
         }
 
         @Override
@@ -140,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         });
 
         fragmentManager = getSupportFragmentManager();
+//        addHiddenFragments();
         askRequiredPermissions();
 
         bottomSheetLayout.setOnClickListener(v -> bottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED));
@@ -156,12 +160,17 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         });
 
         handler = new Handler();
+
     }
 
     public void setUpLastDetails() {
 
         if (isBound && musicPlayerService != null && musicPlayerService.isPlaying()) {
 
+            if (bottomSheetLayout.getVisibility() == View.GONE)
+                bottomSheetLayout.setVisibility(View.VISIBLE);
+
+            setFavoritesDrawable(musicPlayerService.isFavorite());
             peekSongName.setText(musicPlayerService.getSongName());
             bottomSheetSongName.setText(musicPlayerService.getSongName());
             bottomSheetSongArtist.setText(musicPlayerService.getArtistName());
@@ -169,37 +178,34 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             updateSeekBarProgress();
             setPlayPauseDrawable(true);
         } else {
-            String name = Preferences.SongDetails.getLastSongName(getApplicationContext());
-            if (name != null) {
-                peekSongName.setText(name);
-                bottomSheetSongName.setText(name);
-                bottomSheetSongArtist.setText(Preferences.SongDetails.getLastSongArtist(getApplicationContext()));
-                bottomSheetSeekbar.setMax((int) Preferences.SongDetails.getLastSongMaxDuration(getApplicationContext()));
+            SongsModel lastSongModel = Preferences.SongDetails.getLastSongModel(getApplicationContext());
+            if (lastSongModel != null) {
+                setFavoritesDrawable(lastSongModel.isFavorite());
+                peekSongName.setText(lastSongModel.getTitle());
+                bottomSheetSongName.setText(lastSongModel.getTitle());
+                bottomSheetSongArtist.setText(lastSongModel.getArtist());
+                bottomSheetSeekbar.setMax((int) lastSongModel.getDuration());
                 bottomSheetSeekbar.setProgress(Preferences.SongDetails.getLastSongCurrentPosition(getApplicationContext()));
+                bottomSheetLayout.setVisibility(View.VISIBLE);
             } else {
-                SongsModel firstSongModel = ViewModelProviders.of(this).get(AllSongsViewModel.class).getFirstSong().getValue();
-                Log.d(TAG, "setUpLastDetails: " + firstSongModel);
-                if (firstSongModel != null) {
-                    peekSongName.setText(firstSongModel.getTitle());
-                    bottomSheetSongName.setText(firstSongModel.getTitle());
-                    bottomSheetSongArtist.setText(firstSongModel.getArtist());
-                    bottomSheetSeekbar.setMax((int) firstSongModel.getDuration());
-                }
+                bottomSheetLayout.setVisibility(View.GONE);
             }
             setPlayPauseDrawable(false);
         }
     }
 
-
     public void updateSeekBarProgress() {
+
+        boolean isForeground = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(PREFERENCES_ACTIVITY_STATE, false);
+
         runOnUiThread(() -> {
-            if (musicPlayerService != null && musicPlayerService.isPlaying()) {
+            if (musicPlayerService != null && musicPlayerService.isPlaying() && isForeground) {
                 int position = musicPlayerService.getCurrentPosition();
                 bottomSheetSeekbar.setProgress(position);
+                Log.d(TAG, "updateSeekBarProgress: ");
             }
             handler.postDelayed(this::updateSeekBarProgress, 1000);
         });
-
     }
 
     private void askRequiredPermissions() {
@@ -219,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         }
     }
 
-    private void startService(String action) {
+    private void startMyService(String action) {
         Intent serviceIntent = new Intent(this, MusicPlayerService.class);
         serviceIntent.setAction(action);
         startService(serviceIntent);
@@ -228,6 +234,8 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     public void setFragment(Fragment fragment) {
         new Thread(() -> runOnUiThread(() -> {
             fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out).replace(R.id.fragment_container, fragment).commitAllowingStateLoss();
+            if (bottomSheet.getState() == BottomSheetBehavior.STATE_EXPANDED)
+                bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
         })).start();
     }
 
@@ -235,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     public void onUpdateService(SongsModel currentModel, AndroidViewModel mViewModel) {
         if (mViewModel instanceof AllSongsViewModel || mViewModel instanceof FavoritesViewModel)
             musicPlayerService.setSongDetails(currentModel, mViewModel);
-        startService(ACTION_NEW_SONG);
+        startMyService(INTENT_ACTION_NEW_SONG);
     }
 
     @Override
@@ -245,19 +253,19 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         switch (item.getItemId()) {
             case R.id.music:
                 if (!(fragmentManager.findFragmentById(R.id.fragment_container) instanceof AllSongsFragment))
-                    setFragment(new AllSongsFragment());
+                    setFragment(allSongsFragment);
                 break;
             case R.id.search:
                 if (!(fragmentManager.findFragmentById(R.id.fragment_container) instanceof SearchFragment))
-                    setFragment(new SearchFragment());
+                    setFragment(searchFragment);
                 break;
             case R.id.library:
                 if (!(fragmentManager.findFragmentById(R.id.fragment_container) instanceof LibraryFragment))
-                    setFragment(new LibraryFragment());
+                    setFragment(libraryFragment);
                 break;
             case R.id.favorites:
                 if (!(fragmentManager.findFragmentById(R.id.fragment_container) instanceof FavoritesFragment))
-                    setFragment(new FavoritesFragment());
+                    setFragment(favoritesFragment);
                 break;
 
         }
@@ -319,15 +327,12 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         LocalBroadcastManager.getInstance(this).unregisterReceiver(localReceiver);
     }
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == Constants.STORAGE_PERMISSION_REQUEST_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//            Preferences.DefaultSettings.setFirstLaunch(this, true);
-            setFragment(new AllSongsFragment());
-//            Preferences.DefaultSettings.setFirstLaunch(this, false);
+            setFragment(allSongsFragment);
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Permission denied")
@@ -341,11 +346,19 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (bottomSheet.getState() == BottomSheetBehavior.STATE_EXPANDED)
+            bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        else
+            super.onBackPressed();
+    }
+
     public void onClickPlayPauseButton(View view) {
         if (musicPlayerService.isPlaying()) {
-            startService(ACTION_PAUSE);
+            startMyService(INTENT_ACTION_PAUSE);
         } else {
-            startService(ACTION_PLAY);
+            startMyService(INTENT_ACTION_PLAY);
         }
     }
 
@@ -354,15 +367,26 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         bottomSheetPlayPause.setImageResource(isPlaying ? R.drawable.pause_icon_white_24dp : R.drawable.play_icon_white_24dp);
     }
 
+    private void setFavoritesDrawable(boolean isFavorite) {
+        peekFavorite.setImageResource(isFavorite ? R.drawable.ic_favorite_filled_white_24dp : R.drawable.ic_favorite_border_white_24dp);
+        bottomSheetFavorite.setImageResource(isFavorite ? R.drawable.ic_favorite_filled_white_24dp : R.drawable.ic_favorite_border_white_24dp);
+    }
+
     public class LocalReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
 
             if (intent.getAction() != null) {
+
+                if (bottomSheetLayout.getVisibility() == View.GONE) {
+                    bottomSheetLayout.setVisibility(View.VISIBLE);
+                }
+
                 switch (intent.getAction()) {
                     case BROADCAST_ACTION_PLAY:
 
                         SongsModel model = (SongsModel) intent.getSerializableExtra("song_details");
+                        setFavoritesDrawable(model.isFavorite());
                         peekSongName.setText(model.getTitle());
                         bottomSheetSongName.setText(model.getTitle());
                         bottomSheetSongArtist.setText(model.getArtist());
@@ -373,8 +397,8 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
                     case BROADCAST_ACTION_PAUSE:
                         setPlayPauseDrawable(false);
+                        Log.d(TAG, "onReceive: pause");
                         break;
-
                 }
             }
         }

@@ -3,7 +3,9 @@ package io.github.balram02.musify.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import io.github.balram02.musify.Models.SongsModel;
+import com.google.gson.Gson;
+
+import io.github.balram02.musify.models.SongsModel;
 
 public class Preferences {
 
@@ -39,12 +41,10 @@ public class Preferences {
         synchronized public static void setLastSongDetails(Context context, SongsModel model) {
             sharedPreferences = context.getSharedPreferences(SONGS_DETAILS, Context.MODE_PRIVATE);
             sharedPreferences.edit()
-                    .putString("last_song_name", model.getTitle())
-                    .putString("last_song_artist", model.getArtist())
-                    .putLong("last_song_duration", model.getDuration()).apply();
+                    .putString("last_song_model", new Gson().toJson(model)).apply();
         }
 
-        // save songs' last position
+        // save song's last position
         synchronized public static void setLastSongCurrentPosition(Context context, int position) {
             context.getSharedPreferences(SONGS_DETAILS, Context.MODE_PRIVATE).edit()
                     .putInt("last_song_current_position", position).apply();
@@ -52,16 +52,10 @@ public class Preferences {
 
         /**************retrieving operations**************/
 
-        // retrieve last song name
-        synchronized public static String getLastSongName(Context context) {
-            return context.getSharedPreferences(SONGS_DETAILS, Context.MODE_PRIVATE)
-                    .getString("last_song_name", null);
-        }
-
-        // retrieve last song artist
-        synchronized public static String getLastSongArtist(Context context) {
-            return context.getSharedPreferences(SONGS_DETAILS, Context.MODE_PRIVATE)
-                    .getString("last_song_artist", null);
+        // retrieve last song details
+        synchronized public static SongsModel getLastSongModel(Context context) {
+            return new Gson().fromJson(context.getSharedPreferences(SONGS_DETAILS, Context.MODE_PRIVATE)
+                    .getString("last_song_model", null), SongsModel.class);
         }
 
         // retrieve song's last position
@@ -70,11 +64,6 @@ public class Preferences {
                     .getInt("last_song_current_position", 0);
         }
 
-        // retrieve songs duration
-        synchronized public static long getLastSongMaxDuration(Context context) {
-            return context.getSharedPreferences(SONGS_DETAILS, Context.MODE_PRIVATE)
-                    .getLong("last_song_duration", 0);
-        }
     }
 
 }

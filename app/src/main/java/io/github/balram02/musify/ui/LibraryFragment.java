@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import io.github.balram02.musify.R;
-import io.github.balram02.musify.ViewModels.LibraryViewModel;
+import io.github.balram02.musify.viewModels.LibraryViewModel;
 
 import static io.github.balram02.musify.ui.MainActivity.navigationView;
 

@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.balram02.musify.Models.SongsModel;
+import io.github.balram02.musify.models.SongsModel;
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.constants.Constants;
 import io.github.balram02.musify.listeners.OnAdapterItemClickListener;

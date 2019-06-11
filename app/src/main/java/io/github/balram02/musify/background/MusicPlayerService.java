@@ -14,7 +14,9 @@ import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -22,19 +24,19 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import java.io.IOException;
 import java.util.List;
 
-import io.github.balram02.musify.Models.SongsModel;
 import io.github.balram02.musify.R;
+import io.github.balram02.musify.models.SongsModel;
 import io.github.balram02.musify.ui.MainActivity;
 import io.github.balram02.musify.utils.Preferences;
 
-import static io.github.balram02.musify.constants.Constants.ACTION_CLOSE;
-import static io.github.balram02.musify.constants.Constants.ACTION_NEW_SONG;
-import static io.github.balram02.musify.constants.Constants.ACTION_NEXT;
-import static io.github.balram02.musify.constants.Constants.ACTION_PAUSE;
-import static io.github.balram02.musify.constants.Constants.ACTION_PLAY;
-import static io.github.balram02.musify.constants.Constants.ACTION_PREVIOUS;
 import static io.github.balram02.musify.constants.Constants.BROADCAST_ACTION_PAUSE;
 import static io.github.balram02.musify.constants.Constants.BROADCAST_ACTION_PLAY;
+import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_CLOSE;
+import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_NEW_SONG;
+import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_NEXT;
+import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_PAUSE;
+import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_PLAY;
+import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_PREVIOUS;
 import static io.github.balram02.musify.constants.Constants.TAG;
 
 public class MusicPlayerService extends Service implements MediaPlayer.OnCompletionListener, AudioManager.OnAudioFocusChangeListener {
@@ -42,7 +44,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     public static final String CHANNEL_ID = "512";
     public static final int NOTIFICATION_ID = 512;
     //    private static boolean IS_NEW_SONG;
-    private boolean wasPaused;
+//    private boolean wasPaused;
 
     //    intents for notification
     private Intent activityIntent;
@@ -72,6 +74,8 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     private final Binder mBinder = new PlayerServiceBinder();
     private List<SongsModel> songsQueueList;
     private Intent intent;
+    private boolean setSeekTo = false;
+    private NotificationManager manager;
 
     @Override
     public void onAudioFocusChange(int focusChange) {
@@ -79,19 +83,16 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         switch (focusChange) {
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                 if (isPlaying()) {
-                    createNotification(false);
                     pause();
                 }
                 break;
             case AudioManager.AUDIOFOCUS_GAIN:
                 if (!isPlaying()) {
-                    createNotification(true);
-                    player.start();
+                    start();
                 }
                 break;
             case AudioManager.AUDIOFOCUS_LOSS:
                 if (isPlaying()) {
-                    createNotification(false);
                     pause();
                 }
                 break;
@@ -119,9 +120,22 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         Log.d(TAG, "onCreate: ");
 
         player = new MediaPlayer();
+
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel();
+        }
+
         player.setOnCompletionListener(this);
+
+        player.setOnPreparedListener(mediaPlayer -> {
+            if (setSeekTo) {
+                player.seekTo(Preferences.SongDetails.getLastSongCurrentPosition(this));
+                setSeekTo = false;
+            }
+            start();
+        });
 
     }
 
@@ -131,31 +145,28 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "onStartCommand: " + intent.getAction());
 
-        createNotificationChannel();
+        Log.d(TAG, "onStartCommand: " + intent.getAction());
 
         if (intent.getAction() != null && !intent.getAction().isEmpty()) {
 
             switch (intent.getAction()) {
 
-                case ACTION_NEW_SONG:
-                    createNotification(true);
-                    startPlayer(true);
+                case INTENT_ACTION_NEW_SONG:
+                    setDataSourceAndPrepare();
                     break;
 
-                case ACTION_PAUSE:
-                    createNotification(false);
+                case INTENT_ACTION_PAUSE:
                     pause();
                     break;
 
-                case ACTION_PLAY:
-                    createNotification(true);
-                    startPlayer(false);
+                case INTENT_ACTION_PLAY:
+                    start();
                     break;
 
-                case ACTION_CLOSE:
-                    onDestroy();
+                case INTENT_ACTION_CLOSE:
+                    pause();
+                    stopForeground(true);
                     break;
             }
         }
@@ -198,34 +209,34 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
         if (previousIntent == null) {
             previousIntent = new Intent(this, MusicPlayerService.class);
-            previousIntent.setAction(ACTION_PREVIOUS);
+            previousIntent.setAction(INTENT_ACTION_PREVIOUS);
             if (previousPendingIntent == null)
                 previousPendingIntent = PendingIntent.getService(this, 0, previousIntent, 0);
         }
         if (playIntent == null) {
             playIntent = new Intent(this, MusicPlayerService.class);
-            playIntent.setAction(ACTION_PLAY);
+            playIntent.setAction(INTENT_ACTION_PLAY);
             if (playPendingIntent == null)
                 playPendingIntent = PendingIntent.getService(this, 0, playIntent, 0);
         }
 
         if (pauseIntent == null) {
             pauseIntent = new Intent(this, MusicPlayerService.class);
-            pauseIntent.setAction(ACTION_PAUSE);
+            pauseIntent.setAction(INTENT_ACTION_PAUSE);
             if (pausePendingIntent == null)
                 pausePendingIntent = PendingIntent.getService(this, 0, pauseIntent, 0);
         }
 
         if (nextIntent == null) {
             nextIntent = new Intent(this, MusicPlayerService.class);
-            nextIntent.setAction(ACTION_NEXT);
+            nextIntent.setAction(INTENT_ACTION_NEXT);
             if (nextPendingIntent == null)
                 nextPendingIntent = PendingIntent.getService(this, 0, nextIntent, 0);
         }
 
         if (closeIntent == null) {
             closeIntent = new Intent(this, MusicPlayerService.class);
-            closeIntent.setAction(ACTION_CLOSE);
+            closeIntent.setAction(INTENT_ACTION_CLOSE);
             if (closePendingIntent == null)
                 closePendingIntent = PendingIntent.getService(this, 0, closeIntent, 0);
         }
@@ -257,19 +268,17 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             stopForeground(false);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void createNotificationChannel() {
 
-        NotificationManager manager;
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "description", NotificationManager.IMPORTANCE_DEFAULT);
+        channel.setDescription("Music notification");
+        channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        channel.setSound(null, null);
+        channel.enableVibration(false);
+        manager = getSystemService(NotificationManager.class);
+        manager.createNotificationChannel(channel);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "description", NotificationManager.IMPORTANCE_DEFAULT);
-            channel.setDescription("Music notification");
-            channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-            channel.setSound(null, null);
-            channel.enableVibration(false);
-            manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(channel);
-        }
     }
 
     public void setSongDetails(SongsModel model, AndroidViewModel mViewModel) {
@@ -284,26 +293,26 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
-    public void startPlayer(boolean is_new_song) {
+    private void setDataSourceAndPrepare() {
+
         try {
-            if (is_new_song) {
-                player.reset();
-                setDataSourceAndPrepare(model.getPath());
-            }
-            start();
+            reset();
+            if (model != null) {
+                player.setDataSource(model.getPath());
+                player.prepare();
+            } else
+                return;
 
-        } catch (IOException io) {
+            Log.d(TAG, "setDataSourceAndPrepare: " + model.getPath());
+
+        } catch (
+                IOException io) {
             Log.e(TAG, model.getPath() + "IOException caught" + io);
-
-        } catch (Exception e) {
+            Toast.makeText(this, "Song not found on your storage device", Toast.LENGTH_SHORT).show();
+        } catch (
+                Exception e) {
             Log.e(TAG, "Other Exception caught" + e + model.getPath());
         }
-
-    }
-
-    private void setDataSourceAndPrepare(String sourcePath) throws IOException {
-        player.setDataSource(sourcePath);
-        player.prepare();
     }
 
     private void start() {
@@ -311,33 +320,40 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         int result = mAudioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 
         if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            sendBroadcastToLocal(BROADCAST_ACTION_PLAY);
-            player.start();
-            wasPaused = false;
 
+            if (model == null) {
+                model = Preferences.SongDetails.getLastSongModel(this);
+                setSeekTo = true;
+                setDataSourceAndPrepare();
+            } else {
+                player.start();
+                sendBroadcastToLocal(BROADCAST_ACTION_PLAY);
+                createNotification(true);
+            }
+        } else {
+            Toast.makeText(this, "cannot play music while other player is playing", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private boolean wasPaused() {
-        return wasPaused;
-    }
-
     public void pause() {
+
         player.pause();
+        createNotification(false);
         sendBroadcastToLocal(BROADCAST_ACTION_PAUSE);
         Preferences.SongDetails.setLastSongDetails(this, model);
         Preferences.SongDetails.setLastSongCurrentPosition(this, getCurrentPosition());
-        wasPaused = true;
+
     }
 
-    public void stop() {
-        player.stop();
-        Preferences.SongDetails.setLastSongDetails(this, model);
-        Preferences.SongDetails.setLastSongCurrentPosition(this, getCurrentPosition());
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy: ");
+        stopForeground(true);
     }
 
-    public void reset() {
-        player.reset();
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        Log.d(TAG, "onCompletion: ");
     }
 
     public String getSongName() {
@@ -354,6 +370,10 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
     public void seekTo(int pos) {
         player.seekTo(pos);
+    }
+
+    public boolean isFavorite() {
+        return model.isFavorite();
     }
 
     public boolean isPlaying() {
@@ -380,32 +400,18 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         return player.getAudioSessionId();
     }
 
+    public void reset() {
+        player.reset();
+    }
+
+    private void release() {
+        player.release();
+    }
+
     @Override
     public boolean onUnbind(Intent intent) {
         Log.d(TAG, "onUnbind: ");
         return super.onUnbind(intent);
     }
 
-    @Override
-    public void onDestroy() {
-        Log.d(TAG, "onDestroy: ");
-        if (player != null) {
-            stop();
-            reset();
-        }
-        stopForeground(true);
-    }
-
-    @Override
-    public void onCompletion(MediaPlayer mp) {
-        Log.d(TAG, "onCompletion: ");
-
-/*        try {
-            player.reset();
-            setDataSourceAndPrepare(nextModel.getPath());
-            start();
-        } catch (Exception e) {
-            Log.d(TAG, "onCompletion: Exception caught " + e);
-        }*/
-    }
 }

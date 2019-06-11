@@ -1,4 +1,4 @@
-package io.github.balram02.musify.Database;
+package io.github.balram02.musify.database;
 
 
 import android.content.Context;
@@ -13,7 +13,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import io.github.balram02.musify.Models.SongsModel;
+import io.github.balram02.musify.models.SongsModel;
 
 @Database(entities = {SongsModel.class}, version = 1)
 public abstract class SongsDatabase extends RoomDatabase {
