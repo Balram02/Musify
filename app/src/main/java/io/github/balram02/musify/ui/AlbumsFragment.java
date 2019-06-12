@@ -14,8 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import io.github.balram02.musify.R;
-import io.github.balram02.musify.viewModels.AlbumsViewModel;
 import io.github.balram02.musify.adapters.AlbumsAdapter;
+import io.github.balram02.musify.viewModels.SharedViewModel;
 
 public class AlbumsFragment extends Fragment {
 
@@ -24,7 +24,7 @@ public class AlbumsFragment extends Fragment {
     private SwipeRefreshLayout refreshLayout;
     private Context context;
 
-    private AlbumsViewModel mViewModel;
+    private SharedViewModel mViewModel;
 
     public static AlbumsFragment newInstance() {
         return new AlbumsFragment();
@@ -48,10 +48,10 @@ public class AlbumsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(AlbumsViewModel.class);
-        mViewModel.getAllSongsByAlbum().observe(getViewLifecycleOwner(), albumsModel -> {
-            albumsAdapter.setSongs(albumsModel);
-        });
+        mViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
+//        mViewModel.getAllSongsByAlbum().observe(getViewLifecycleOwner(), albumsModel -> {
+//            albumsAdapter.setSongs(albumsModel);
+//        });
     }
 
 }

@@ -16,14 +16,25 @@ import io.github.balram02.musify.models.SongsModel;
 @Dao
 public interface SongsDao {
 
+    /**************insert operations**************/
+
     @Insert
     void insert(SongsModel songsModel);
+
+
+    /**************update operations**************/
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     void update(SongsModel songsModel);
 
+
+    /**************delete operations**************/
+
     @Delete
     void delete(SongsModel songsModel);
+
+
+    /**************retrieve operations**************/
 
     @Query("SELECT * FROM songs_table ORDER BY title")
     LiveData<List<SongsModel>> getAllSongs();
@@ -36,4 +47,8 @@ public interface SongsDao {
 
     @Query("SELECT * FROM songs_table WHERE is_favorite = 1 ORDER BY title ")
     LiveData<List<SongsModel>> getFavoriteSongs();
+
+    @Query("SELECT is_favorite from songs_table WHERE id = :id")
+    LiveData<Boolean> isFavorite(int id);
+
 }

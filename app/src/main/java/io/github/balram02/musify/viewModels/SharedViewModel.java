@@ -11,15 +11,17 @@ import java.util.List;
 import io.github.balram02.musify.models.SongsModel;
 import io.github.balram02.musify.repositories.SongsRepository;
 
-public class FavoritesViewModel extends AndroidViewModel {
+public class SharedViewModel extends AndroidViewModel {
 
     private SongsRepository repository;
-    private LiveData<List<SongsModel>> favorites;
+    private LiveData<List<SongsModel>> songs;
+    private LiveData<List<SongsModel>> songsQueue;
 
-    public FavoritesViewModel(@NonNull Application application) {
+    public SharedViewModel(@NonNull Application application) {
         super(application);
         repository = new SongsRepository(application);
-        favorites = repository.getFavoriteSong();
+        songs = repository.getAllSongs();
+        songsQueue = repository.getSongsQueue();
     }
 
     public void update(SongsModel songsModel) {
@@ -30,8 +32,20 @@ public class FavoritesViewModel extends AndroidViewModel {
         repository.delete(songsModel);
     }
 
+    public LiveData<List<SongsModel>> getAllSongs() {
+        return songs;
+    }
+
+    public LiveData<List<SongsModel>> getSongsQueue() {
+        return songsQueue;
+    }
+
+    public LiveData<Boolean> isFavorite(int id) {
+        return repository.isFavorite(id);
+    }
+
     public LiveData<List<SongsModel>> getFavoriteSong() {
-        return favorites;
+        return repository.getFavoriteSong();
     }
 
 }

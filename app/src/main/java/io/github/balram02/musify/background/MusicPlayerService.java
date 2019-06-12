@@ -322,7 +322,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
 
             if (model == null) {
-                model = Preferences.SongDetails.getLastSongModel(this);
+                model = Preferences.SongDetails.getLastSongDetails(this);
                 setSeekTo = true;
                 setDataSourceAndPrepare();
             } else {
@@ -356,6 +356,14 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         Log.d(TAG, "onCompletion: ");
     }
 
+    public SongsModel getSongModel() {
+        return model;
+    }
+
+    public int getSongId() {
+        return model.getId();
+    }
+
     public String getSongName() {
         return model.getTitle();
     }
@@ -374,6 +382,10 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
     public boolean isFavorite() {
         return model.isFavorite();
+    }
+
+    public void setFavorite(boolean favorite) {
+        model.setFavorite(favorite);
     }
 
     public boolean isPlaying() {

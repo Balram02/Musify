@@ -1,23 +1,21 @@
 package io.github.balram02.musify.ui;
 
-import androidx.lifecycle.ViewModelProviders;
-
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+
 import io.github.balram02.musify.R;
-import io.github.balram02.musify.viewModels.SearchViewModel;
+import io.github.balram02.musify.viewModels.SharedViewModel;
 
 public class SearchFragment extends Fragment {
 
-    private SearchViewModel mViewModel;
+    private SharedViewModel mViewModel;
 
     public static SearchFragment newInstance() {
         return new SearchFragment();
@@ -32,7 +30,7 @@ public class SearchFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
+        mViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
         // TODO: Use the ViewModel
     }
 

@@ -15,15 +15,15 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
 import io.github.balram02.musify.R;
-import io.github.balram02.musify.viewModels.FavoritesViewModel;
 import io.github.balram02.musify.adapters.FavoritesAdapter;
 import io.github.balram02.musify.listeners.MusicPlayerServiceListener;
+import io.github.balram02.musify.viewModels.SharedViewModel;
 
 import static io.github.balram02.musify.constants.Constants.TAG;
 
 public class FavoritesFragment extends Fragment {
 
-    private FavoritesViewModel mViewModel;
+    private SharedViewModel mViewModel;
 
     public static FavoritesFragment newInstance() {
         return new FavoritesFragment();
@@ -69,10 +69,9 @@ public class FavoritesFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(FavoritesViewModel.class);
+        mViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
         mViewModel.getFavoriteSong().observe(getViewLifecycleOwner(), songsModels -> {
-            favoritesAdapter.setFavorites(songsModels);
-            favoritesAdapter.notifyDataSetChanged();
+            favoritesAdapter.setFavoritesSongsList(songsModels);
         });
     }
 }

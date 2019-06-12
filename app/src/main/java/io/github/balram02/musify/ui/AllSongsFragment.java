@@ -26,18 +26,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Objects;
 
-import io.github.balram02.musify.models.SongsModel;
 import io.github.balram02.musify.R;
-import io.github.balram02.musify.viewModels.AllSongsViewModel;
 import io.github.balram02.musify.adapters.SongsAdapter;
 import io.github.balram02.musify.listeners.MusicPlayerServiceListener;
+import io.github.balram02.musify.models.SongsModel;
+import io.github.balram02.musify.viewModels.SharedViewModel;
 
 import static io.github.balram02.musify.constants.Constants.TAG;
 
 
 public class AllSongsFragment extends Fragment {
 
-    private AllSongsViewModel mViewModel;
+    private SharedViewModel mViewModel;
     private RecyclerView recyclerView;
     private SongsAdapter songsAdapter;
     //    private SwipeRefreshLayout refreshLayout;
@@ -164,7 +164,7 @@ public class AllSongsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mViewModel = ViewModelProviders.of(this).get(AllSongsViewModel.class);
+        mViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
         mViewModel.getAllSongs().observe(getViewLifecycleOwner(), songsModels -> {
             songsAdapter.updateSongsList(songsModels);
             totalSongs.setText(getString(R.string.songs_found_text, songsModels.size()));

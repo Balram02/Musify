@@ -37,7 +37,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
         holder.songDuration.setText(Constants.millisecondsToMinutesAndSeconds(model.getDuration()));
     }
 
-    public void setFavorites(List<SongsModel> favorites) {
+    public void setFavoritesSongsList(List<SongsModel> favorites) {
         this.favorites = favorites;
         notifyDataSetChanged();
     }

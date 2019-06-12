@@ -21,7 +21,7 @@ public class SongsRepository {
     private final static int DELETE = 3;
 
     private SongsDatabase songsDB;
-    private SongsDao songsDao;
+    private static SongsDao songsDao;
     private LiveData<List<SongsModel>> songs;
     private LiveData<List<SongsModel>> songsQueue;
     private LiveData<List<SongsModel>> favoriteSongs;
@@ -58,9 +58,13 @@ public class SongsRepository {
         return favoriteSongs;
     }
 
+    public LiveData<Boolean> isFavorite(int id) {
+        return songsDao.isFavorite(id);
+    }
+
     private void performTask(int operation, SongsModel songsModel) {
         try {
-            new DBAsyncTask(songsDao, operation).execute(songsModel).get();
+            new DBAsyncTask(operation).execute(songsModel).get();
         } catch (Exception e) {
             Log.d(TAG, e.toString());
         }
@@ -68,11 +72,9 @@ public class SongsRepository {
 
     private static class DBAsyncTask extends AsyncTask<SongsModel, Void, Void> {
 
-        private SongsDao songsDao;
         private int operation;
 
-        DBAsyncTask(SongsDao songsDao, int operation) {
-            this.songsDao = songsDao;
+        DBAsyncTask(int operation) {
             this.operation = operation;
         }
 

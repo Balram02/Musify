@@ -29,6 +29,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -41,8 +42,7 @@ import io.github.balram02.musify.constants.Constants;
 import io.github.balram02.musify.listeners.MusicPlayerServiceListener;
 import io.github.balram02.musify.models.SongsModel;
 import io.github.balram02.musify.utils.Preferences;
-import io.github.balram02.musify.viewModels.AllSongsViewModel;
-import io.github.balram02.musify.viewModels.FavoritesViewModel;
+import io.github.balram02.musify.viewModels.SharedViewModel;
 
 import static io.github.balram02.musify.constants.Constants.BROADCAST_ACTION_PAUSE;
 import static io.github.balram02.musify.constants.Constants.BROADCAST_ACTION_PLAY;
@@ -53,9 +53,11 @@ import static io.github.balram02.musify.constants.Constants.PREFERENCES_ACTIVITY
 
 public class MainActivity extends AppCompatActivity implements OnNavigationItemSelectedListener, MusicPlayerServiceListener {
 
-    public final String TAG = Constants.TAG;
+    private final String TAG = Constants.TAG;
 
     private LocalReceiver localReceiver;
+
+    private SharedViewModel sharedViewModel;
 
     private TextView peekSongName;
     private ImageView peekFavorite;
@@ -80,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     private LinearLayout bottomPeek;
 
     private boolean isBound;
+    private boolean isObserverAdded = false;
     private Handler handler;
 
     public MusicPlayerService musicPlayerService;
@@ -102,6 +105,8 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        sharedViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
 
         setSupportActionBar(findViewById(R.id.toolbar));
         navigationView = findViewById(R.id.bottom_nav_view);
@@ -175,23 +180,35 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             bottomSheetSongName.setText(musicPlayerService.getSongName());
             bottomSheetSongArtist.setText(musicPlayerService.getArtistName());
             bottomSheetSeekbar.setMax(musicPlayerService.getDuration());
+            addObserverOnFavorite();
             updateSeekBarProgress();
             setPlayPauseDrawable(true);
         } else {
-            SongsModel lastSongModel = Preferences.SongDetails.getLastSongModel(getApplicationContext());
+            SongsModel lastSongModel = Preferences.SongDetails.getLastSongDetails(this);
             if (lastSongModel != null) {
                 setFavoritesDrawable(lastSongModel.isFavorite());
                 peekSongName.setText(lastSongModel.getTitle());
                 bottomSheetSongName.setText(lastSongModel.getTitle());
                 bottomSheetSongArtist.setText(lastSongModel.getArtist());
                 bottomSheetSeekbar.setMax((int) lastSongModel.getDuration());
-                bottomSheetSeekbar.setProgress(Preferences.SongDetails.getLastSongCurrentPosition(getApplicationContext()));
+                bottomSheetSeekbar.setProgress(Preferences.SongDetails.getLastSongCurrentPosition(this));
+                addObserverOnFavorite();
                 bottomSheetLayout.setVisibility(View.VISIBLE);
             } else {
                 bottomSheetLayout.setVisibility(View.GONE);
             }
             setPlayPauseDrawable(false);
         }
+    }
+
+    public void addObserverOnFavorite() {
+        int id = musicPlayerService != null && musicPlayerService.isPlaying() ?
+                musicPlayerService.getSongId() : Preferences.SongDetails.getLastSongDetails(this).getId();
+
+        sharedViewModel.isFavorite(id).observe(this, isFavorite -> {
+            setFavoritesDrawable(isFavorite);
+            Log.d(TAG, "onChanged: Observer " + isFavorite);
+        });
     }
 
     public void updateSeekBarProgress() {
@@ -202,7 +219,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             if (musicPlayerService != null && musicPlayerService.isPlaying() && isForeground) {
                 int position = musicPlayerService.getCurrentPosition();
                 bottomSheetSeekbar.setProgress(position);
-                Log.d(TAG, "updateSeekBarProgress: ");
             }
             handler.postDelayed(this::updateSeekBarProgress, 1000);
         });
@@ -241,13 +257,11 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
     @Override
     public void onUpdateService(SongsModel currentModel, AndroidViewModel mViewModel) {
-        if (mViewModel instanceof AllSongsViewModel || mViewModel instanceof FavoritesViewModel)
-            musicPlayerService.setSongDetails(currentModel, mViewModel);
+        musicPlayerService.setSongDetails(currentModel, mViewModel);
         startMyService(INTENT_ACTION_NEW_SONG);
     }
 
     @Override
-
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
         switch (item.getItemId()) {
@@ -267,7 +281,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                 if (!(fragmentManager.findFragmentById(R.id.fragment_container) instanceof FavoritesFragment))
                     setFragment(favoritesFragment);
                 break;
-
         }
 
         return true;
@@ -312,7 +325,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     protected void onPause() {
         super.onPause();
         Log.d(TAG, "onPause: ");
-        PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(PREFERENCES_ACTIVITY_STATE, false).apply();
     }
 
     @Override
@@ -362,6 +374,26 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         }
     }
 
+    public void onClickFavoriteButton(View view) {
+        boolean isFavorite;
+        SongsModel model;
+        if (musicPlayerService.isPlaying()) {
+            isFavorite = musicPlayerService.isFavorite();
+            model = musicPlayerService.getSongModel();
+            model.setFavorite(!isFavorite);
+            sharedViewModel.update(model);
+            musicPlayerService.setFavorite(!isFavorite);
+        } else {
+            isFavorite = Preferences.SongDetails.getLastSongDetails(this).isFavorite();
+            model = Preferences.SongDetails.getLastSongDetails(this);
+            model.setFavorite(!isFavorite);
+            sharedViewModel.update(model);
+            Preferences.SongDetails.setLastSongDetails(this, model);
+        }
+
+        Log.d(TAG, "onClickFavoriteButton: " + !isFavorite + " " + model.isFavorite());
+    }
+
     private void setPlayPauseDrawable(boolean isPlaying) {
         peekPlayPause.setImageResource(isPlaying ? R.drawable.pause_icon_white_24dp : R.drawable.play_icon_white_24dp);
         bottomSheetPlayPause.setImageResource(isPlaying ? R.drawable.pause_icon_white_24dp : R.drawable.play_icon_white_24dp);
@@ -397,7 +429,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
                     case BROADCAST_ACTION_PAUSE:
                         setPlayPauseDrawable(false);
-                        Log.d(TAG, "onReceive: pause");
                         break;
                 }
             }

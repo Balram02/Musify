@@ -7,7 +7,7 @@
     android:background="@color/colorPrimaryDark"
     android:elevation="13dp"
     android:orientation="vertical"
-    android:visibility="gone"
+    android:visibility="visible"
     app:behavior_hideable="false"
     app:behavior_peekHeight="50dp"
     app:layout_behavior="@string/bottom_sheet_behavior">
@@ -31,6 +31,7 @@
             android:layout_marginStart="20dp"
             android:clickable="true"
             android:focusable="true"
+            android:onClick="onClickFavoriteButton"
             android:src="@drawable/ic_favorite_border_white_24dp" />
 
         <TextView
@@ -133,6 +134,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:padding="5dp"
+                android:onClick="onClickFavoriteButton"
                 android:src="@drawable/ic_favorite_border_white_24dp" />
 
             <LinearLayout

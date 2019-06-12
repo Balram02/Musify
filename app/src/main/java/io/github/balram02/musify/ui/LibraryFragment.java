@@ -12,13 +12,13 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import io.github.balram02.musify.R;
-import io.github.balram02.musify.viewModels.LibraryViewModel;
+import io.github.balram02.musify.viewModels.SharedViewModel;
 
 import static io.github.balram02.musify.ui.MainActivity.navigationView;
 
 public class LibraryFragment extends Fragment {
 
-    private LibraryViewModel mViewModel;
+    private SharedViewModel mViewModel;
     private CardView songsCardView, albumsCardView;
 
     public static LibraryFragment newInstance() {
@@ -45,7 +45,7 @@ public class LibraryFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(LibraryViewModel.class);
+        mViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
         // TODO: Use the ViewModel
     }
 

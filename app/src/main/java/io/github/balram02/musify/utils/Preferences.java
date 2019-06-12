@@ -53,7 +53,7 @@ public class Preferences {
         /**************retrieving operations**************/
 
         // retrieve last song details
-        synchronized public static SongsModel getLastSongModel(Context context) {
+        synchronized public static SongsModel getLastSongDetails(Context context) {
             return new Gson().fromJson(context.getSharedPreferences(SONGS_DETAILS, Context.MODE_PRIVATE)
                     .getString("last_song_model", null), SongsModel.class);
         }
