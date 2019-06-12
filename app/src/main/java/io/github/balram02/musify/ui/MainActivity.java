@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     private SearchFragment searchFragment = new SearchFragment();
     private LibraryFragment libraryFragment = new LibraryFragment();
     private FavoritesFragment favoritesFragment = new FavoritesFragment();
-    //    private Fragment activeFragment = allSongsFragment;
+    private Fragment activeFragment;
     public static BottomNavigationView navigationView;
 
     private BottomSheetBehavior bottomSheet;
@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     private LinearLayout bottomPeek;
 
     private boolean isBound;
-    private boolean isObserverAdded = false;
     private Handler handler;
 
     public MusicPlayerService musicPlayerService;
@@ -148,7 +147,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         });
 
         fragmentManager = getSupportFragmentManager();
-//        addHiddenFragments();
         askRequiredPermissions();
 
         bottomSheetLayout.setOnClickListener(v -> bottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED));
@@ -205,10 +203,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         int id = musicPlayerService != null && musicPlayerService.isPlaying() ?
                 musicPlayerService.getSongId() : Preferences.SongDetails.getLastSongDetails(this).getId();
 
-        sharedViewModel.isFavorite(id).observe(this, isFavorite -> {
-            setFavoritesDrawable(isFavorite);
-            Log.d(TAG, "onChanged: Observer " + isFavorite);
-        });
+        sharedViewModel.isFavorite(id).observe(this, this::setFavoritesDrawable);
     }
 
     public void updateSeekBarProgress() {
@@ -234,10 +229,12 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.STORAGE_PERMISSION_REQUEST_CODE);
             } else {
-                setFragment(new AllSongsFragment());
+                addHiddenFragments();
+                setFragment(allSongsFragment);
             }
         } else {
-            setFragment(new AllSongsFragment());
+            addHiddenFragments();
+            setFragment(allSongsFragment);
         }
     }
 
@@ -247,9 +244,31 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         startService(serviceIntent);
     }
 
+    private void addHiddenFragments() {
+        fragmentManager.beginTransaction()
+                .add(R.id.fragment_container, allSongsFragment, "all_songs_fragment").hide(allSongsFragment).commit();
+        fragmentManager.beginTransaction()
+                .add(R.id.fragment_container, libraryFragment, "library_fragment").hide(libraryFragment).commit();
+        fragmentManager.beginTransaction()
+                .add(R.id.fragment_container, searchFragment, "search_fragment").hide(searchFragment).commit();
+        fragmentManager.beginTransaction()
+                .add(R.id.fragment_container, favoritesFragment, "favorites_fragment").hide(favoritesFragment).commit();
+    }
+
     public void setFragment(Fragment fragment) {
         new Thread(() -> runOnUiThread(() -> {
-            fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out).replace(R.id.fragment_container, fragment).commitAllowingStateLoss();
+
+            if (activeFragment == null) {
+                fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+                        .show(fragment).commitAllowingStateLoss();
+            } else {
+                fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+                        .hide(activeFragment).show(fragment).commitAllowingStateLoss();
+            }
+            activeFragment = fragment;
+
+            Log.d(TAG, "setFragment: " + fragment.getTag());
+
             if (bottomSheet.getState() == BottomSheetBehavior.STATE_EXPANDED)
                 bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
         })).start();
@@ -266,19 +285,19 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
         switch (item.getItemId()) {
             case R.id.music:
-                if (!(fragmentManager.findFragmentById(R.id.fragment_container) instanceof AllSongsFragment))
+                if (!allSongsFragment.isVisible())
                     setFragment(allSongsFragment);
                 break;
             case R.id.search:
-                if (!(fragmentManager.findFragmentById(R.id.fragment_container) instanceof SearchFragment))
+                if (!searchFragment.isVisible())
                     setFragment(searchFragment);
                 break;
             case R.id.library:
-                if (!(fragmentManager.findFragmentById(R.id.fragment_container) instanceof LibraryFragment))
+                if (!libraryFragment.isVisible())
                     setFragment(libraryFragment);
                 break;
             case R.id.favorites:
-                if (!(fragmentManager.findFragmentById(R.id.fragment_container) instanceof FavoritesFragment))
+                if (!favoritesFragment.isVisible())
                     setFragment(favoritesFragment);
                 break;
         }
@@ -344,6 +363,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == Constants.STORAGE_PERMISSION_REQUEST_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            addHiddenFragments();
             setFragment(allSongsFragment);
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -390,8 +410,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             sharedViewModel.update(model);
             Preferences.SongDetails.setLastSongDetails(this, model);
         }
-
-        Log.d(TAG, "onClickFavoriteButton: " + !isFavorite + " " + model.isFavorite());
     }
 
     private void setPlayPauseDrawable(boolean isPlaying) {
