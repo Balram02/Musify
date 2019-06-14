@@ -24,12 +24,11 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.Objects;
-
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.adapters.SongsAdapter;
 import io.github.balram02.musify.listeners.MusicPlayerServiceListener;
 import io.github.balram02.musify.models.SongsModel;
+import io.github.balram02.musify.utils.Preferences;
 import io.github.balram02.musify.viewModels.SharedViewModel;
 
 import static io.github.balram02.musify.constants.Constants.TAG;
@@ -80,7 +79,12 @@ public class AllSongsFragment extends Fragment {
         recyclerView.setAdapter(songsAdapter);
 
         songsAdapter.setOnItemClickListener(model -> {
-            musicPlayerServiceListener.onUpdateService(model, mViewModel);
+            boolean state = Preferences.DefaultSettings.getShuffleState(context);
+            if (state) {
+                musicPlayerServiceListener.onUpdateService(mViewModel.getShuffleSongsQueue(), model, mViewModel);
+            } else {
+                musicPlayerServiceListener.onUpdateService(mViewModel.getAllSongsQueue(), model, mViewModel);
+            }
         });
 
 /*        refreshLayout.setOnRefreshListener(() -> {
@@ -169,7 +173,6 @@ public class AllSongsFragment extends Fragment {
             songsAdapter.updateSongsList(songsModels);
             totalSongs.setText(getString(R.string.songs_found_text, songsModels.size()));
         });
-        ((MainActivity) Objects.requireNonNull(getActivity())).setUpLastDetails();
         startTotalSongsCardAnimation();
     }
 

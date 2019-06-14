@@ -1,20 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     android:layout_marginStart="5dp"
     android:layout_marginEnd="5dp"
-    app:cardElevation="12dp"
-    app:cardBackgroundColor="@color/transparent">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@drawable/curved_toolbar_background"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        app:popupTheme="@style/AppTheme.PopupOverlay">
-
-    </androidx.appcompat.widget.Toolbar>
-</androidx.cardview.widget.CardView>
+    android:background="@drawable/curved_toolbar_background"
+    android:elevation="12dp" />

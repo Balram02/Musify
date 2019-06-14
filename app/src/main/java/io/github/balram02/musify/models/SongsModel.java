@@ -1,6 +1,7 @@
 package io.github.balram02.musify.models;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -68,6 +69,13 @@ public class SongsModel implements Serializable {
 
     public boolean isFavorite() {
         return favorite;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof SongsModel)
+            return this.getPath().equals(((SongsModel) obj).getPath());
+        return super.equals(obj);
     }
 
     @NonNull

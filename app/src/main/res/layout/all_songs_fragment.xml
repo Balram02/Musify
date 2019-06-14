@@ -23,6 +23,13 @@
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fadeScrollbars="true"
+            android:paddingBottom="48dp"
+            app:fastScrollEnabled="true"
+            app:fastScrollHorizontalThumbDrawable="@drawable/thumb_drawable"
+            app:fastScrollHorizontalTrackDrawable="@drawable/line_drawable"
+            app:fastScrollVerticalThumbDrawable="@drawable/thumb_drawable"
+            app:fastScrollVerticalTrackDrawable="@drawable/line_drawable"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:reverseLayout="false" />
 

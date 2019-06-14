@@ -42,11 +42,20 @@ public interface SongsDao {
     @Query("SELECT album FROM songs_table ORDER BY album")
     LiveData<List<AlbumsModel>> getAllSongsByAlbum();
 
-    @Query("SELECT * FROM songs_table WHERE id IN (SELECT id FROM songs_table ORDER BY RANDOM() LIMIT 70)")
-    LiveData<List<SongsModel>> getSongsQueue();
+    @Query("SELECT * FROM songs_table ORDER BY RANDOM() LIMIT 70")
+    List<SongsModel> getShuffleSongsQueue();
+
+    @Query("SELECT * FROM songs_table ORDER BY title ASC")
+    List<SongsModel> getAllSongsQueue();
 
     @Query("SELECT * FROM songs_table WHERE is_favorite = 1 ORDER BY title ")
     LiveData<List<SongsModel>> getFavoriteSongs();
+
+    @Query("SELECT * FROM songs_table WHERE is_favorite = 1 ORDER BY title ")
+    List<SongsModel> getFavoriteSongsQueueList();
+
+    @Query("SELECT * FROM songs_table WHERE is_favorite = 1 ORDER BY RANDOM()")
+    List<SongsModel> getFavoriteSongsShuffleQueueList();
 
     @Query("SELECT is_favorite from songs_table WHERE id = :id")
     LiveData<Boolean> isFavorite(int id);

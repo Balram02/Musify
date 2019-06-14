@@ -22,6 +22,16 @@ public class Constants {
     public static final String BROADCAST_ACTION_PLAY = "broadcast_action_play";
     public static final String BROADCAST_ACTION_PAUSE = "broadcast_action_pause";
 
+    //    Repeat states
+    public static final int PREFERENCES_REPEAT_STATE_NONE = 0;
+    public static final int PREFERENCES_REPEAT_STATE_ALL = -1;
+    public static final int PREFERENCES_REPEAT_STATE_ONE = 1;
+
+    //    Shuffle states
+    public static final boolean PREFERENCES_SHUFFLE_STATE_YES = true;
+    public static final boolean PREFERENCES_SHUFFLE_STATE_NO = false;
+
+
     public static final String PREFERENCES_ACTIVITY_STATE = "isForeground";
 
     public static String millisecondsToMinutesAndSeconds(long milliseconds) {

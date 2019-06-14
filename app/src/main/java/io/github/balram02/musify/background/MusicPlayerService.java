@@ -18,16 +18,17 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.models.SongsModel;
 import io.github.balram02.musify.ui.MainActivity;
 import io.github.balram02.musify.utils.Preferences;
+import io.github.balram02.musify.viewModels.SharedViewModel;
 
 import static io.github.balram02.musify.constants.Constants.BROADCAST_ACTION_PAUSE;
 import static io.github.balram02.musify.constants.Constants.BROADCAST_ACTION_PLAY;
@@ -37,6 +38,8 @@ import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_NEXT;
 import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_PAUSE;
 import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_PLAY;
 import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_PREVIOUS;
+import static io.github.balram02.musify.constants.Constants.PREFERENCES_REPEAT_STATE_NONE;
+import static io.github.balram02.musify.constants.Constants.PREFERENCES_REPEAT_STATE_ONE;
 import static io.github.balram02.musify.constants.Constants.TAG;
 
 public class MusicPlayerService extends Service implements MediaPlayer.OnCompletionListener, AudioManager.OnAudioFocusChangeListener {
@@ -65,14 +68,15 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     private MediaPlayer player;
 
     private SongsModel model;
-    private AndroidViewModel mViewModel;
+    private SharedViewModel mViewModel;
+    private List<SongsModel> songsQueueList;
+    private int currentSongPosition;
 
     private RemoteViews notificationCollapsed;
     private RemoteViews notificationExpanded;
     private AudioManager mAudioManager;
 
     private final Binder mBinder = new PlayerServiceBinder();
-    private List<SongsModel> songsQueueList;
     private Intent intent;
     private boolean setSeekTo = false;
     private NotificationManager manager;
@@ -120,6 +124,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         Log.d(TAG, "onCreate: ");
 
         player = new MediaPlayer();
+//        setLooping(true);
 
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
@@ -139,10 +144,6 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
     }
 
-    public void setSongsQueueList(List<SongsModel> songsQueueList) {
-        this.songsQueueList = songsQueueList;
-    }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
@@ -156,12 +157,20 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
                     setDataSourceAndPrepare();
                     break;
 
+                case INTENT_ACTION_PREVIOUS:
+                    playPrevious();
+                    break;
+
                 case INTENT_ACTION_PAUSE:
                     pause();
                     break;
 
                 case INTENT_ACTION_PLAY:
                     start();
+                    break;
+
+                case INTENT_ACTION_NEXT:
+                    playNext();
                     break;
 
                 case INTENT_ACTION_CLOSE:
@@ -172,7 +181,6 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         }
         return START_NOT_STICKY;
     }
-
 
     public void createNotification(boolean pauseButton) {
 
@@ -281,9 +289,33 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
     }
 
-    public void setSongDetails(SongsModel model, AndroidViewModel mViewModel) {
+    public void setSongsQueueList(boolean isShuffled, List<SongsModel> songsQueueList) {
+
+        this.songsQueueList = songsQueueList;
+
+        if (isShuffled) {
+            currentSongPosition = new Random().nextInt(songsQueueList.size());
+            this.songsQueueList.add(currentSongPosition, this.model);
+        } else
+            currentSongPosition = this.songsQueueList.indexOf(model);
+
+        currentSongPosition = new Random().nextInt(songsQueueList.size());
+        this.songsQueueList.add(currentSongPosition, this.model != null ? model :
+                Preferences.SongDetails.getLastSongDetails(this));
+    }
+
+    public void setSongDetails(List<SongsModel> songsQueueList, SongsModel model, SharedViewModel mViewModel) {
         this.model = model;
         this.mViewModel = mViewModel;
+        this.songsQueueList = songsQueueList;
+
+        if (Preferences.DefaultSettings.getShuffleState(this)) {
+            currentSongPosition = new Random().nextInt(songsQueueList.size());
+            this.songsQueueList.add(currentSongPosition, this.model);
+        } else
+            currentSongPosition = this.songsQueueList.indexOf(model);
+
+        Log.d(TAG, "setSongDetails: position = " + currentSongPosition);
     }
 
     private void sendBroadcastToLocal(String action) {
@@ -302,6 +334,8 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
                 player.prepare();
             } else
                 return;
+
+            setLooping(Preferences.DefaultSettings.getRepeatState(this) == PREFERENCES_REPEAT_STATE_ONE);
 
             Log.d(TAG, "setDataSourceAndPrepare: " + model.getPath());
 
@@ -345,6 +379,29 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
     }
 
+    public void playNext() {
+
+        if (songsQueueList.size() - 1 == currentSongPosition)
+            currentSongPosition = 0;
+        else
+            currentSongPosition += 1;
+
+        setSongModel(songsQueueList.get(currentSongPosition));
+        setDataSourceAndPrepare();
+    }
+
+    public void playPrevious() {
+
+        if (currentSongPosition == 0)
+            currentSongPosition = songsQueueList.size() - 1;
+        else
+            currentSongPosition -= 1;
+
+        setSongModel(songsQueueList.get(currentSongPosition));
+        setDataSourceAndPrepare();
+
+    }
+
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy: ");
@@ -353,7 +410,24 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        Log.d(TAG, "onCompletion: ");
+        Log.d(TAG, "onCompletion: " + isLooping());
+
+        if (Preferences.DefaultSettings.getRepeatState(this) != PREFERENCES_REPEAT_STATE_NONE)
+            playNext();
+        else
+            pause();
+    }
+
+    public void setLooping(boolean looping) {
+        player.setLooping(looping);
+    }
+
+    public boolean isLooping() {
+        return player.isLooping();
+    }
+
+    public void setSongModel(SongsModel model) {
+        this.model = model;
     }
 
     public SongsModel getSongModel() {

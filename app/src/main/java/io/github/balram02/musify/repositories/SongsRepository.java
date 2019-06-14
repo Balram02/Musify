@@ -23,14 +23,16 @@ public class SongsRepository {
     private SongsDatabase songsDB;
     private static SongsDao songsDao;
     private LiveData<List<SongsModel>> songs;
-    private LiveData<List<SongsModel>> songsQueue;
     private LiveData<List<SongsModel>> favoriteSongs;
+    private List<SongsModel> songQueue;
+    private List<SongsModel> allSongsQueue;
 
     public SongsRepository(Application application) {
         songsDB = SongsDatabase.getInstance(application);
         songsDao = songsDB.songDao();
         songs = songsDao.getAllSongs();
-        songsQueue = songsDao.getSongsQueue();
+        songQueue = songsDao.getShuffleSongsQueue();
+        allSongsQueue = songsDao.getAllSongsQueue();
         favoriteSongs = songsDao.getFavoriteSongs();
     }
 
@@ -50,8 +52,12 @@ public class SongsRepository {
         return songs;
     }
 
-    public LiveData<List<SongsModel>> getSongsQueue() {
-        return songsQueue;
+    public List<SongsModel> getAllSongsQueue() {
+        return allSongsQueue;
+    }
+
+    public List<SongsModel> getShuffleSongsQueue() {
+        return songQueue;
     }
 
     public LiveData<List<SongsModel>> getFavoriteSong() {

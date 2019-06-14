@@ -15,13 +15,15 @@ public class SharedViewModel extends AndroidViewModel {
 
     private SongsRepository repository;
     private LiveData<List<SongsModel>> songs;
-    private LiveData<List<SongsModel>> songsQueue;
+    private List<SongsModel> songsQueue;
+    private List<SongsModel> allSongsQueue;
 
     public SharedViewModel(@NonNull Application application) {
         super(application);
         repository = new SongsRepository(application);
         songs = repository.getAllSongs();
-        songsQueue = repository.getSongsQueue();
+        songsQueue = repository.getShuffleSongsQueue();
+        allSongsQueue = repository.getAllSongsQueue();
     }
 
     public void update(SongsModel songsModel) {
@@ -36,7 +38,11 @@ public class SharedViewModel extends AndroidViewModel {
         return songs;
     }
 
-    public LiveData<List<SongsModel>> getSongsQueue() {
+    public List<SongsModel> getAllSongsQueue() {
+        return allSongsQueue;
+    }
+
+    public List<SongsModel> getShuffleSongsQueue() {
         return songsQueue;
     }
 

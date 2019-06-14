@@ -26,6 +26,7 @@ public abstract class SongsDatabase extends RoomDatabase {
 
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(), SongsDatabase.class, "songs_database")
+                    .allowMainThreadQueries()
                     .addCallback(new RoomDatabase.Callback() {
                         @Override
                         public void onCreate(@NonNull SupportSQLiteDatabase db) {

@@ -7,6 +7,9 @@ import com.google.gson.Gson;
 
 import io.github.balram02.musify.models.SongsModel;
 
+import static io.github.balram02.musify.constants.Constants.PREFERENCES_REPEAT_STATE_NONE;
+import static io.github.balram02.musify.constants.Constants.PREFERENCES_SHUFFLE_STATE_NO;
+
 public class Preferences {
 
     private static final String SONGS_DETAILS = "general_preferences";
@@ -19,18 +22,44 @@ public class Preferences {
         /**************save operations**************/
 
         // save when app is launched first time
-        synchronized public static void setFirstLaunch(Context context, boolean value) {
+        synchronized public static void setFirstLaunch(Context context) {
             sharedPreferences = context.getSharedPreferences(DEFAULT_SETTINGS, Context.MODE_PRIVATE);
-            sharedPreferences.edit().putBoolean("is_first_launch", value).apply();
+            sharedPreferences.edit().putBoolean("is_first_launch", false).apply();
         }
+
+        // save repeat state
+        synchronized public static void setRepeatState(Context context, int state) {
+            context.getSharedPreferences(SONGS_DETAILS, Context.MODE_PRIVATE).edit()
+                    .putInt("repeat_state", state).apply();
+        }
+
+        // save shuffle state
+        synchronized public static void setShuffleState(Context context, boolean state) {
+            context.getSharedPreferences(SONGS_DETAILS, Context.MODE_PRIVATE).edit()
+                    .putBoolean("shuffle_state", state).apply();
+        }
+
 
         /**************retrieving operations**************/
 
         // check if app is launched first time
         synchronized public static boolean isFirstLaunch(Context context) {
             return context.getSharedPreferences(DEFAULT_SETTINGS, Context.MODE_PRIVATE)
-                    .getBoolean("is_first_launch", false);
+                    .getBoolean("is_first_launch", true);
         }
+
+        // retrieve repeat state
+        synchronized public static int getRepeatState(Context context) {
+            return context.getSharedPreferences(SONGS_DETAILS, Context.MODE_PRIVATE)
+                    .getInt("repeat_state", PREFERENCES_REPEAT_STATE_NONE);
+        }
+
+        // retrieve shuffle state
+        synchronized public static boolean getShuffleState(Context context) {
+            return context.getSharedPreferences(SONGS_DETAILS, Context.MODE_PRIVATE)
+                    .getBoolean("shuffle_state", PREFERENCES_SHUFFLE_STATE_NO);
+        }
+
     }
 
     public static class SongDetails {

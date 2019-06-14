@@ -25,16 +25,18 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+
+import java.util.List;
 
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.background.MusicPlayerService;
@@ -50,18 +52,26 @@ import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_NEW_SO
 import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_PAUSE;
 import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_PLAY;
 import static io.github.balram02.musify.constants.Constants.PREFERENCES_ACTIVITY_STATE;
+import static io.github.balram02.musify.constants.Constants.PREFERENCES_REPEAT_STATE_ALL;
+import static io.github.balram02.musify.constants.Constants.PREFERENCES_REPEAT_STATE_NONE;
+import static io.github.balram02.musify.constants.Constants.PREFERENCES_REPEAT_STATE_ONE;
+import static io.github.balram02.musify.constants.Constants.PREFERENCES_SHUFFLE_STATE_NO;
+import static io.github.balram02.musify.constants.Constants.PREFERENCES_SHUFFLE_STATE_YES;
 
 public class MainActivity extends AppCompatActivity implements OnNavigationItemSelectedListener, MusicPlayerServiceListener {
 
     private final String TAG = Constants.TAG;
 
     private LocalReceiver localReceiver;
+    private Toolbar toolbar;
 
     private SharedViewModel sharedViewModel;
 
     private TextView peekSongName;
     private ImageView peekFavorite;
     private ImageView peekPlayPause;
+    private ImageView bottomSheetRepeat;
+    private ImageView bottomSheetShuffle;
 
     private TextView bottomSheetSongName;
     private TextView bottomSheetSongArtist;
@@ -91,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             Log.d(TAG, "onServiceConnected: ");
             isBound = true;
             musicPlayerService = ((MusicPlayerService.PlayerServiceBinder) iBinder).getBoundService();
+            setUpLastDetails();
         }
 
         @Override
@@ -107,7 +118,8 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
         sharedViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
 
-        setSupportActionBar(findViewById(R.id.toolbar));
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         navigationView = findViewById(R.id.bottom_nav_view);
         navigationView.setOnNavigationItemSelectedListener(this);
 
@@ -127,6 +139,8 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         bottomSheetSongArtist = findViewById(R.id.bottom_sheet_song_artist);
         bottomSheetSongArtist.setSelected(true);
         bottomSheetSeekbar = findViewById(R.id.bottom_sheet_seek_bar);
+        bottomSheetRepeat = findViewById(R.id.bottom_sheet_repeat);
+        bottomSheetShuffle = findViewById(R.id.bottom_sheet_shuffle);
 
         bottomSheetSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -168,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
     public void setUpLastDetails() {
 
-        if (isBound && musicPlayerService != null && musicPlayerService.isPlaying()) {
+        if (musicPlayerService != null && musicPlayerService.isPlaying()) {
 
             if (bottomSheetLayout.getVisibility() == View.GONE)
                 bottomSheetLayout.setVisibility(View.VISIBLE);
@@ -178,9 +192,11 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             bottomSheetSongName.setText(musicPlayerService.getSongName());
             bottomSheetSongArtist.setText(musicPlayerService.getArtistName());
             bottomSheetSeekbar.setMax(musicPlayerService.getDuration());
-            addObserverOnFavorite();
             updateSeekBarProgress();
             setPlayPauseDrawable(true);
+
+            Log.d(TAG, "setUpLastDetails: service is active ");
+
         } else {
             SongsModel lastSongModel = Preferences.SongDetails.getLastSongDetails(this);
             if (lastSongModel != null) {
@@ -190,20 +206,45 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                 bottomSheetSongArtist.setText(lastSongModel.getArtist());
                 bottomSheetSeekbar.setMax((int) lastSongModel.getDuration());
                 bottomSheetSeekbar.setProgress(Preferences.SongDetails.getLastSongCurrentPosition(this));
-                addObserverOnFavorite();
                 bottomSheetLayout.setVisibility(View.VISIBLE);
             } else {
                 bottomSheetLayout.setVisibility(View.GONE);
             }
+
+            Log.d(TAG, "setUpLastDetails: service is inactive ");
             setPlayPauseDrawable(false);
         }
+
+        addObserverOnFavorite();
+
+        boolean shuffleState = Preferences.DefaultSettings.getShuffleState(this);
+
+        setRepeatDrawable(Preferences.DefaultSettings.getRepeatState(this));
+        setShuffleDrawable(shuffleState);
+        setQueueListInService(shuffleState);
     }
 
     public void addObserverOnFavorite() {
-        int id = musicPlayerService != null && musicPlayerService.isPlaying() ?
-                musicPlayerService.getSongId() : Preferences.SongDetails.getLastSongDetails(this).getId();
 
-        sharedViewModel.isFavorite(id).observe(this, this::setFavoritesDrawable);
+        int id = -1;
+        if (musicPlayerService != null && musicPlayerService.getSongModel() != null) {
+            id = musicPlayerService.getSongId();
+        } else if (Preferences.SongDetails.getLastSongDetails(this) != null) {
+            id = Preferences.SongDetails.getLastSongDetails(this).getId();
+        }
+
+        if (id != -1) {
+            sharedViewModel.isFavorite(id).observe(this, isFavorite -> {
+                SongsModel model = Preferences.SongDetails.getLastSongDetails(this);
+                if (musicPlayerService != null && musicPlayerService.getSongModel() != null) {
+                    musicPlayerService.setFavorite(isFavorite);
+                } else if (model != null) {
+                    model.setFavorite(isFavorite);
+                    Preferences.SongDetails.setLastSongDetails(this, model);
+                }
+                setFavoritesDrawable(isFavorite);
+            });
+        }
     }
 
     public void updateSeekBarProgress() {
@@ -267,16 +308,30 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             }
             activeFragment = fragment;
 
-            Log.d(TAG, "setFragment: " + fragment.getTag());
+
+            if (fragment instanceof SearchFragment)
+                toolbar.setVisibility(View.GONE);
+            else {
+                if (fragment instanceof AllSongsFragment)
+                    setTitle(R.string.app_name);
+                else if (fragment instanceof LibraryFragment)
+                    setTitle("Music Library");
+                else
+                    setTitle("Favorites");
+                toolbar.setVisibility(View.VISIBLE);
+            }
+
+//            Log.d(TAG, "setFragment: " + fragment.getTag());
 
             if (bottomSheet.getState() == BottomSheetBehavior.STATE_EXPANDED)
                 bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
         })).start();
     }
 
     @Override
-    public void onUpdateService(SongsModel currentModel, AndroidViewModel mViewModel) {
-        musicPlayerService.setSongDetails(currentModel, mViewModel);
+    public void onUpdateService(List<SongsModel> list, SongsModel currentModel, SharedViewModel mViewModel) {
+        musicPlayerService.setSongDetails(list, currentModel, mViewModel);
         startMyService(INTENT_ACTION_NEW_SONG);
     }
 
@@ -382,8 +437,22 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     public void onBackPressed() {
         if (bottomSheet.getState() == BottomSheetBehavior.STATE_EXPANDED)
             bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        else if (!(activeFragment instanceof AllSongsFragment))
+            navigationView.setSelectedItemId(R.id.music);
         else
             super.onBackPressed();
+    }
+
+    public void setQueueListInService(boolean isShuffled) {
+
+        musicPlayerService.setSongsQueueList(isShuffled,
+                isShuffled ? sharedViewModel.getShuffleSongsQueue() : sharedViewModel.getAllSongsQueue());
+    }
+
+    public void onClickPreviousButton(View view) {
+        if (musicPlayerService != null) {
+            musicPlayerService.playPrevious();
+        }
     }
 
     public void onClickPlayPauseButton(View view) {
@@ -394,10 +463,18 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         }
     }
 
+    public void onClickNextButton(View view) {
+        if (musicPlayerService != null) {
+            musicPlayerService.playNext();
+        }
+    }
+
     public void onClickFavoriteButton(View view) {
+
         boolean isFavorite;
         SongsModel model;
-        if (musicPlayerService.isPlaying()) {
+
+        if (musicPlayerService != null && musicPlayerService.getSongModel() != null) {
             isFavorite = musicPlayerService.isFavorite();
             model = musicPlayerService.getSongModel();
             model.setFavorite(!isFavorite);
@@ -410,6 +487,42 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             sharedViewModel.update(model);
             Preferences.SongDetails.setLastSongDetails(this, model);
         }
+
+        setFavoritesDrawable(!isFavorite);
+
+        Log.d(TAG, "onClickFavoriteButton: from " + isFavorite + " = " + !isFavorite);
+    }
+
+    public void onClickRepeatButton(View view) {
+        int state = PREFERENCES_REPEAT_STATE_NONE;
+        switch (Preferences.DefaultSettings.getRepeatState(this)) {
+            case PREFERENCES_REPEAT_STATE_NONE:
+                state = PREFERENCES_REPEAT_STATE_ALL;
+                break;
+            case PREFERENCES_REPEAT_STATE_ALL:
+                state = PREFERENCES_REPEAT_STATE_ONE;
+                break;
+            case PREFERENCES_REPEAT_STATE_ONE:
+                state = PREFERENCES_REPEAT_STATE_NONE;
+                break;
+        }
+        Preferences.DefaultSettings.setRepeatState(this, state);
+        setRepeatDrawable(state);
+        if (musicPlayerService != null && musicPlayerService.isPlaying()) {
+            musicPlayerService.setLooping(state == PREFERENCES_REPEAT_STATE_ONE);
+        }
+    }
+
+    public void onClickShuffleButton(View view) {
+        boolean state = Preferences.DefaultSettings.getShuffleState(this);
+        if (!state) {
+            Preferences.DefaultSettings.setShuffleState(this, PREFERENCES_SHUFFLE_STATE_YES);
+            setShuffleDrawable(PREFERENCES_SHUFFLE_STATE_YES);
+        } else {
+            Preferences.DefaultSettings.setShuffleState(this, PREFERENCES_SHUFFLE_STATE_NO);
+            setShuffleDrawable(PREFERENCES_SHUFFLE_STATE_NO);
+        }
+        setQueueListInService(state);
     }
 
     private void setPlayPauseDrawable(boolean isPlaying) {
@@ -420,6 +533,29 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     private void setFavoritesDrawable(boolean isFavorite) {
         peekFavorite.setImageResource(isFavorite ? R.drawable.ic_favorite_filled_white_24dp : R.drawable.ic_favorite_border_white_24dp);
         bottomSheetFavorite.setImageResource(isFavorite ? R.drawable.ic_favorite_filled_white_24dp : R.drawable.ic_favorite_border_white_24dp);
+        Log.d(TAG, "setFavoritesDrawable: " + isFavorite);
+    }
+
+    private void setRepeatDrawable(int state) {
+        switch (state) {
+            case PREFERENCES_REPEAT_STATE_NONE:
+                bottomSheetRepeat.setImageResource(R.drawable.ic_repeat_none_24dp);
+                break;
+            case PREFERENCES_REPEAT_STATE_ALL:
+                bottomSheetRepeat.setImageResource(R.drawable.ic_repeat_all_24dp);
+                break;
+            case PREFERENCES_REPEAT_STATE_ONE:
+                bottomSheetRepeat.setImageResource(R.drawable.ic_repeat_one_24dp);
+                break;
+        }
+    }
+
+    private void setShuffleDrawable(boolean state) {
+        if (state)
+            bottomSheetShuffle.setImageResource(R.drawable.ic_shuffle_yes_24dp);
+        else
+            bottomSheetShuffle.setImageResource(R.drawable.ic_shuffle_no_24dp);
+        Log.d(TAG, "setShuffleDrawable: " + state);
     }
 
     public class LocalReceiver extends BroadcastReceiver {
@@ -441,6 +577,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                         bottomSheetSongName.setText(model.getTitle());
                         bottomSheetSongArtist.setText(model.getArtist());
                         bottomSheetSeekbar.setMax(musicPlayerService.getDuration());
+                        addObserverOnFavorite();
                         updateSeekBarProgress();
                         setPlayPauseDrawable(true);
                         break;

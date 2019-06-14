@@ -61,7 +61,7 @@ public class FavoritesFragment extends Fragment {
         favoritesAdapter = new FavoritesAdapter();
         recyclerView.setAdapter(favoritesAdapter);
         favoritesAdapter.setOnItemClickerListsner(model -> {
-            musicPlayerServiceListener.onUpdateService(model, mViewModel);
+            musicPlayerServiceListener.onUpdateService(mViewModel.getShuffleSongsQueue(),model, mViewModel);
         });
         return v;
     }
