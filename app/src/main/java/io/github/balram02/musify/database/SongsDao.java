@@ -8,6 +8,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import io.github.balram02.musify.models.AlbumsModel;
@@ -18,7 +19,7 @@ public interface SongsDao {
 
     /**************insert operations**************/
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(SongsModel songsModel);
 
 
@@ -36,7 +37,7 @@ public interface SongsDao {
 
     /**************retrieve operations**************/
 
-    @Query("SELECT * FROM songs_table ORDER BY title")
+    @Query("SELECT * FROM songs_table ORDER BY title ASC")
     LiveData<List<SongsModel>> getAllSongs();
 
     @Query("SELECT album FROM songs_table ORDER BY album")
@@ -59,5 +60,8 @@ public interface SongsDao {
 
     @Query("SELECT is_favorite from songs_table WHERE id = :id")
     LiveData<Boolean> isFavorite(int id);
+
+    @Query("SELECT * FROM songs_table WHERE accessed_timestamp <= :timestamp ORDER BY title ASC LIMIT 15")
+    LiveData<List<SongsModel>> getRecentlyPlayedSongs(Timestamp timestamp);
 
 }

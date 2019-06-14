@@ -7,7 +7,7 @@
     android:background="@color/colorPrimaryDark"
     android:elevation="13dp"
     android:orientation="vertical"
-    android:visibility="visible"
+    android:visibility="gone"
     app:behavior_hideable="false"
     app:behavior_peekHeight="50dp"
     app:layout_behavior="@string/bottom_sheet_behavior">

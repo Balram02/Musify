@@ -36,6 +36,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import io.github.balram02.musify.R;
@@ -116,8 +118,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        sharedViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
-
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         navigationView = findViewById(R.id.bottom_nav_view);
@@ -142,6 +142,11 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         bottomSheetRepeat = findViewById(R.id.bottom_sheet_repeat);
         bottomSheetShuffle = findViewById(R.id.bottom_sheet_shuffle);
 
+        fragmentManager = getSupportFragmentManager();
+        handler = new Handler();
+
+        askRequiredPermissions();
+
         bottomSheetSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -160,9 +165,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             }
         });
 
-        fragmentManager = getSupportFragmentManager();
-        askRequiredPermissions();
-
         bottomSheetLayout.setOnClickListener(v -> bottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED));
 
         bottomSheet.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -175,8 +177,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                 bottomPeek.setAlpha(1f - (slideOffset * 1.5f));
             }
         });
-
-        handler = new Handler();
 
     }
 
@@ -194,7 +194,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             bottomSheetSeekbar.setMax(musicPlayerService.getDuration());
             updateSeekBarProgress();
             setPlayPauseDrawable(true);
-
             Log.d(TAG, "setUpLastDetails: service is active ");
 
         } else {
@@ -207,6 +206,9 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                 bottomSheetSeekbar.setMax((int) lastSongModel.getDuration());
                 bottomSheetSeekbar.setProgress(Preferences.SongDetails.getLastSongCurrentPosition(this));
                 bottomSheetLayout.setVisibility(View.VISIBLE);
+                boolean shuffleState = Preferences.DefaultSettings.getShuffleState(this);
+                setShuffleDrawable(shuffleState);
+                setQueueListInService(shuffleState);
             } else {
                 bottomSheetLayout.setVisibility(View.GONE);
             }
@@ -217,11 +219,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
         addObserverOnFavorite();
 
-        boolean shuffleState = Preferences.DefaultSettings.getShuffleState(this);
-
         setRepeatDrawable(Preferences.DefaultSettings.getRepeatState(this));
-        setShuffleDrawable(shuffleState);
-        setQueueListInService(shuffleState);
     }
 
     public void addObserverOnFavorite() {
@@ -270,10 +268,12 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.STORAGE_PERMISSION_REQUEST_CODE);
             } else {
+                sharedViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
                 addHiddenFragments();
                 setFragment(allSongsFragment);
             }
         } else {
+            sharedViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
             addHiddenFragments();
             setFragment(allSongsFragment);
         }
@@ -418,6 +418,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == Constants.STORAGE_PERMISSION_REQUEST_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            sharedViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
             addHiddenFragments();
             setFragment(allSongsFragment);
         } else {
@@ -522,7 +523,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             Preferences.DefaultSettings.setShuffleState(this, PREFERENCES_SHUFFLE_STATE_NO);
             setShuffleDrawable(PREFERENCES_SHUFFLE_STATE_NO);
         }
-        setQueueListInService(state);
+        setQueueListInService(!state);
     }
 
     private void setPlayPauseDrawable(boolean isPlaying) {
@@ -580,6 +581,9 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                         addObserverOnFavorite();
                         updateSeekBarProgress();
                         setPlayPauseDrawable(true);
+                        SongsModel songsModel = model;
+                        songsModel.setLastAccessedTimestamp(new Timestamp(new Date().getTime()));
+                        sharedViewModel.update(songsModel);
                         break;
 
                     case BROADCAST_ACTION_PAUSE:
