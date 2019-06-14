@@ -7,7 +7,6 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 
 @Entity(tableName = "songs_table")
 public class SongsModel implements Serializable {
@@ -23,7 +22,7 @@ public class SongsModel implements Serializable {
     @ColumnInfo(name = "is_favorite")
     private boolean favorite = false;
     @ColumnInfo(name = "accessed_timestamp")
-    private Timestamp lastAccessedTimestamp = new Timestamp(0);
+    private Long lastAccessedTimestamp = 0L;
 
     public SongsModel(String title, String album, String artist, String genre, String path, long duration) {
         this.title = title;
@@ -42,7 +41,7 @@ public class SongsModel implements Serializable {
         this.favorite = favorite;
     }
 
-    public void setLastAccessedTimestamp(Timestamp lastAccessedTimestamp) {
+    public void setLastAccessedTimestamp(long lastAccessedTimestamp) {
         this.lastAccessedTimestamp = lastAccessedTimestamp;
     }
 
@@ -78,7 +77,7 @@ public class SongsModel implements Serializable {
         return favorite;
     }
 
-    public Timestamp getLastAccessedTimestamp() {
+    public Long getLastAccessedTimestamp() {
         return lastAccessedTimestamp;
     }
 

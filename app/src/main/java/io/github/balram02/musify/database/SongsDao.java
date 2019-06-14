@@ -8,7 +8,6 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 import io.github.balram02.musify.models.AlbumsModel;
@@ -61,7 +60,6 @@ public interface SongsDao {
     @Query("SELECT is_favorite from songs_table WHERE id = :id")
     LiveData<Boolean> isFavorite(int id);
 
-    @Query("SELECT * FROM songs_table WHERE accessed_timestamp <= :timestamp ORDER BY title ASC LIMIT 15")
-    LiveData<List<SongsModel>> getRecentlyPlayedSongs(Timestamp timestamp);
-
+    @Query("SELECT * FROM songs_table WHERE accessed_timestamp != 0 AND accessed_timestamp <= datetime() ORDER BY accessed_timestamp DESC LIMIT 10")
+    LiveData<List<SongsModel>> getRecentlyPlayedSongs();
 }

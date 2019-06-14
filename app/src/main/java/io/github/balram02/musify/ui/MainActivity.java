@@ -36,7 +36,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -581,9 +580,8 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                         addObserverOnFavorite();
                         updateSeekBarProgress();
                         setPlayPauseDrawable(true);
-                        SongsModel songsModel = model;
-                        songsModel.setLastAccessedTimestamp(new Timestamp(new Date().getTime()));
-                        sharedViewModel.update(songsModel);
+                        model.setLastAccessedTimestamp(new Date().getTime());
+                        sharedViewModel.update(model);
                         break;
 
                     case BROADCAST_ACTION_PAUSE:

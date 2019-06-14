@@ -9,7 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="5dp"
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
@@ -47,18 +47,24 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:text="Recently played "
+            android:text="Recently played"
             android:textColor="@color/white"
             android:textSize="19sp"
             android:textStyle="bold" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recent_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="3dp">
-
-        </androidx.recyclerview.widget.RecyclerView>
-
+            android:fadeScrollbars="true"
+            android:paddingBottom="48dp"
+            app:fastScrollEnabled="true"
+            app:fastScrollHorizontalThumbDrawable="@drawable/thumb_drawable"
+            app:fastScrollHorizontalTrackDrawable="@drawable/line_drawable"
+            app:fastScrollVerticalThumbDrawable="@drawable/thumb_drawable"
+            app:fastScrollVerticalTrackDrawable="@drawable/line_drawable"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:reverseLayout="false" />
 
     </LinearLayout>
 

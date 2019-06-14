@@ -1,37 +1,87 @@
 package io.github.balram02.musify.ui;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.RecyclerView;
 
 import io.github.balram02.musify.R;
+import io.github.balram02.musify.adapters.SongsAdapter;
+import io.github.balram02.musify.listeners.MusicPlayerServiceListener;
+import io.github.balram02.musify.utils.Preferences;
 import io.github.balram02.musify.viewModels.SharedViewModel;
+
+import static io.github.balram02.musify.constants.Constants.TAG;
 
 public class SearchFragment extends Fragment {
 
+    private RecyclerView recyclerView;
+    private SongsAdapter songsAdapter;
     private SharedViewModel mViewModel;
+    private Context context;
 
-    public static SearchFragment newInstance() {
-        return new SearchFragment();
+    private MusicPlayerServiceListener musicPlayerServiceListener;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        try {
+            musicPlayerServiceListener = (MusicPlayerServiceListener) context;
+        } catch (Exception e) {
+            Log.d(TAG, "onAttach: " + e.toString());
+            Toast.makeText(context, "Must Implement Service Listener", Toast.LENGTH_SHORT).show();
+        }
+
+        this.context = context;
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.search_fragment, container, false);
+        View v = inflater.inflate(R.layout.search_fragment, container, false);
+        recyclerView = v.findViewById(R.id.recent_recycler_view);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
+        songsAdapter = new SongsAdapter();
+        recyclerView.setAdapter(songsAdapter);
+
+        songsAdapter.setOnItemClickListener(model -> {
+            boolean state = Preferences.DefaultSettings.getShuffleState(context);
+            if (state) {
+                musicPlayerServiceListener.onUpdateService(mViewModel.getShuffleSongsQueue(), model, mViewModel);
+            } else {
+                musicPlayerServiceListener.onUpdateService(mViewModel.getAllSongsQueue(), model, mViewModel);
+            }
+        });
+
+        return v;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         mViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
-        // TODO: Use the ViewModel
+        mViewModel.getRecentlyPlayedSongs().observe(getViewLifecycleOwner(), songsModels -> {
+            songsAdapter.updateSongsList(songsModels);
+        });
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        musicPlayerServiceListener = null;
+        context = null;
     }
 
 }

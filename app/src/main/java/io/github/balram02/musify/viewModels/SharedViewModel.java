@@ -17,6 +17,7 @@ public class SharedViewModel extends AndroidViewModel {
     private LiveData<List<SongsModel>> songs;
     private List<SongsModel> songsQueue;
     private List<SongsModel> allSongsQueue;
+    private LiveData<List<SongsModel>> recentSongs;
 
     public SharedViewModel(@NonNull Application application) {
         super(application);
@@ -24,6 +25,7 @@ public class SharedViewModel extends AndroidViewModel {
         songs = repository.getAllSongs();
         songsQueue = repository.getShuffleSongsQueue();
         allSongsQueue = repository.getAllSongsQueue();
+        recentSongs = repository.getRecentlyPlayedSongs();
     }
 
     public void update(SongsModel songsModel) {
@@ -52,6 +54,10 @@ public class SharedViewModel extends AndroidViewModel {
 
     public LiveData<List<SongsModel>> getFavoriteSong() {
         return repository.getFavoriteSong();
+    }
+
+    public LiveData<List<SongsModel>> getRecentlyPlayedSongs() {
+        return recentSongs;
     }
 
 }
