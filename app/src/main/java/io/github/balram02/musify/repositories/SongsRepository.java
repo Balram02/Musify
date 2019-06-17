@@ -25,6 +25,9 @@ public class SongsRepository {
     private LiveData<List<SongsModel>> songs;
     private LiveData<List<SongsModel>> favoriteSongs;
     private LiveData<List<SongsModel>> recentSongs;
+    private LiveData<List<SongsModel>> songsByAlbums;
+    private LiveData<List<SongsModel>> songsByArtist;
+
     private List<SongsModel> songQueue;
     private List<SongsModel> allSongsQueue;
 
@@ -36,6 +39,8 @@ public class SongsRepository {
         allSongsQueue = songsDao.getAllSongsQueue();
         favoriteSongs = songsDao.getFavoriteSongs();
         recentSongs = songsDao.getRecentlyPlayedSongs();
+        songsByAlbums = songsDao.getAlbums();
+        songsByArtist = songsDao.getArtist();
     }
 
     public void insert(SongsModel songsModel) {
@@ -72,6 +77,14 @@ public class SongsRepository {
 
     public LiveData<List<SongsModel>> getRecentlyPlayedSongs() {
         return recentSongs;
+    }
+
+    public LiveData<List<SongsModel>> getAlbums() {
+        return songsByAlbums;
+    }
+
+    public LiveData<List<SongsModel>> getArtist() {
+        return songsByArtist;
     }
 
     private void performTask(int operation, SongsModel songsModel) {

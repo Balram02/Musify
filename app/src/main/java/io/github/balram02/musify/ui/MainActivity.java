@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -73,18 +74,23 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     private ImageView peekPlayPause;
     private ImageView bottomSheetRepeat;
     private ImageView bottomSheetShuffle;
+    private ImageView bottomPeekUpArrow;
 
     private TextView bottomSheetSongName;
     private TextView bottomSheetSongArtist;
     private ImageView bottomSheetPlayPause;
     private ImageView bottomSheetFavorite;
     private SeekBar bottomSheetSeekbar;
+    private TextView bottomSheetSongCurrentPosition;
+    private TextView bottomSheetSongDuration;
+    private ImageView bottomSheetAlbumArt;
 
     private FragmentManager fragmentManager;
     private AllSongsFragment allSongsFragment = new AllSongsFragment();
     private SearchFragment searchFragment = new SearchFragment();
     private LibraryFragment libraryFragment = new LibraryFragment();
     private FavoritesFragment favoritesFragment = new FavoritesFragment();
+    public CommonFragment commonFragment = new CommonFragment();
     private Fragment activeFragment;
     public static BottomNavigationView navigationView;
 
@@ -130,7 +136,9 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         peekPlayPause = findViewById(R.id.peek_play_pause);
         peekSongName = findViewById(R.id.peek_song_name);
         peekSongName.setSelected(true);
+        bottomPeekUpArrow = findViewById(R.id.bottom_peek_up_arrow);
 
+        bottomSheetAlbumArt = findViewById(R.id.bottom_sheet_album_art);
         bottomSheetFavorite = findViewById(R.id.bottom_sheet_favorite);
         bottomSheetPlayPause = findViewById(R.id.bottom_sheet_play_pause);
         bottomSheetSongName = findViewById(R.id.bottom_sheet_song_name);
@@ -140,6 +148,10 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         bottomSheetSeekbar = findViewById(R.id.bottom_sheet_seek_bar);
         bottomSheetRepeat = findViewById(R.id.bottom_sheet_repeat);
         bottomSheetShuffle = findViewById(R.id.bottom_sheet_shuffle);
+        bottomSheetSongCurrentPosition = findViewById(R.id.bottom_sheet_song_current_position);
+        bottomSheetSongCurrentPosition.setSelected(false);
+        bottomSheetSongDuration = findViewById(R.id.bottom_sheet_song_duration);
+        bottomSheetSongDuration.setSelected(false);
 
         fragmentManager = getSupportFragmentManager();
         handler = new Handler();
@@ -164,7 +176,12 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             }
         });
 
-        bottomSheetLayout.setOnClickListener(v -> bottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED));
+        bottomSheetLayout.setOnClickListener(v -> {
+            if (bottomSheet.getState() == BottomSheetBehavior.STATE_EXPANDED)
+                bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            else if (bottomSheet.getState() == BottomSheetBehavior.STATE_COLLAPSED)
+                bottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
+        });
 
         bottomSheet.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -173,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                bottomPeekUpArrow.setRotation(slideOffset * 180f);
                 bottomPeek.setAlpha(1f - (slideOffset * 1.5f));
             }
         });
@@ -191,6 +209,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             bottomSheetSongName.setText(musicPlayerService.getSongName());
             bottomSheetSongArtist.setText(musicPlayerService.getArtistName());
             bottomSheetSeekbar.setMax(musicPlayerService.getDuration());
+            bottomSheetSongDuration.setText(Constants.convertMilliseconds(musicPlayerService.getDuration()));
             updateSeekBarProgress();
             setPlayPauseDrawable(true);
             Log.d(TAG, "setUpLastDetails: service is active ");
@@ -205,6 +224,10 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                 bottomSheetSeekbar.setMax((int) lastSongModel.getDuration());
                 bottomSheetSeekbar.setProgress(Preferences.SongDetails.getLastSongCurrentPosition(this));
                 bottomSheetLayout.setVisibility(View.VISIBLE);
+                bottomSheetSongDuration.setText(Constants.convertMilliseconds(lastSongModel.getDuration()));
+                bottomSheetSongCurrentPosition.setText(
+                        Constants.convertMilliseconds(Preferences.SongDetails.getLastSongCurrentPosition(this)));
+                setAlbumArt(lastSongModel.getAlbumId());
                 boolean shuffleState = Preferences.DefaultSettings.getShuffleState(this);
                 setShuffleDrawable(shuffleState);
                 setQueueListInService(shuffleState);
@@ -251,6 +274,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         runOnUiThread(() -> {
             if (musicPlayerService != null && musicPlayerService.isPlaying() && isForeground) {
                 int position = musicPlayerService.getCurrentPosition();
+                bottomSheetSongCurrentPosition.setText(Constants.convertMilliseconds(position));
                 bottomSheetSeekbar.setProgress(position);
             }
             handler.postDelayed(this::updateSeekBarProgress, 1000);
@@ -285,14 +309,16 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     }
 
     private void addHiddenFragments() {
-        fragmentManager.beginTransaction()
+        fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                 .add(R.id.fragment_container, allSongsFragment, "all_songs_fragment").hide(allSongsFragment).commit();
-        fragmentManager.beginTransaction()
+        fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                 .add(R.id.fragment_container, libraryFragment, "library_fragment").hide(libraryFragment).commit();
-        fragmentManager.beginTransaction()
+        fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                 .add(R.id.fragment_container, searchFragment, "search_fragment").hide(searchFragment).commit();
-        fragmentManager.beginTransaction()
+        fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                 .add(R.id.fragment_container, favoritesFragment, "favorites_fragment").hide(favoritesFragment).commit();
+        fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+                .add(R.id.fragment_container, commonFragment, "common_fragment").hide(commonFragment).commit();
     }
 
     public void setFragment(Fragment fragment) {
@@ -315,7 +341,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                     setTitle(R.string.app_name);
                 else if (fragment instanceof LibraryFragment)
                     setTitle("Music Library");
-                else
+                else if (fragment instanceof FavoritesFragment)
                     setTitle("Favorites");
                 toolbar.setVisibility(View.VISIBLE);
             }
@@ -377,7 +403,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart: ");
+        Log.d(TAG, "onStart: MainActivity");
         localReceiver = new LocalReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(BROADCAST_ACTION_PLAY);
@@ -437,10 +463,28 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     public void onBackPressed() {
         if (bottomSheet.getState() == BottomSheetBehavior.STATE_EXPANDED)
             bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+/*
+        else if (!(activeFragment instanceof AllSongsFragment) &&
+                !(activeFragment instanceof SearchFragment) &&
+                !(activeFragment instanceof LibraryFragment) &&
+                !(activeFragment instanceof FavoritesFragment))
+            removeInternalFragment();
+*/
         else if (!(activeFragment instanceof AllSongsFragment))
             navigationView.setSelectedItemId(R.id.music);
         else
             super.onBackPressed();
+    }
+
+    public void setAlbumArt(long albumArtId) {
+        Bitmap img = Constants.getAlbumArt(this, albumArtId);
+        if (img != null) {
+            bottomSheetAlbumArt.setImageBitmap(img);
+            bottomSheetAlbumArt.setBackground(null);
+        } else {
+            bottomSheetAlbumArt.setImageResource(R.drawable.ic_music_placeholder_white);
+            bottomSheetAlbumArt.setBackground(getDrawable(R.drawable.background_square_stroke_white_16dp));
+        }
     }
 
     public void setQueueListInService(boolean isShuffled) {
@@ -573,10 +617,12 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
                         SongsModel model = (SongsModel) intent.getSerializableExtra("song_details");
                         setFavoritesDrawable(model.isFavorite());
+                        setAlbumArt(model.getAlbumId());
                         peekSongName.setText(model.getTitle());
                         bottomSheetSongName.setText(model.getTitle());
                         bottomSheetSongArtist.setText(model.getArtist());
                         bottomSheetSeekbar.setMax(musicPlayerService.getDuration());
+                        bottomSheetSongDuration.setText(Constants.convertMilliseconds(model.getDuration()));
                         addObserverOnFavorite();
                         updateSeekBarProgress();
                         setPlayPauseDrawable(true);

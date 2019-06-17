@@ -34,7 +34,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
         SongsModel model = favorites.get(i);
         holder.songName.setText(model.getTitle());
         holder.songArtist.setText(model.getArtist());
-        holder.songDuration.setText(Constants.millisecondsToMinutesAndSeconds(model.getDuration()));
+        holder.songDuration.setText(Constants.convertMilliseconds(model.getDuration()));
     }
 
     public void setFavoritesSongsList(List<SongsModel> favorites) {

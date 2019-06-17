@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:gravity="center"
+        android:scaleType="fitCenter"
         android:padding="2dp"
         android:src="@mipmap/ic_launcher" />
 

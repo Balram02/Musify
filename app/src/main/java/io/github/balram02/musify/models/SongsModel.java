@@ -15,6 +15,8 @@ public class SongsModel implements Serializable {
     private int id;
     private String title;
     private String album;
+    @ColumnInfo(name = "album_id")
+    private long albumId;
     private String artist;
     private String genre;
     private String path;
@@ -24,9 +26,10 @@ public class SongsModel implements Serializable {
     @ColumnInfo(name = "accessed_timestamp")
     private Long lastAccessedTimestamp = 0L;
 
-    public SongsModel(String title, String album, String artist, String genre, String path, long duration) {
+    public SongsModel(String title, String album, long albumId, String artist, String genre, String path, long duration) {
         this.title = title;
         this.album = album;
+        this.albumId = albumId;
         this.artist = artist;
         this.genre = genre;
         this.path = path;
@@ -45,6 +48,11 @@ public class SongsModel implements Serializable {
         this.lastAccessedTimestamp = lastAccessedTimestamp;
     }
 
+    public void setAlbumId(long albumId) {
+        this.albumId = albumId;
+    }
+
+
     public int getId() {
         return id;
     }
@@ -55,6 +63,10 @@ public class SongsModel implements Serializable {
 
     public String getAlbum() {
         return album;
+    }
+
+    public long getAlbumId() {
+        return albumId;
     }
 
     public String getArtist() {

@@ -41,7 +41,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongListView
         SongsModel model = songs.get(i);
         holder.songName.setText(model.getTitle());
         holder.songArtist.setText(model.getArtist());
-        holder.songDuration.setText(Constants.millisecondsToMinutesAndSeconds(model.getDuration()));
+        holder.songDuration.setText(Constants.convertMilliseconds(model.getDuration()));
     }
 
     @Override

@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Random;
 
 import io.github.balram02.musify.R;
+import io.github.balram02.musify.constants.Constants;
 import io.github.balram02.musify.models.SongsModel;
 import io.github.balram02.musify.ui.MainActivity;
 import io.github.balram02.musify.utils.Preferences;
@@ -194,6 +196,16 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
         notificationCollapsed.setTextViewText(R.id.notification_song_artist_name, model.getArtist());
         notificationExpanded.setTextViewText(R.id.notification_song_artist_name, model.getArtist());
+
+        Bitmap art = Constants.getAlbumArt(this, model.getAlbumId());
+
+        if (art != null) {
+            notificationCollapsed.setImageViewBitmap(R.id.notification_album_art, art);
+            notificationExpanded.setImageViewBitmap(R.id.notification_album_art, art);
+        } else {
+            notificationCollapsed.setImageViewResource(R.id.notification_album_art, R.drawable.ic_music_placeholder_white);
+            notificationExpanded.setImageViewResource(R.id.notification_album_art, R.drawable.ic_music_placeholder_white);
+        }
 
         notificationCollapsed.setImageViewResource(R.id.notification_previous_icon, R.drawable.previous_icon_white_24dp);
         notificationExpanded.setImageViewResource(R.id.notification_previous_icon, R.drawable.previous_icon_white_24dp);

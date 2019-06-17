@@ -14,33 +14,41 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import io.github.balram02.musify.R;
-import io.github.balram02.musify.adapters.AlbumsAdapter;
+import io.github.balram02.musify.adapters.CommonAdapter;
 import io.github.balram02.musify.viewModels.SharedViewModel;
 
-public class AlbumsFragment extends Fragment {
+import static io.github.balram02.musify.constants.Constants.ALBUM_FRAGMENT_REQUEST;
+
+public class CommonFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private AlbumsAdapter albumsAdapter;
+    private CommonAdapter commonAdapter;
     private SwipeRefreshLayout refreshLayout;
     private Context context;
 
     private SharedViewModel mViewModel;
+    private boolean requestForAlbum;
 
-    public static AlbumsFragment newInstance() {
-        return new AlbumsFragment();
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.context = context;
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.albums_fragment, container, false);
+        View v = inflater.inflate(R.layout.common_fragment, container, false);
+
+        if (getArguments() != null)
+            requestForAlbum = getArguments().getString("request_for").equals(ALBUM_FRAGMENT_REQUEST);
 
         recyclerView = v.findViewById(R.id.recycler_view);
         refreshLayout = v.findViewById(R.id.refresh_layout);
         recyclerView.setHasFixedSize(true);
-//        recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
-        albumsAdapter = new AlbumsAdapter();
-        recyclerView.setAdapter(albumsAdapter);
+        commonAdapter = new CommonAdapter(getContext());
+        recyclerView.setDrawingCacheEnabled(true);
+        recyclerView.setAdapter(commonAdapter);
 
         return v;
     }
@@ -49,9 +57,21 @@ public class AlbumsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
-//        mViewModel.getAllSongsByAlbum().observe(getViewLifecycleOwner(), albumsModel -> {
-//            albumsAdapter.setSongs(albumsModel);
-//        });
+
+        if (!requestForAlbum) {
+            mViewModel.getAlbums().observe(getViewLifecycleOwner(), albumsModel -> {
+                commonAdapter.setList(albumsModel, true);
+            });
+        } else {
+            mViewModel.getArtist().observe(getViewLifecycleOwner(), artistModel -> {
+                commonAdapter.setList(artistModel, false);
+            });
+        }
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        this.context = null;
+    }
 }

@@ -56,6 +56,7 @@ public abstract class SongsDatabase extends RoomDatabase {
 
                 int title = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
                 int album = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
+                int album_id = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
                 int artist = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
                 int genre = cursor.getColumnIndex(MediaStore.Audio.Genres.NAME);
                 int path = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
@@ -64,11 +65,12 @@ public abstract class SongsDatabase extends RoomDatabase {
                 do {
                     String songTitle = cursor.getString(title);
                     String songAlbum = cursor.getString(album);
+                    long songAlbumId = cursor.getLong(album_id);
                     String songArtist = cursor.getString(artist);
 //                    String songGenre = cursor.getString(genre);
                     String songPath = cursor.getString(path);
                     long songDuration = cursor.getLong(duration);
-                    songsModel = new SongsModel(songTitle, songAlbum, songArtist, "", songPath, songDuration);
+                    songsModel = new SongsModel(songTitle, songAlbum, songAlbumId, songArtist, "", songPath, songDuration);
 
                     songsDao.insert(songsModel);
                 } while (cursor.moveToNext());

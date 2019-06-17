@@ -10,7 +10,6 @@ import androidx.room.Update;
 
 import java.util.List;
 
-import io.github.balram02.musify.models.AlbumsModel;
 import io.github.balram02.musify.models.SongsModel;
 
 @Dao
@@ -39,9 +38,6 @@ public interface SongsDao {
     @Query("SELECT * FROM songs_table ORDER BY title ASC")
     LiveData<List<SongsModel>> getAllSongs();
 
-    @Query("SELECT album FROM songs_table ORDER BY album")
-    LiveData<List<AlbumsModel>> getAllSongsByAlbum();
-
     @Query("SELECT * FROM songs_table ORDER BY RANDOM() LIMIT 70")
     List<SongsModel> getShuffleSongsQueue();
 
@@ -62,4 +58,10 @@ public interface SongsDao {
 
     @Query("SELECT * FROM songs_table WHERE accessed_timestamp != 0 AND accessed_timestamp <= datetime() ORDER BY accessed_timestamp DESC LIMIT 10")
     LiveData<List<SongsModel>> getRecentlyPlayedSongs();
+
+    @Query("SELECT * FROM songs_table GROUP BY album")
+    LiveData<List<SongsModel>> getAlbums();
+
+    @Query("SELECT * FROM songs_table GROUP BY artist")
+    LiveData<List<SongsModel>> getArtist();
 }
