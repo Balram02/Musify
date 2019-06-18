@@ -95,9 +95,7 @@ public class SongsModel implements Serializable {
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        if (obj instanceof SongsModel)
-            return this.getPath().equals(((SongsModel) obj).getPath());
-        return super.equals(obj);
+        return (obj instanceof SongsModel) ? this.getPath().equals(((SongsModel) obj).getPath()) : super.equals(obj);
     }
 
     @NonNull
