@@ -52,7 +52,7 @@ public class SearchFragment extends Fragment {
         recyclerView = v.findViewById(R.id.recent_recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
-        songsAdapter = new SongsAdapter();
+        songsAdapter = new SongsAdapter(getActivity());
         recyclerView.setAdapter(songsAdapter);
 
         songsAdapter.setOnItemClickListener(model -> {
@@ -73,7 +73,8 @@ public class SearchFragment extends Fragment {
 
         mViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
         mViewModel.getRecentlyPlayedSongs().observe(getViewLifecycleOwner(), songsModels -> {
-            songsAdapter.updateSongsList(songsModels);
+            songsAdapter.submitList(songsModels);
+            songsAdapter.onAttachedToRecyclerView(recyclerView);
         });
     }
 

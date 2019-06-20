@@ -75,7 +75,7 @@ public class AllSongsFragment extends Fragment {
 //        refreshLayout = v.findViewById(R.id.refresh_layout);
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
-        songsAdapter = new SongsAdapter();
+        songsAdapter = new SongsAdapter(getActivity());
         recyclerView.setAdapter(songsAdapter);
 
         songsAdapter.setOnItemClickListener(model -> {
@@ -170,7 +170,8 @@ public class AllSongsFragment extends Fragment {
 
         mViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
         mViewModel.getAllSongs().observe(getViewLifecycleOwner(), songsModels -> {
-            songsAdapter.updateSongsList(songsModels);
+            songsAdapter.submitList(songsModels);
+            songsAdapter.onAttachedToRecyclerView(recyclerView);
             totalSongs.setText(getString(R.string.songs_found_text, songsModels.size()));
         });
         startTotalSongsCardAnimation();

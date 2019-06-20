@@ -190,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                navigationView.setTranslationY(slideOffset * 150);
                 bottomPeekUpArrow.setRotation(slideOffset * 180f);
                 bottomPeek.setAlpha(1f - (slideOffset * 1.5f));
             }
