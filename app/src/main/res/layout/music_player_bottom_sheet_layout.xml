@@ -87,17 +87,19 @@
             android:layout_height="290dp"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="10dp"
-            app:cardBackgroundColor="@color/transparent"
+            app:cardBackgroundColor="@color/blackOverlay2"
             app:cardCornerRadius="10dp"
-            app:cardElevation="13dp">
+            app:cardElevation="24dp">
 
             <ImageView
                 android:id="@+id/bottom_sheet_album_art"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:maxHeight="290dp"
+                android:maxWidth="290dp"
                 android:background="@drawable/background_square_stroke_white_16dp"
-                android:elevation="13dp"
-                android:padding="30dp"
+                android:clickable="true"
+                android:focusable="true"
                 android:src="@drawable/ic_music_placeholder_white" />
 
         </androidx.cardview.widget.CardView>

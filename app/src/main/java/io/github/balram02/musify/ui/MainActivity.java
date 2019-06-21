@@ -482,9 +482,11 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         if (img != null) {
             bottomSheetAlbumArt.setImageBitmap(img);
             bottomSheetAlbumArt.setBackground(null);
+            bottomSheetAlbumArt.setPadding(0, 0, 0, 0);
         } else {
             bottomSheetAlbumArt.setImageResource(R.drawable.ic_music_placeholder_white);
             bottomSheetAlbumArt.setBackground(getDrawable(R.drawable.background_square_stroke_white_16dp));
+            bottomSheetAlbumArt.setPadding(30, 30, 30, 30);
         }
     }
 

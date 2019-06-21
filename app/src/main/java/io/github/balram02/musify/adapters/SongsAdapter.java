@@ -1,6 +1,7 @@
 package io.github.balram02.musify.adapters;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,6 +90,7 @@ public class SongsAdapter extends ListAdapter<SongsModel, SongsAdapter.SongListV
             });
 
             songMenu.setOnClickListener(v -> {
+
                 BottomSheetDialog dialogFragment = new BottomSheetDialog(itemView.getContext());
                 dialogFragment.setContentView(R.layout.song_menu_layout);
 
@@ -112,6 +114,29 @@ public class SongsAdapter extends ListAdapter<SongsModel, SongsAdapter.SongListV
                     dialogFragment.dismiss();
                 });
 
+                dialogFragment.findViewById(R.id.song_info_layout).setOnClickListener(v1 -> {
+
+                    BottomSheetDialog infoDialogFragment = new BottomSheetDialog(itemView.getContext());
+                    infoDialogFragment.setContentView(R.layout.song_info_layout);
+
+                    SongsModel model = getItem();
+
+                    Bitmap art = Constants.getAlbumArt(itemView.getContext(), model.getAlbumId());
+                    if (art != null)
+                        ((ImageView) infoDialogFragment.findViewById(R.id.info_album_art)).setImageBitmap(art);
+                    else {
+                        ((ImageView) infoDialogFragment.findViewById(R.id.info_album_art)).setImageResource(R.drawable.ic_music_placeholder_white);
+                        infoDialogFragment.findViewById(R.id.info_album_art).setBackgroundResource(R.drawable.background_square_stroke_white_6dp);
+                    }
+                    ((TextView) infoDialogFragment.findViewById(R.id.info_song_album)).setText(model.getAlbum());
+                    ((TextView) infoDialogFragment.findViewById(R.id.info_song_title)).setText(model.getTitle());
+                    ((TextView) infoDialogFragment.findViewById(R.id.info_song_artist)).setText(model.getArtist());
+                    ((TextView) infoDialogFragment.findViewById(R.id.info_song_path)).setText(model.getPath());
+                    infoDialogFragment.findViewById(R.id.info_back_arrow).setOnClickListener(v2 -> infoDialogFragment.dismiss());
+
+                    infoDialogFragment.show();
+
+                });
 
                 dialogFragment.show();
             });
