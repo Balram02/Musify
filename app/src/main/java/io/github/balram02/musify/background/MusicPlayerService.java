@@ -7,9 +7,9 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
@@ -20,6 +20,9 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.List;
@@ -48,7 +51,6 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
     public static final String CHANNEL_ID = "512";
     public static final int NOTIFICATION_ID = 512;
-    //    private static boolean IS_NEW_SONG;
 //    private boolean wasPaused;
 
     //    intents for notification
@@ -68,6 +70,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     private PendingIntent closePendingIntent;
 
     private MediaPlayer player;
+    private Notification notification;
 
     private SongsModel model;
     private SharedViewModel mViewModel;
@@ -126,7 +129,6 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         Log.d(TAG, "onCreate: ");
 
         player = new MediaPlayer();
-//        setLooping(true);
 
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
@@ -197,16 +199,6 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         notificationCollapsed.setTextViewText(R.id.notification_song_artist_name, model.getArtist());
         notificationExpanded.setTextViewText(R.id.notification_song_artist_name, model.getArtist());
 
-        Bitmap art = Constants.getAlbumArt(this, model.getAlbumId());
-
-        if (art != null) {
-            notificationCollapsed.setImageViewBitmap(R.id.notification_album_art, art);
-            notificationExpanded.setImageViewBitmap(R.id.notification_album_art, art);
-        } else {
-            notificationCollapsed.setImageViewResource(R.id.notification_album_art, R.drawable.ic_music_placeholder_white);
-            notificationExpanded.setImageViewResource(R.id.notification_album_art, R.drawable.ic_music_placeholder_white);
-        }
-
         notificationCollapsed.setImageViewResource(R.id.notification_previous_icon, R.drawable.previous_icon_white_24dp);
         notificationExpanded.setImageViewResource(R.id.notification_previous_icon, R.drawable.previous_icon_white_24dp);
 
@@ -275,12 +267,47 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         notificationExpanded.setOnClickPendingIntent(R.id.notification_close_icon, closePendingIntent);
         notificationExpanded.setOnClickPendingIntent(R.id.root_layout, activityPendingIntent);
 
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+        notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(pauseButton ? R.drawable.pause_icon_white_24dp : R.drawable.play_icon_white_24dp)
                 .setStyle(new androidx.media.app.NotificationCompat.DecoratedMediaCustomViewStyle())
                 .setCustomContentView(notificationCollapsed)
                 .setCustomBigContentView(notificationExpanded)
+                .setColor(getResources().getColor(R.color.blackOverlay))
                 .build();
+
+        Uri uri = Constants.getAlbumArtUri(model.getAlbumId());
+
+        Picasso.get().load(uri).into(
+                notificationCollapsed,
+                R.id.notification_album_art,
+                NOTIFICATION_ID,
+                notification, null,
+                new Callback() {
+                    @Override
+                    public void onSuccess() {
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        notificationCollapsed.setImageViewResource(R.id.notification_album_art, R.drawable.ic_music_placeholder_white);
+                    }
+                });
+        Picasso.get().load(uri).into(
+                notificationExpanded,
+                R.id.notification_album_art,
+                NOTIFICATION_ID,
+                notification,
+                null,
+                new Callback() {
+                    @Override
+                    public void onSuccess() {
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        notificationExpanded.setImageViewResource(R.id.notification_album_art, R.drawable.ic_music_placeholder_white);
+                    }
+                });
 
         startForeground(NOTIFICATION_ID, notification);
 

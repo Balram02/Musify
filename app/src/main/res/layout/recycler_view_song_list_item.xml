@@ -26,8 +26,7 @@
                 android:layout_height="35dp"
                 android:layout_centerVertical="true"
                 android:layout_margin="10dp"
-                android:background="@drawable/background_square_stroke_white_6dp"
-                android:padding="5dp"
+                android:padding="2dp"
                 app:srcCompat="@drawable/ic_music_placeholder_white" />
 
             <LinearLayout

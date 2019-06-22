@@ -75,7 +75,7 @@ public class AllSongsFragment extends Fragment {
 //        refreshLayout = v.findViewById(R.id.refresh_layout);
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
-        songsAdapter = new SongsAdapter(getActivity());
+        songsAdapter = new SongsAdapter(context);
         recyclerView.setAdapter(songsAdapter);
 
         songsAdapter.setOnItemClickListener(model -> {

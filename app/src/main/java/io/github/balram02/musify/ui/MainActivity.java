@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,6 +36,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.Date;
 import java.util.List;
@@ -43,6 +45,7 @@ import java.util.List;
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.background.MusicPlayerService;
 import io.github.balram02.musify.constants.Constants;
+import io.github.balram02.musify.listeners.FragmentListener;
 import io.github.balram02.musify.listeners.MusicPlayerServiceListener;
 import io.github.balram02.musify.models.SongsModel;
 import io.github.balram02.musify.utils.Preferences;
@@ -60,7 +63,7 @@ import static io.github.balram02.musify.constants.Constants.PREFERENCES_REPEAT_S
 import static io.github.balram02.musify.constants.Constants.PREFERENCES_SHUFFLE_STATE_NO;
 import static io.github.balram02.musify.constants.Constants.PREFERENCES_SHUFFLE_STATE_YES;
 
-public class MainActivity extends AppCompatActivity implements OnNavigationItemSelectedListener, MusicPlayerServiceListener {
+public class MainActivity extends AppCompatActivity implements OnNavigationItemSelectedListener, MusicPlayerServiceListener, FragmentListener {
 
     private final String TAG = Constants.TAG;
 
@@ -92,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     private FavoritesFragment favoritesFragment = new FavoritesFragment();
     public CommonFragment commonFragment = new CommonFragment();
     private Fragment activeFragment;
-    public static BottomNavigationView navigationView;
+    private BottomNavigationView navigationView;
 
     private BottomSheetBehavior bottomSheet;
     private LinearLayout bottomSheetLayout;
@@ -190,7 +193,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                navigationView.setTranslationY(slideOffset * 150);
                 bottomPeekUpArrow.setRotation(slideOffset * 180f);
                 bottomPeek.setAlpha(1f - (slideOffset * 1.5f));
             }
@@ -320,6 +322,13 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                 .add(R.id.fragment_container, favoritesFragment, "favorites_fragment").hide(favoritesFragment).commit();
         fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                 .add(R.id.fragment_container, commonFragment, "common_fragment").hide(commonFragment).commit();
+    }
+
+    @Override
+    public void setCommonFragmentType(String fragmentType) {
+        setFragment(commonFragment);
+        setTitle(fragmentType.equals(FragmentListener.ALBUM_FRAGMENT) ? "Albums" : "Artists");
+        commonFragment.setRecyclerViewAdapterType(fragmentType);
     }
 
     public void setFragment(Fragment fragment) {
@@ -456,7 +465,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                     }).setPositiveButton("Ok", (dialog, which) -> {
                 askRequiredPermissions();
             });
-            builder.show();
+            builder.setCancelable(false).show();
         }
     }
 
@@ -464,13 +473,10 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     public void onBackPressed() {
         if (bottomSheet.getState() == BottomSheetBehavior.STATE_EXPANDED)
             bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
-/*
-        else if (!(activeFragment instanceof AllSongsFragment) &&
-                !(activeFragment instanceof SearchFragment) &&
-                !(activeFragment instanceof LibraryFragment) &&
-                !(activeFragment instanceof FavoritesFragment))
-            removeInternalFragment();
-*/
+
+        else if (activeFragment instanceof CommonFragment)
+            setFragment(libraryFragment);
+
         else if (!(activeFragment instanceof AllSongsFragment))
             navigationView.setSelectedItemId(R.id.music);
         else
@@ -478,16 +484,23 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     }
 
     public void setAlbumArt(long albumArtId) {
-        Bitmap img = Constants.getAlbumArt(this, albumArtId);
-        if (img != null) {
-            bottomSheetAlbumArt.setImageBitmap(img);
-            bottomSheetAlbumArt.setBackground(null);
-            bottomSheetAlbumArt.setPadding(0, 0, 0, 0);
-        } else {
-            bottomSheetAlbumArt.setImageResource(R.drawable.ic_music_placeholder_white);
-            bottomSheetAlbumArt.setBackground(getDrawable(R.drawable.background_square_stroke_white_16dp));
-            bottomSheetAlbumArt.setPadding(30, 30, 30, 30);
-        }
+
+        Uri uri = Constants.getAlbumArtUri(albumArtId);
+
+        Picasso.get().load(uri).into(bottomSheetAlbumArt, new Callback() {
+            @Override
+            public void onSuccess() {
+                bottomSheetAlbumArt.setBackground(null);
+                bottomSheetAlbumArt.setPadding(0, 0, 0, 0);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                bottomSheetAlbumArt.setImageResource(R.drawable.ic_music_placeholder_white);
+                bottomSheetAlbumArt.setBackground(getDrawable(R.drawable.background_square_stroke_white_16dp));
+                bottomSheetAlbumArt.setPadding(30, 30, 30, 30);
+            }
+        });
     }
 
     public void setQueueListInService(boolean isShuffled) {

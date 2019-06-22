@@ -25,10 +25,6 @@ public class FavoritesFragment extends Fragment {
 
     private SharedViewModel mViewModel;
 
-    public static FavoritesFragment newInstance() {
-        return new FavoritesFragment();
-    }
-
     private RecyclerView recyclerView;
     private FavoritesAdapter favoritesAdapter;
     private Context context;
@@ -58,10 +54,10 @@ public class FavoritesFragment extends Fragment {
         View v = inflater.inflate(R.layout.favorites_fragment, container, false);
         recyclerView = v.findViewById(R.id.favorites_recycler_view);
         recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
-        favoritesAdapter = new FavoritesAdapter();
+        favoritesAdapter = new FavoritesAdapter(context);
         recyclerView.setAdapter(favoritesAdapter);
-        favoritesAdapter.setOnItemClickerListsner(model -> {
-            musicPlayerServiceListener.onUpdateService(mViewModel.getShuffleSongsQueue(),model, mViewModel);
+        favoritesAdapter.setOnItemClickerListener(model -> {
+            musicPlayerServiceListener.onUpdateService(mViewModel.getShuffleSongsQueue(), model, mViewModel);
         });
         return v;
     }
@@ -71,7 +67,7 @@ public class FavoritesFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
         mViewModel.getFavoriteSong().observe(getViewLifecycleOwner(), songsModels -> {
-            favoritesAdapter.setFavoritesSongsList(songsModels);
+            favoritesAdapter.submitList(songsModels);
         });
     }
 }

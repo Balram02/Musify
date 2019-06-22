@@ -13,10 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import io.github.balram02.musify.R;
+import io.github.balram02.musify.listeners.FragmentListener;
 import io.github.balram02.musify.viewModels.SharedViewModel;
-
-import static io.github.balram02.musify.constants.Constants.ALBUM_FRAGMENT_REQUEST;
-import static io.github.balram02.musify.constants.Constants.ARTIST_FRAGMENT_REQUEST;
 
 public class LibraryFragment extends Fragment {
 
@@ -25,10 +23,13 @@ public class LibraryFragment extends Fragment {
     private SharedViewModel mViewModel;
     private CardView albumsCardView, artistCardView;
 
+    private FragmentListener fragmentListener;
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
+        fragmentListener = (FragmentListener) context;
     }
 
     @Override
@@ -38,17 +39,11 @@ public class LibraryFragment extends Fragment {
         albumsCardView = v.findViewById(R.id.albums_card_view);
 
         albumsCardView.setOnClickListener(v1 -> {
-            Bundle bundle = new Bundle();
-            bundle.putString("request_for", ALBUM_FRAGMENT_REQUEST);
-            ((MainActivity) context).commonFragment.setArguments(bundle);
-            ((MainActivity) context).setFragment(((MainActivity) context).commonFragment);
+            fragmentListener.setCommonFragmentType(FragmentListener.ALBUM_FRAGMENT);
         });
 
         artistCardView.setOnClickListener(v1 -> {
-            Bundle bundle = new Bundle();
-            bundle.putString("request_for", ARTIST_FRAGMENT_REQUEST);
-            ((MainActivity) context).commonFragment.setArguments(bundle);
-            ((MainActivity) context).setFragment(((MainActivity) context).commonFragment);
+            fragmentListener.setCommonFragmentType(FragmentListener.ARTIST_FRAGMENT);
         });
 
         return v;
@@ -58,7 +53,6 @@ public class LibraryFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
-        // TODO: Use the ViewModel
     }
 
     @Override

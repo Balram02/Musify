@@ -1,11 +1,7 @@
 package io.github.balram02.musify.adapters;
 
-import android.content.ContentUris;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.ParcelFileDescriptor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,14 +11,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.FileDescriptor;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.constants.Constants;
 import io.github.balram02.musify.models.SongsModel;
-import io.github.balram02.musify.ui.MainActivity;
 
 public class CommonAdapter extends RecyclerView.Adapter<CommonAdapter.SongListViewHolder> {
 
@@ -33,10 +30,6 @@ public class CommonAdapter extends RecyclerView.Adapter<CommonAdapter.SongListVi
 
     public CommonAdapter(Context context) {
         this.context = context;
-    }
-
-    public CommonAdapter(List<SongsModel> songs) {
-        this.songs = songs;
     }
 
     @NonNull
@@ -50,16 +43,20 @@ public class CommonAdapter extends RecyclerView.Adapter<CommonAdapter.SongListVi
     public void onBindViewHolder(@NonNull SongListViewHolder holder, int i) {
 
         SongsModel model = songs.get(i);
-        holder.songName.setText(isAlbum ? model.getAlbum() : model.getArtist());
+        holder.commonName.setText(isAlbum ? model.getAlbum() : model.getArtist());
 
-        ((MainActivity) context).runOnUiThread(() -> {
-            Bitmap img = Constants.getAlbumArt(context, model.getAlbumId());
-            if (img != null)
-                holder.albumArt.setImageBitmap(img);
-            else
+        Uri uri = Constants.getAlbumArtUri(model.getAlbumId());
+
+        Picasso.get().load(uri).into(holder.albumArt, new Callback() {
+            @Override
+            public void onSuccess() {
+            }
+
+            @Override
+            public void onError(Exception e) {
                 holder.albumArt.setImageResource(R.drawable.ic_music_placeholder_white);
+            }
         });
-
     }
 
     @Override
@@ -75,14 +72,12 @@ public class CommonAdapter extends RecyclerView.Adapter<CommonAdapter.SongListVi
 
     class SongListViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView songName;
+        private TextView commonName;
         private ImageView albumArt;
-/*        private TextView songArtist;
-        private TextView songDuration;*/
 
         SongListViewHolder(@NonNull View itemView) {
             super(itemView);
-            songName = itemView.findViewById(R.id.common_name);
+            commonName = itemView.findViewById(R.id.common_name);
             albumArt = itemView.findViewById(R.id.album_art);
 
 /*            itemView.setOnClickListener(v -> {
@@ -99,28 +94,6 @@ public class CommonAdapter extends RecyclerView.Adapter<CommonAdapter.SongListVi
 
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
-    }
-
-
-    public Bitmap getAlbumArt(Long album_id) {
-
-        Bitmap bm = null;
-        try {
-            final Uri sArtworkUri = Uri
-                    .parse("content://media/external/audio/albumart");
-
-            Uri uri = ContentUris.withAppendedId(sArtworkUri, album_id);
-
-            ParcelFileDescriptor pfd = context.getContentResolver()
-                    .openFileDescriptor(uri, "r");
-
-            if (pfd != null) {
-                FileDescriptor fd = pfd.getFileDescriptor();
-                bm = BitmapFactory.decodeFileDescriptor(fd);
-            }
-        } catch (Exception e) {
-        }
-        return bm;
     }
 
 }

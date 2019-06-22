@@ -1,7 +1,7 @@
 package io.github.balram02.musify.adapters;
 
-import android.app.Activity;
-import android.graphics.Bitmap;
+import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.constants.Constants;
@@ -27,7 +29,7 @@ import io.github.balram02.musify.viewModels.SharedViewModel;
 public class SongsAdapter extends ListAdapter<SongsModel, SongsAdapter.SongListViewHolder> {
 
     private OnAdapterItemClickListener listener;
-    private Activity activity;
+    private Context context;
 
     private static DiffUtil.ItemCallback<SongsModel> diffCallback = new DiffUtil.ItemCallback<SongsModel>() {
         @Override
@@ -41,9 +43,9 @@ public class SongsAdapter extends ListAdapter<SongsModel, SongsAdapter.SongListV
         }
     };
 
-    public SongsAdapter(Activity activity) {
+    public SongsAdapter(Context context) {
         super(diffCallback);
-        this.activity = activity;
+        this.context = context;
     }
 
 
@@ -61,6 +63,19 @@ public class SongsAdapter extends ListAdapter<SongsModel, SongsAdapter.SongListV
         holder.songName.setText(model.getTitle());
         holder.songArtist.setText(model.getArtist());
         holder.songDuration.setText(Constants.convertMilliseconds(model.getDuration()));
+
+        Uri uri = Constants.getAlbumArtUri(model.getAlbumId());
+
+        Picasso.get().load(uri).into(holder.songAlbumArt, new Callback() {
+            @Override
+            public void onSuccess() {
+            }
+
+            @Override
+            public void onError(Exception e) {
+                holder.songAlbumArt.setImageResource(R.drawable.ic_music_placeholder_white);
+            }
+        });
     }
 
     public class SongListViewHolder extends RecyclerView.ViewHolder {
@@ -71,6 +86,7 @@ public class SongsAdapter extends ListAdapter<SongsModel, SongsAdapter.SongListV
         private RelativeLayout songItem;
         private ImageView songMenu;
         private SharedViewModel sharedViewModel;
+        private ImageView songAlbumArt;
 
         SongListViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -79,9 +95,10 @@ public class SongsAdapter extends ListAdapter<SongsModel, SongsAdapter.SongListV
             songArtist = itemView.findViewById(R.id.song_artist);
             songDuration = itemView.findViewById(R.id.song_duration);
             songMenu = itemView.findViewById(R.id.song_menu);
+            songAlbumArt = itemView.findViewById(R.id.song_album_art_icon);
 
             if (sharedViewModel == null)
-                sharedViewModel = ViewModelProviders.of((FragmentActivity) activity).get(SharedViewModel.class);
+                sharedViewModel = ViewModelProviders.of((FragmentActivity) context).get(SharedViewModel.class);
 
             songItem.setOnClickListener(v -> {
                 if (listener != null && getAdapterPosition() != -1) {
@@ -121,13 +138,20 @@ public class SongsAdapter extends ListAdapter<SongsModel, SongsAdapter.SongListV
 
                     SongsModel model = getItem();
 
-                    Bitmap art = Constants.getAlbumArt(itemView.getContext(), model.getAlbumId());
-                    if (art != null)
-                        ((ImageView) infoDialogFragment.findViewById(R.id.info_album_art)).setImageBitmap(art);
-                    else {
-                        ((ImageView) infoDialogFragment.findViewById(R.id.info_album_art)).setImageResource(R.drawable.ic_music_placeholder_white);
-                        infoDialogFragment.findViewById(R.id.info_album_art).setBackgroundResource(R.drawable.background_square_stroke_white_6dp);
-                    }
+                    Uri uri = Constants.getAlbumArtUri(model.getAlbumId());
+
+                    Picasso.get().load(uri).into(infoDialogFragment.findViewById(R.id.info_album_art), new Callback() {
+                        @Override
+                        public void onSuccess() {
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            ((ImageView) infoDialogFragment.findViewById(R.id.info_album_art))
+                                    .setImageResource(R.drawable.ic_music_placeholder_white);
+                        }
+                    });
+
                     ((TextView) infoDialogFragment.findViewById(R.id.info_song_album)).setText(model.getAlbum());
                     ((TextView) infoDialogFragment.findViewById(R.id.info_song_title)).setText(model.getTitle());
                     ((TextView) infoDialogFragment.findViewById(R.id.info_song_artist)).setText(model.getArtist());

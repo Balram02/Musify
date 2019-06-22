@@ -36,12 +36,13 @@
                 android:layout_marginStart="20dp"
                 android:clickable="true"
                 android:focusable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
                 android:onClick="onClickFavoriteButton"
                 android:src="@drawable/ic_favorite_border_white_24dp" />
 
             <TextView
                 android:id="@+id/peek_song_name"
-                android:layout_width="270dp"
+                android:layout_width="260dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
@@ -72,6 +73,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
+            android:layout_marginEnd="2dp"
             android:src="@drawable/ic_arrow_up_white_24dp" />
 
     </RelativeLayout>
@@ -95,11 +97,11 @@
                 android:id="@+id/bottom_sheet_album_art"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:maxHeight="290dp"
-                android:maxWidth="290dp"
                 android:background="@drawable/background_square_stroke_white_16dp"
                 android:clickable="true"
                 android:focusable="true"
+                android:maxWidth="290dp"
+                android:maxHeight="290dp"
                 android:src="@drawable/ic_music_placeholder_white" />
 
         </androidx.cardview.widget.CardView>
@@ -155,6 +157,7 @@
                 android:layout_marginStart="40dp"
                 android:clickable="true"
                 android:focusable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
                 android:onClick="onClickFavoriteButton"
                 android:padding="5dp"
                 android:src="@drawable/ic_favorite_border_white_24dp" />
