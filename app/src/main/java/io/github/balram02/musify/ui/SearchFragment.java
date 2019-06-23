@@ -15,6 +15,8 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.futuremind.recyclerviewfastscroll.FastScroller;
+
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.adapters.SongsAdapter;
 import io.github.balram02.musify.listeners.MusicPlayerServiceListener;
@@ -31,6 +33,7 @@ public class SearchFragment extends Fragment {
     private Context context;
 
     private MusicPlayerServiceListener musicPlayerServiceListener;
+    private FastScroller fastScroller;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -50,6 +53,7 @@ public class SearchFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.search_fragment, container, false);
         recyclerView = v.findViewById(R.id.recent_recycler_view);
+        fastScroller = v.findViewById(R.id.fast_scroller);
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
         songsAdapter = new SongsAdapter(getActivity());
@@ -75,6 +79,7 @@ public class SearchFragment extends Fragment {
         mViewModel.getRecentlyPlayedSongs().observe(getViewLifecycleOwner(), songsModels -> {
             songsAdapter.submitList(songsModels);
             songsAdapter.onAttachedToRecyclerView(recyclerView);
+            fastScroller.setRecyclerView(recyclerView);
         });
     }
 

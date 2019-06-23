@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.futuremind.recyclerviewfastscroll.FastScroller;
+
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.adapters.CommonAdapter;
 import io.github.balram02.musify.listeners.FragmentListener;
@@ -28,6 +30,7 @@ public class CommonFragment extends Fragment {
     private Context context;
 
     private SharedViewModel mViewModel;
+//    private FastScroller fastScroller;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -41,6 +44,7 @@ public class CommonFragment extends Fragment {
         View v = inflater.inflate(R.layout.common_fragment, container, false);
 
         recyclerView = v.findViewById(R.id.recycler_view);
+//        fastScroller = v.findViewById(R.id.fast_scroller);
 //        refreshLayout = v.findViewById(R.id.refresh_layout);
         recyclerView.setHasFixedSize(true);
         commonAdapter = new CommonAdapter(getContext());
@@ -63,12 +67,15 @@ public class CommonFragment extends Fragment {
         if (fragmentType.equals(FragmentListener.ALBUM_FRAGMENT)) {
             mViewModel.getAlbums().observe(getViewLifecycleOwner(), albumsModel -> {
                 commonAdapter.setList(albumsModel, true);
+//                fastScroller.setRecyclerView(recyclerView);
             });
         } else if (fragmentType.equals(FragmentListener.ARTIST_FRAGMENT)) {
             mViewModel.getArtist().observe(getViewLifecycleOwner(), artistModel -> {
                 commonAdapter.setList(artistModel, false);
+//                fastScroller.setRecyclerView(recyclerView);
             });
         }
+
 
     }
 

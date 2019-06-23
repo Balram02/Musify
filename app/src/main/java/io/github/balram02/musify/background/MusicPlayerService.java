@@ -272,7 +272,8 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
                 .setStyle(new androidx.media.app.NotificationCompat.DecoratedMediaCustomViewStyle())
                 .setCustomContentView(notificationCollapsed)
                 .setCustomBigContentView(notificationExpanded)
-                .setColor(getResources().getColor(R.color.blackOverlay))
+                .setColorized(true)
+                .setColor(getResources().getColor(R.color.transparentBlack))
                 .build();
 
         Uri uri = Constants.getAlbumArtUri(model.getAlbumId());

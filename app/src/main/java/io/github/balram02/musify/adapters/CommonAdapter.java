@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.futuremind.recyclerviewfastscroll.SectionTitleProvider;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -21,7 +22,7 @@ import io.github.balram02.musify.R;
 import io.github.balram02.musify.constants.Constants;
 import io.github.balram02.musify.models.SongsModel;
 
-public class CommonAdapter extends RecyclerView.Adapter<CommonAdapter.SongListViewHolder> {
+public class CommonAdapter extends RecyclerView.Adapter<CommonAdapter.SongListViewHolder> implements SectionTitleProvider {
 
     private List<SongsModel> songs = new ArrayList<>();
     private OnItemClickListener listener;
@@ -62,6 +63,11 @@ public class CommonAdapter extends RecyclerView.Adapter<CommonAdapter.SongListVi
     @Override
     public int getItemCount() {
         return songs.size();
+    }
+
+    @Override
+    public String getSectionTitle(int position) {
+        return songs.get(position).getTitle().substring(0, 1);
     }
 
     public void setList(List<SongsModel> songs, boolean isAlbum) {

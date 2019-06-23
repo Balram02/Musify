@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId 'io.github.balram02.musify'
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -47,4 +47,6 @@ dependencies {
 
     //Image loading library
     implementation 'com.squareup.picasso:picasso:2.71828'
+
+    implementation 'com.futuremind.recyclerfastscroll:fastscroll:0.2.5'
 }
