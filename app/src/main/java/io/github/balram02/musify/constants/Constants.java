@@ -1,7 +1,14 @@
 package io.github.balram02.musify.constants;
 
 import android.content.ContentUris;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.ParcelFileDescriptor;
+import android.util.Log;
+
+import java.io.FileDescriptor;
 
 public class Constants {
 
@@ -47,6 +54,28 @@ public class Constants {
 
     public static Uri getAlbumArtUri(Long albumId) {
         return ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), albumId);
+    }
+
+    public static Bitmap getAlbumArt(Context context, Long album_id) {
+
+        Bitmap bm = null;
+        try {
+            final Uri sArtworkUri = Uri
+                    .parse("content://media/external/audio/albumart");
+
+            Uri uri = ContentUris.withAppendedId(sArtworkUri, album_id);
+
+            ParcelFileDescriptor pfd = context.getContentResolver()
+                    .openFileDescriptor(uri, "r");
+
+            if (pfd != null) {
+                FileDescriptor fd = pfd.getFileDescriptor();
+                bm = BitmapFactory.decodeFileDescriptor(fd);
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "getAlbumArt: " + e);
+        }
+        return bm;
     }
 
 }

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -419,6 +420,11 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         filter.addAction(BROADCAST_ACTION_PLAY);
         filter.addAction(BROADCAST_ACTION_PAUSE);
         LocalBroadcastManager.getInstance(this).registerReceiver(localReceiver, filter);
+
+        // Handles headphones coming unplugged. cannot be done through a manifest receiver
+        IntentFilter globalFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+        registerReceiver(mNoisyReceiver, globalFilter);
+
         Intent playerServiceIntent = new Intent(this, MusicPlayerService.class);
         bindService(playerServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
@@ -446,6 +452,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         }
         PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(PREFERENCES_ACTIVITY_STATE, false).apply();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(localReceiver);
+        unregisterReceiver(mNoisyReceiver);
     }
 
     @Override
@@ -653,4 +660,14 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             }
         }
     }
+
+    private BroadcastReceiver mNoisyReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (musicPlayerService != null && musicPlayerService.isPlaying()) {
+                musicPlayerService.pause();
+            }
+        }
+    };
+
 }

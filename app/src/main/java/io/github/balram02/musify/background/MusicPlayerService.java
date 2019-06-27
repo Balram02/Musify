@@ -4,25 +4,34 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
+import androidx.media.MediaBrowserServiceCompat;
+import androidx.media.session.MediaButtonReceiver;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,7 +56,7 @@ import static io.github.balram02.musify.constants.Constants.PREFERENCES_REPEAT_S
 import static io.github.balram02.musify.constants.Constants.PREFERENCES_REPEAT_STATE_ONE;
 import static io.github.balram02.musify.constants.Constants.TAG;
 
-public class MusicPlayerService extends Service implements MediaPlayer.OnCompletionListener, AudioManager.OnAudioFocusChangeListener {
+public class MusicPlayerService extends MediaBrowserServiceCompat implements MediaPlayer.OnCompletionListener, AudioManager.OnAudioFocusChangeListener {
 
     public static final String CHANNEL_ID = "512";
     public static final int NOTIFICATION_ID = 512;
@@ -71,6 +80,8 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
     private MediaPlayer player;
     private Notification notification;
+    private MediaSessionCompat mediaSessionCompat;
+    private PlaybackStateCompat.Builder stateBuilder;
 
     private SongsModel model;
     private SharedViewModel mViewModel;
@@ -108,6 +119,27 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         }
     }
 
+    MediaSessionCompat.Callback callback = new MediaSessionCompat.Callback() {
+        @Override
+        public void onPlay() {
+            super.onPlay();
+            Log.d(TAG, "onPlay: callback method");
+            start();
+
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+            pause();
+        }
+
+        @Override
+        public void onStop() {
+            super.onStop();
+        }
+    };
+
     public String getArtistName() {
         return model.getArtist();
     }
@@ -123,12 +155,27 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         return mBinder;
     }
 
+    @Nullable
+    @Override
+    public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
+        if (TextUtils.equals(clientPackageName, getPackageName())) {
+            return new BrowserRoot(getString(R.string.app_name), null);
+        }
+        return null;
+    }
+
+    @Override
+    public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
+        result.sendResult(null);
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "onCreate: ");
 
         player = new MediaPlayer();
+        initMediaSessionCompat();
 
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
@@ -145,13 +192,41 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             }
             start();
         });
+    }
 
+    public void initMediaSessionCompat() {
+
+        ComponentName mediaButtonReceiver = new ComponentName(getApplicationContext(), MediaButtonReceiver.class);
+        mediaSessionCompat = new MediaSessionCompat(getApplicationContext(), TAG, mediaButtonReceiver, null);
+        mediaSessionCompat.setCallback(callback);
+        mediaSessionCompat.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+
+        Intent intent = new Intent(INTENT_ACTION_PLAY);
+        intent.setClass(this, MediaButtonReceiver.class);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        mediaSessionCompat.setMediaButtonReceiver(pendingIntent);
+
+        setSessionToken(mediaSessionCompat.getSessionToken());
+    }
+
+    private void setMediaPlaybackState(int state) {
+        stateBuilder = new PlaybackStateCompat.Builder();
+        if (state == PlaybackStateCompat.STATE_PLAYING) {
+            stateBuilder.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PAUSE);
+        } else {
+            stateBuilder.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PLAY);
+        }
+        stateBuilder.setState(state, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, 0);
+        mediaSessionCompat.setPlaybackState(stateBuilder.build());
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         Log.d(TAG, "onStartCommand: " + intent.getAction());
+
+        MediaButtonReceiver.handleIntent(mediaSessionCompat, intent);
 
         if (intent.getAction() != null && !intent.getAction().isEmpty()) {
 
@@ -268,47 +343,23 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         notificationExpanded.setOnClickPendingIntent(R.id.root_layout, activityPendingIntent);
 
         notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(pauseButton ? R.drawable.pause_icon_white_24dp : R.drawable.play_icon_white_24dp)
-                .setStyle(new androidx.media.app.NotificationCompat.DecoratedMediaCustomViewStyle())
+                .setSmallIcon(pauseButton ? R.drawable.play_icon_white_24dp : R.drawable.pause_icon_white_24dp)
+                .setStyle(new androidx.media.app.NotificationCompat.DecoratedMediaCustomViewStyle().setMediaSession(mediaSessionCompat.getSessionToken()))
                 .setCustomContentView(notificationCollapsed)
                 .setCustomBigContentView(notificationExpanded)
                 .setColorized(true)
                 .setColor(getResources().getColor(R.color.transparentBlack))
                 .build();
 
-        Uri uri = Constants.getAlbumArtUri(model.getAlbumId());
+        Bitmap art = Constants.getAlbumArt(this, model.getAlbumId());
 
-        Picasso.get().load(uri).into(
-                notificationCollapsed,
-                R.id.notification_album_art,
-                NOTIFICATION_ID,
-                notification, null,
-                new Callback() {
-                    @Override
-                    public void onSuccess() {
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        notificationCollapsed.setImageViewResource(R.id.notification_album_art, R.drawable.ic_music_placeholder_white);
-                    }
-                });
-        Picasso.get().load(uri).into(
-                notificationExpanded,
-                R.id.notification_album_art,
-                NOTIFICATION_ID,
-                notification,
-                null,
-                new Callback() {
-                    @Override
-                    public void onSuccess() {
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        notificationExpanded.setImageViewResource(R.id.notification_album_art, R.drawable.ic_music_placeholder_white);
-                    }
-                });
+        if (art != null) {
+            notificationCollapsed.setImageViewBitmap(R.id.notification_album_art, art);
+            notificationExpanded.setImageViewBitmap(R.id.notification_album_art, art);
+        } else {
+            notificationCollapsed.setImageViewResource(R.id.notification_album_art, R.drawable.ic_music_placeholder_white);
+            notificationExpanded.setImageViewResource(R.id.notification_album_art, R.drawable.ic_music_placeholder_white);
+        }
 
         startForeground(NOTIFICATION_ID, notification);
 
@@ -404,15 +455,41 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
                 sendBroadcastToLocal(BROADCAST_ACTION_PLAY);
                 createNotification(true);
             }
+
+            Bitmap bitmap = Constants.getAlbumArt(this, model.getAlbumId());
+            mediaSessionCompat.setMetadata(new MediaMetadataCompat.Builder()
+                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, model.getTitle())
+                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, model.getArtist())
+                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, model.getAlbum())
+                    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, model.getDuration())
+                    .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap != null ? bitmap : drawableToBitmap())
+                    .build());
+            mediaSessionCompat.setActive(true);
+            setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
+
         } else {
-            Toast.makeText(this, "cannot play music while other player is playing", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "cannot play music while on call or other player is playing", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private Bitmap drawableToBitmap() {
+
+        Drawable drawable = getResources().getDrawable(R.drawable.ic_music_placeholder_white);
+
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
     }
 
     public void pause() {
 
         player.pause();
         createNotification(false);
+        mediaSessionCompat.setActive(false);
+        setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
         sendBroadcastToLocal(BROADCAST_ACTION_PAUSE);
         Preferences.SongDetails.setLastSongDetails(this, model);
         Preferences.SongDetails.setLastSongCurrentPosition(this, getCurrentPosition());
