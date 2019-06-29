@@ -456,14 +456,18 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
                 createNotification(true);
             }
 
-            Bitmap bitmap = Constants.getAlbumArt(this, model.getAlbumId());
-            mediaSessionCompat.setMetadata(new MediaMetadataCompat.Builder()
-                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, model.getTitle())
-                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, model.getArtist())
-                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, model.getAlbum())
-                    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, model.getDuration())
-                    .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap != null ? bitmap : drawableToBitmap())
-                    .build());
+            if (Preferences.DefaultSettings.getAlbumArtOnLockScreen(this)) {
+                Bitmap bitmap = Constants.getAlbumArt(this, model.getAlbumId());
+                mediaSessionCompat.setMetadata(new MediaMetadataCompat.Builder()
+                        .putString(MediaMetadataCompat.METADATA_KEY_TITLE, model.getTitle())
+                        .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, model.getArtist())
+                        .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, model.getAlbum())
+                        .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, model.getDuration())
+                        .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap != null ? bitmap : drawableToBitmap())
+                        .build());
+            } else {
+                mediaSessionCompat.setMetadata(new MediaMetadataCompat.Builder().build());
+            }
             mediaSessionCompat.setActive(true);
             setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
 

@@ -41,6 +41,8 @@ public class Constants {
     public static final boolean PREFERENCES_SHUFFLE_STATE_YES = true;
     public static final boolean PREFERENCES_SHUFFLE_STATE_NO = false;
 
+    public static final int INTENT_THEME_REQUEST = 200;
+
     public static final String PREFERENCES_ACTIVITY_STATE = "isForeground";
 
     public static String convertMilliseconds(long milliseconds) {

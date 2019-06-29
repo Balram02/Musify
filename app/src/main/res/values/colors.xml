@@ -1,8 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#000000</color>
-    <color name="colorPrimaryDark">#121212</color>
+
+    <!--*************Theme 1*************-->
+    <color name="colorBackground1">#121212</color>
+    <color name="colorBackgroundDark1">#000000</color>
     <color name="colorAccent">#00D6C3</color>
+    <color name="colorTextPrimary1">@android:color/white</color>
+    <color name="colorTextPrimaryLight1">#919191</color>
+    <color name="colorTextPrimaryDark1">@android:color/black</color>
+    <color name="colorOverlay1">#272727</color>
+    <color name="colorTint1">#272727</color>
+    <color name="colorRipple1">@android:color/white</color>
+    <!--**********************************-->
+
+
+    <!--*************Theme 2*************-->
+    <color name="colorBackground2">@android:color/white</color>
+    <color name="colorBackgroundDark2">@android:color/white</color>
+    <color name="colorAccent2">#DF0C0C</color>
+    <color name="colorTextPrimary2">#121212</color>
+    <color name="colorTextPrimaryLight2">#919191</color>
+    <color name="colorTextPrimaryDark2">@android:color/black</color>
+    <color name="colorOverlay2">@android:color/white</color>
+    <color name="colorTint2">#272727</color>
+    <color name="colorRipple2">@android:color/black</color>
+    <!--**********************************-->
+
 
     <!--Standard android colors-->
     <color name="white">@android:color/white</color>

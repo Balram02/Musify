@@ -1,5 +1,5 @@
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/colorAccent">
+    android:color="?attr/colorRipple">
     <item>
         <vector
             android:width="24dp"
@@ -7,7 +7,7 @@
             android:viewportWidth="24.0"
             android:viewportHeight="24.0">
             <path
-                android:fillColor="#FFFFFFFF"
+                android:fillColor="?drawableTintColor"
                 android:pathData="M6,18l8.5,-6L6,6v12zM16,6v12h2V6h-2z" />
         </vector>
     </item>

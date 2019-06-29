@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <attr name="primaryColor" format="color" />
+    <attr name="primaryColorDark" format="color" />
+    <attr name="colorAccent" format="color" />
+    <attr name="textColorPrimary" format="color" />
+    <attr name="textColorPrimaryLight" format="color" />
+    <attr name="textColorPrimaryDark" format="color" />
+    <attr name="colorOverlay" format="color" />
+    <attr name="colorTint" format="color" />
+    <attr name="colorRipple" format="color" />
+    <attr name="drawableTintColor" format="color" />
+
+</resources>

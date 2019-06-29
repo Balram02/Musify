@@ -18,6 +18,6 @@
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
         android:orientation="vertical"
-        app:fastscroll__bubbleColor="@color/colorAccent" />
+        app:fastscroll__bubbleColor="?attr/colorAccent" />
 
 </RelativeLayout>

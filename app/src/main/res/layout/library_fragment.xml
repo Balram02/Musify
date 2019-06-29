@@ -24,7 +24,7 @@
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground"
-            app:cardBackgroundColor="@color/blackOverlay"
+            app:cardBackgroundColor="?attr/colorOverlay"
             app:cardCornerRadius="10dp"
             app:cardElevation="8dp">
 
@@ -39,7 +39,7 @@
                     android:scaleX="0.5"
                     android:scaleY="0.5"
                     android:src="@drawable/icons8_song_album_art_100dp"
-                    android:tint="@color/blackTint" />
+                    android:tint="?attr/colorTint" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -48,7 +48,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="20dp"
                     android:text="Albums"
-                    android:textColor="@color/white"
+                    android:textColor="?attr/textColorPrimary"
                     android:textSize="20sp" />
 
             </RelativeLayout>
@@ -64,7 +64,7 @@
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground"
-            app:cardBackgroundColor="@color/blackOverlay"
+            app:cardBackgroundColor="?attr/colorOverlay"
             app:cardCornerRadius="10dp"
             app:cardElevation="8dp">
 
@@ -75,7 +75,7 @@
                 android:scaleX="0.5"
                 android:scaleY="0.5"
                 android:src="@drawable/icons8_song_artist_100dp"
-                android:tint="@color/blackTint" />
+                android:tint="?attr/colorTint" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -83,7 +83,7 @@
                 android:layout_gravity="center_horizontal|bottom"
                 android:layout_marginBottom="20dp"
                 android:text="Artists"
-                android:textColor="@color/white"
+                android:textColor="?attr/textColorPrimary"
                 android:textSize="20sp" />
 
         </androidx.cardview.widget.CardView>

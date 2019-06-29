@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/icons8_nothing_found_100"
-        android:tint="@color/white" />
+        android:tint="?attr/colorTint" />
 
     <TextView
         android:layout_width="wrap_content"

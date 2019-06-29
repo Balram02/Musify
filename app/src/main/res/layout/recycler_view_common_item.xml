@@ -7,7 +7,7 @@
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground"
-    app:cardBackgroundColor="@color/colorPrimaryDark"
+    app:cardBackgroundColor="?attr/primaryColorDark"
     app:cardCornerRadius="10dp">
 
     <RelativeLayout
@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitCenter"
-            android:tint="@color/blackTint" />
+            android:tint="?attr/colorTint" />
 
         <TextView
             android:id="@+id/common_name"
@@ -34,7 +34,7 @@
             android:maxLines="3"
             android:text="Album Name"
             android:textAlignment="center"
-            android:textColor="@color/white"
+            android:textColor="?attr/textColorPrimary"
             android:textSize="16sp" />
 
     </RelativeLayout>

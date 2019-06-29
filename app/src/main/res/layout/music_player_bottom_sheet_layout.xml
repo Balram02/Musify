@@ -4,7 +4,7 @@
     android:id="@+id/bottom_sheet"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark"
+    android:background="?attr/primaryColor"
     android:elevation="13dp"
     android:orientation="vertical"
     android:visibility="visible"
@@ -23,7 +23,7 @@
             android:layout_height="50dp"
             android:layout_marginStart="1dp"
             android:layout_marginEnd="1dp"
-            android:background="@color/blackOverlay"
+            android:background="?attr/colorOverlay"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:padding="2dp">
@@ -53,7 +53,7 @@
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-                android:textColor="@color/white"
+                android:textColor="?attr/textColorPrimary"
                 android:textSize="16sp" />
 
             <ImageView
@@ -62,9 +62,11 @@
                 android:layout_height="40dp"
                 android:layout_margin="2dp"
                 android:background="@drawable/background_circle_stroke_accent"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
                 android:onClick="onClickPlayPauseButton"
-                android:src="@drawable/play_icon_white_24dp"
-                android:tint="@color/white" />
+                android:src="@drawable/play_icon_white_24dp" />
 
         </LinearLayout>
 
@@ -89,8 +91,8 @@
             android:layout_height="290dp"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="10dp"
-            app:cardBackgroundColor="@color/blackOverlay2"
-            app:cardCornerRadius="10dp"
+            app:cardBackgroundColor="?attr/colorOverlay"
+            app:cardCornerRadius="16dp"
             app:cardElevation="24dp">
 
             <ImageView
@@ -123,7 +125,7 @@
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-                android:textColor="@color/white"
+                android:textColor="?attr/textColorPrimary"
                 android:textSize="20sp" />
 
             <TextView
@@ -138,6 +140,7 @@
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+                android:textColor="?attr/textColorPrimary"
                 android:textSize="16sp" />
         </LinearLayout>
 
@@ -176,13 +179,11 @@
                     android:layout_height="45dp"
                     android:layout_gravity="center_vertical"
                     android:layout_margin="3dp"
-                    android:background="@color/transparent"
                     android:clickable="true"
                     android:focusable="true"
                     android:onClick="onClickPreviousButton"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/previous_icon_white_24dp"
-                    android:tint="@color/white" />
+                    android:src="@drawable/previous_icon_white_24dp" />
 
                 <ImageView
                     android:id="@+id/bottom_sheet_play_pause"
@@ -195,8 +196,7 @@
                     android:focusable="true"
                     android:onClick="onClickPlayPauseButton"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/play_icon_white_24dp"
-                    android:tint="@color/white" />
+                    android:src="@drawable/play_icon_white_24dp" />
 
                 <ImageView
                     android:id="@+id/bottom_sheet_next"
@@ -208,8 +208,7 @@
                     android:focusable="true"
                     android:onClick="onClickNextButton"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/next_icon_white_24dp"
-                    android:tint="@color/white" />
+                    android:src="@drawable/next_icon_white_24dp" />
 
             </LinearLayout>
 
