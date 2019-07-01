@@ -26,4 +26,6 @@
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
 
+    <string name="become_contributor_text"><a href="https://github.com/Balram02/Musify">Become a contributor !</a></string>
+
 </resources>

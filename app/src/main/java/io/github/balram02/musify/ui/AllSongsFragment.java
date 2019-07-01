@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +46,7 @@ public class AllSongsFragment extends Fragment {
     private Context context;
     private TextView totalSongs;
     private CardView totalSongsCard;
+    private LinearLayout nothing;
 
     private MusicPlayerServiceListener musicPlayerServiceListener;
 
@@ -76,6 +78,7 @@ public class AllSongsFragment extends Fragment {
         totalSongsCard = v.findViewById(R.id.total_songs_card_view);
         totalSongs = v.findViewById(R.id.total_songs);
         fastScroller = v.findViewById(R.id.fast_scroller);
+        nothing = v.findViewById(R.id.nothing_layout);
 //        refreshLayout = v.findViewById(R.id.refresh_layout);
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
@@ -177,7 +180,13 @@ public class AllSongsFragment extends Fragment {
             songsAdapter.submitList(songsModels);
             songsAdapter.onAttachedToRecyclerView(recyclerView);
             fastScroller.setRecyclerView(recyclerView);
-            totalSongs.setText(getString(R.string.songs_found_text, songsModels.size()));
+            int size = songsModels.size();
+            totalSongs.setText(getString(R.string.songs_found_text, size));
+            if (size == 0 && nothing.getVisibility() == View.GONE) {
+                nothing.setVisibility(View.VISIBLE);
+            } else if (size != 0 && nothing.getVisibility() == View.VISIBLE) {
+                nothing.setVisibility(View.GONE);
+            }
         });
         startTotalSongsCardAnimation();
     }

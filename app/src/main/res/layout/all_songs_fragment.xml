@@ -37,6 +37,8 @@
             app:fastscroll__bubbleColor="?attr/colorAccent" />
 
     </RelativeLayout>
+
+    <include layout="@layout/nothing_found_layout" />
     <!--</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>-->
 
     <androidx.cardview.widget.CardView

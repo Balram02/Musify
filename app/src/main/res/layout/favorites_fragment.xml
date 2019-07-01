@@ -5,6 +5,8 @@
     android:layout_height="match_parent"
     android:padding="5dp">
 
+    <include layout="@layout/nothing_found_layout" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/favorites_recycler_view"
         android:layout_width="match_parent"

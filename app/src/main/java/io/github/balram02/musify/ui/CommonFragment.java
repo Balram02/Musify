@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,9 +29,10 @@ public class CommonFragment extends Fragment {
     private CommonAdapter commonAdapter;
     //    private SwipeRefreshLayout refreshLayout;
     private Context context;
+    private LinearLayout nothing;
 
     private SharedViewModel mViewModel;
-//    private FastScroller fastScroller;
+    private FastScroller fastScroller;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -44,12 +46,14 @@ public class CommonFragment extends Fragment {
         View v = inflater.inflate(R.layout.common_fragment, container, false);
 
         recyclerView = v.findViewById(R.id.recycler_view);
-//        fastScroller = v.findViewById(R.id.fast_scroller);
+        nothing = v.findViewById(R.id.nothing_layout);
+        fastScroller = v.findViewById(R.id.fast_scroller);
 //        refreshLayout = v.findViewById(R.id.refresh_layout);
         recyclerView.setHasFixedSize(true);
-        commonAdapter = new CommonAdapter(getContext());
+        commonAdapter = new CommonAdapter(context);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setAdapter(commonAdapter);
+        fastScroller.setRecyclerView(recyclerView);
 
         return v;
     }
@@ -67,15 +71,24 @@ public class CommonFragment extends Fragment {
         if (fragmentType.equals(FragmentListener.ALBUM_FRAGMENT)) {
             mViewModel.getAlbums().observe(getViewLifecycleOwner(), albumsModel -> {
                 commonAdapter.setList(albumsModel, true);
-//                fastScroller.setRecyclerView(recyclerView);
+                int size = albumsModel.size();
+                if (size == 0 && nothing.getVisibility() == View.GONE) {
+                    nothing.setVisibility(View.VISIBLE);
+                } else if (size != 0 && nothing.getVisibility() == View.VISIBLE) {
+                    nothing.setVisibility(View.GONE);
+                }
             });
         } else if (fragmentType.equals(FragmentListener.ARTIST_FRAGMENT)) {
             mViewModel.getArtist().observe(getViewLifecycleOwner(), artistModel -> {
                 commonAdapter.setList(artistModel, false);
-//                fastScroller.setRecyclerView(recyclerView);
+                int size = artistModel.size();
+                if (size == 0 && nothing.getVisibility() == View.GONE) {
+                    nothing.setVisibility(View.VISIBLE);
+                } else if (size != 0 && nothing.getVisibility() == View.VISIBLE) {
+                    nothing.setVisibility(View.GONE);
+                }
             });
         }
-
 
     }
 

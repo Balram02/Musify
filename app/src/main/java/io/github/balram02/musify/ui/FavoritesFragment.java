@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,11 +29,13 @@ public class FavoritesFragment extends Fragment {
 
     private SharedViewModel mViewModel;
 
+    private LinearLayout nothing;
     private RecyclerView recyclerView;
     private FavoritesAdapter favoritesAdapter;
     private Context context;
     private MusicPlayerServiceListener musicPlayerServiceListener;
     private FastScroller fastScroller;
+    private TextView nothingMsg;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -57,6 +61,8 @@ public class FavoritesFragment extends Fragment {
         View v = inflater.inflate(R.layout.favorites_fragment, container, false);
         recyclerView = v.findViewById(R.id.favorites_recycler_view);
         fastScroller = v.findViewById(R.id.fast_scroller);
+        nothing = v.findViewById(R.id.nothing_layout);
+        nothingMsg = v.findViewById(R.id.nothing_msg);
         recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
         favoritesAdapter = new FavoritesAdapter(context);
         recyclerView.setAdapter(favoritesAdapter);
@@ -73,6 +79,14 @@ public class FavoritesFragment extends Fragment {
         mViewModel.getFavoriteSong().observe(getViewLifecycleOwner(), songsModels -> {
             favoritesAdapter.submitList(songsModels);
             fastScroller.setRecyclerView(recyclerView);
+            int size = songsModels.size();
+            if (size == 0 && nothing.getVisibility() == View.GONE) {
+                nothingMsg.setText("You don't have any favorites");
+                nothing.setVisibility(View.VISIBLE);
+            } else if (size != 0 && nothing.getVisibility() == View.VISIBLE) {
+                nothing.setVisibility(View.GONE);
+            }
+
         });
     }
 }

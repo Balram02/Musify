@@ -26,7 +26,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -417,19 +416,10 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            startActivityForResult(new Intent(MainActivity.this, SettingsActivity.class), Constants.INTENT_THEME_REQUEST);
+            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, resultCode + " onActivityResult: " + requestCode);
-        if (resultCode == Constants.INTENT_THEME_REQUEST && requestCode == Constants.INTENT_THEME_REQUEST) {
-            recreate();
-        }
     }
 
     @Override

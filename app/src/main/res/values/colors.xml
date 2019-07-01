@@ -17,7 +17,7 @@
     <!--*************Theme 2*************-->
     <color name="colorBackground2">@android:color/white</color>
     <color name="colorBackgroundDark2">@android:color/white</color>
-    <color name="colorAccent2">#DF0C0C</color>
+    <color name="colorAccent2">#FF9800</color>
     <color name="colorTextPrimary2">#121212</color>
     <color name="colorTextPrimaryLight2">#919191</color>
     <color name="colorTextPrimaryDark2">@android:color/black</color>
