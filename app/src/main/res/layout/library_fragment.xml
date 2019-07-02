@@ -39,7 +39,7 @@
                     android:scaleX="0.5"
                     android:scaleY="0.5"
                     android:src="@drawable/icons8_song_album_art_100dp"
-                    android:tint="?attr/colorTint" />
+                    android:tint="?albumTint" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -75,7 +75,7 @@
                 android:scaleX="0.5"
                 android:scaleY="0.5"
                 android:src="@drawable/icons8_song_artist_100dp"
-                android:tint="?attr/colorTint" />
+                android:tint="?albumTint" />
 
             <TextView
                 android:layout_width="wrap_content"

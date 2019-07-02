@@ -9,6 +9,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -115,15 +116,17 @@ public class AllSongsFragment extends Fragment {
                     final float height = (float) itemView.getBottom() - (float) itemView.getTop();
                     final float width = height / 3;
 
+                    TypedValue typedValue = new TypedValue();
+                    context.getTheme().resolveAttribute(R.attr.colorOverlay, typedValue, true);
                     if (dX > 0) {
-                        paint.setColor(getResources().getColor(R.color.blackOverlay));
+                        paint.setColor(typedValue.data);
                         RectF background = new RectF((float) itemView.getLeft(), (float) itemView.getTop(), dX, (float) itemView.getBottom());
                         c.drawRect(background, paint);
                         RectF icon = new RectF((float) itemView.getLeft() + width, (float) itemView.getTop() + width, (float) itemView.getLeft() + 2 * width, (float) itemView.getBottom() - width);
                         c.drawBitmap(favorite, null, icon, paint);
 
                     } else {
-                        paint.setColor(getResources().getColor(R.color.blackOverlay));
+                        paint.setColor(typedValue.data);
                         RectF background = new RectF((float) itemView.getRight() + dX, (float) itemView.getTop(), (float) itemView.getRight(), (float) itemView.getBottom());
                         c.drawRect(background, paint);
                         RectF icon = new RectF((float) itemView.getRight() - 2 * width, (float) itemView.getTop() + width, (float) itemView.getRight() - width, (float) itemView.getBottom() - width);
@@ -160,7 +163,7 @@ public class AllSongsFragment extends Fragment {
 
     private Bitmap drawableToBitmap(boolean favorite) {
 
-        Drawable drawable = getResources().getDrawable(favorite ?
+        Drawable drawable = context.getDrawable(favorite ?
                 R.drawable.ic_favorite_filled_white_24dp : R.drawable.ic_favorite_border_white_24dp);
 
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);

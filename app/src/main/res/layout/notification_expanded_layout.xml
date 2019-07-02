@@ -63,19 +63,19 @@
             android:id="@+id/notification_previous_icon"
             android:layout_width="50dp"
             android:layout_height="match_parent"
-            app:srcCompat="@drawable/previous_icon_white_24dp" />
+            app:srcCompat="@drawable/notification_next_icon_white_24dp" />
 
         <ImageView
             android:id="@+id/notification_play_pause_icon"
             android:layout_width="50dp"
             android:layout_height="match_parent"
-            app:srcCompat="@drawable/play_icon_white_24dp" />
+            app:srcCompat="@drawable/notification_play_icon_white_24dp" />
 
         <ImageView
             android:id="@+id/notification_next_icon"
             android:layout_width="50dp"
             android:layout_height="match_parent"
-            app:srcCompat="@drawable/next_icon_white_24dp" />
+            app:srcCompat="@drawable/notification_next_icon_white_24dp" />
 
     </LinearLayout>
 
@@ -88,6 +88,6 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
         android:padding="1dp"
-        app:srcCompat="@drawable/ic_close_white_24dp" />
+        app:srcCompat="@drawable/notification_ic_close_white_24dp" />
 
 </RelativeLayout>

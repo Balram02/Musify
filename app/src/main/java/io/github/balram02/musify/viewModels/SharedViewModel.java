@@ -72,4 +72,12 @@ public class SharedViewModel extends AndroidViewModel {
         return songsByArtist;
     }
 
+    public LiveData<List<SongsModel>> getSongsByAlbums(String albumName) {
+        return repository.getSongsByAlbums(albumName);
+    }
+
+    public LiveData<List<SongsModel>> getSongsByArtist(String artistName) {
+        return repository.getSongsByArtist(artistName);
+    }
+
 }

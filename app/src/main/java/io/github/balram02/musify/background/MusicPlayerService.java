@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
@@ -29,9 +30,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.media.MediaBrowserServiceCompat;
 import androidx.media.session.MediaButtonReceiver;
+
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.List;
@@ -44,8 +46,6 @@ import io.github.balram02.musify.ui.MainActivity;
 import io.github.balram02.musify.utils.Preferences;
 import io.github.balram02.musify.viewModels.SharedViewModel;
 
-import static io.github.balram02.musify.constants.Constants.BROADCAST_ACTION_PAUSE;
-import static io.github.balram02.musify.constants.Constants.BROADCAST_ACTION_PLAY;
 import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_CLOSE;
 import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_NEW_SONG;
 import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_NEXT;
@@ -93,9 +93,10 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
     private AudioManager mAudioManager;
 
     private final Binder mBinder = new PlayerServiceBinder();
-    private Intent intent;
     private boolean setSeekTo = false;
     private NotificationManager manager;
+
+    private MediaControllerCompat mediaControllerCompat;
 
     @Override
     public void onAudioFocusChange(int focusChange) {
@@ -125,7 +126,6 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
             super.onPlay();
             Log.d(TAG, "onPlay: callback method");
             start();
-
         }
 
         @Override
@@ -176,6 +176,11 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
 
         player = new MediaPlayer();
         initMediaSessionCompat();
+        try {
+            mediaControllerCompat = new MediaControllerCompat(this, getSessionToken());
+        } catch (Exception e) {
+            Toast.makeText(this, "403 There was some error !", Toast.LENGTH_SHORT).show();
+        }
 
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
@@ -263,10 +268,18 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
 
     public void createNotification(boolean pauseButton) {
 
-        if (notificationCollapsed == null)
+        if (notificationCollapsed == null) {
             notificationCollapsed = new RemoteViews(getPackageName(), R.layout.notification_collapsed_layout);
-        if (notificationExpanded == null)
+            notificationCollapsed.setImageViewResource(R.id.notification_previous_icon, R.drawable.notification_previous_icon_white_24dp);
+            notificationCollapsed.setImageViewResource(R.id.notification_next_icon, R.drawable.notification_next_icon_white_24dp);
+            notificationCollapsed.setImageViewResource(R.id.notification_close_icon, R.drawable.notification_ic_close_white_24dp);
+        }
+        if (notificationExpanded == null) {
             notificationExpanded = new RemoteViews(getPackageName(), R.layout.notification_expanded_layout);
+            notificationExpanded.setImageViewResource(R.id.notification_previous_icon, R.drawable.notification_previous_icon_white_24dp);
+            notificationExpanded.setImageViewResource(R.id.notification_next_icon, R.drawable.notification_next_icon_white_24dp);
+            notificationExpanded.setImageViewResource(R.id.notification_close_icon, R.drawable.notification_ic_close_white_24dp);
+        }
 
         notificationCollapsed.setTextViewText(R.id.notification_song_name, model.getTitle());
         notificationExpanded.setTextViewText(R.id.notification_song_name, model.getTitle());
@@ -274,19 +287,12 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
         notificationCollapsed.setTextViewText(R.id.notification_song_artist_name, model.getArtist());
         notificationExpanded.setTextViewText(R.id.notification_song_artist_name, model.getArtist());
 
-        notificationCollapsed.setImageViewResource(R.id.notification_previous_icon, R.drawable.previous_icon_white_24dp);
-        notificationExpanded.setImageViewResource(R.id.notification_previous_icon, R.drawable.previous_icon_white_24dp);
 
         notificationCollapsed.setImageViewResource(R.id.notification_play_pause_icon,
-                pauseButton ? R.drawable.pause_icon_white_24dp : R.drawable.play_icon_white_24dp);
+                pauseButton ? R.drawable.notification_pause_icon_white_24dp : R.drawable.notification_play_icon_white_24dp);
         notificationExpanded.setImageViewResource(R.id.notification_play_pause_icon,
-                pauseButton ? R.drawable.pause_icon_white_24dp : R.drawable.play_icon_white_24dp);
+                pauseButton ? R.drawable.notification_pause_icon_white_24dp : R.drawable.notification_play_icon_white_24dp);
 
-        notificationCollapsed.setImageViewResource(R.id.notification_next_icon, R.drawable.next_icon_white_24dp);
-        notificationExpanded.setImageViewResource(R.id.notification_next_icon, R.drawable.next_icon_white_24dp);
-
-        notificationCollapsed.setImageViewResource(R.id.notification_close_icon, R.drawable.ic_close_white_24dp);
-        notificationExpanded.setImageViewResource(R.id.notification_close_icon, R.drawable.ic_close_white_24dp);
 
         if (activityIntent == null) {
             activityIntent = new Intent(this, MainActivity.class);
@@ -357,8 +363,8 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
             notificationCollapsed.setImageViewBitmap(R.id.notification_album_art, art);
             notificationExpanded.setImageViewBitmap(R.id.notification_album_art, art);
         } else {
-            notificationCollapsed.setImageViewResource(R.id.notification_album_art, R.drawable.ic_music_placeholder_white);
-            notificationExpanded.setImageViewResource(R.id.notification_album_art, R.drawable.ic_music_placeholder_white);
+            notificationCollapsed.setImageViewResource(R.id.notification_album_art, R.drawable.notification_ic_music_placeholder_white);
+            notificationExpanded.setImageViewResource(R.id.notification_album_art, R.drawable.notification_ic_music_placeholder_white);
         }
 
         startForeground(NOTIFICATION_ID, notification);
@@ -372,7 +378,7 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
 
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "description", NotificationManager.IMPORTANCE_DEFAULT);
         channel.setDescription("Music notification");
-        channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
         channel.setSound(null, null);
         channel.enableVibration(false);
         manager = getSystemService(NotificationManager.class);
@@ -407,13 +413,6 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
             currentSongPosition = this.songsQueueList.indexOf(model);
 
         Log.d(TAG, "setSongDetails: position = " + currentSongPosition);
-    }
-
-    private void sendBroadcastToLocal(String action) {
-        intent = new Intent();
-        intent.setAction(action);
-        intent.putExtra("song_details", model);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     private void setDataSourceAndPrepare() {
@@ -452,7 +451,6 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
                 setDataSourceAndPrepare();
             } else {
                 player.start();
-                sendBroadcastToLocal(BROADCAST_ACTION_PLAY);
                 createNotification(true);
             }
 
@@ -463,6 +461,7 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
                         .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, model.getArtist())
                         .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, model.getAlbum())
                         .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, model.getDuration())
+                        .putString("song_model_object", new Gson().toJson(model))
                         .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap != null ? bitmap : drawableToBitmap())
                         .build());
             } else {
@@ -494,7 +493,6 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
         createNotification(false);
         mediaSessionCompat.setActive(false);
         setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
-        sendBroadcastToLocal(BROADCAST_ACTION_PAUSE);
         Preferences.SongDetails.setLastSongDetails(this, model);
         Preferences.SongDetails.setLastSongCurrentPosition(this, getCurrentPosition());
 
@@ -585,6 +583,10 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
 
     public boolean isPlaying() {
         return player.isPlaying();
+    }
+
+    public MediaControllerCompat getMediaControllerCompat() {
+        return mediaControllerCompat;
     }
 
     private int getBufferPercentage() {

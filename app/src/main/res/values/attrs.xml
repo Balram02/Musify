@@ -11,5 +11,6 @@
     <attr name="colorTint" format="color" />
     <attr name="colorRipple" format="color" />
     <attr name="drawableTintColor" format="color" />
+    <attr name="albumTint" format="color" />
 
 </resources>

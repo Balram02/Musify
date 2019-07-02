@@ -87,6 +87,14 @@ public class SongsRepository {
         return songsByArtist;
     }
 
+    public LiveData<List<SongsModel>> getSongsByAlbums(String albumName) {
+        return songsDao.getSongsByAlbums(albumName);
+    }
+
+    public LiveData<List<SongsModel>> getSongsByArtist(String artistName) {
+        return songsDao.getSongsByArtist(artistName);
+    }
+
     private void performTask(int operation, SongsModel songsModel) {
         try {
             new DBAsyncTask(operation).execute(songsModel).get();

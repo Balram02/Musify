@@ -1,6 +1,7 @@
 package io.github.balram02.musify.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,27 +10,41 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.futuremind.recyclerviewfastscroll.SectionTitleProvider;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.constants.Constants;
 import io.github.balram02.musify.models.SongsModel;
+import io.github.balram02.musify.ui.CommonActivity;
 
-public class CommonAdapter extends RecyclerView.Adapter<CommonAdapter.SongListViewHolder> implements SectionTitleProvider {
+public class CommonAdapter extends ListAdapter<SongsModel, CommonAdapter.SongListViewHolder> implements SectionTitleProvider {
 
-    private List<SongsModel> songs = new ArrayList<>();
     private OnItemClickListener listener;
     private Context context;
     private boolean isAlbum;
 
+    private static DiffUtil.ItemCallback<SongsModel> diffCallback = new DiffUtil.ItemCallback<SongsModel>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull SongsModel oldItem, @NonNull SongsModel newItem) {
+            return oldItem.getId() == newItem.getId();
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull SongsModel oldItem, @NonNull SongsModel newItem) {
+            return oldItem.equals(newItem);
+        }
+    };
+
     public CommonAdapter(Context context) {
+        super(diffCallback);
         this.context = context;
     }
 
@@ -43,7 +58,7 @@ public class CommonAdapter extends RecyclerView.Adapter<CommonAdapter.SongListVi
     @Override
     public void onBindViewHolder(@NonNull SongListViewHolder holder, int i) {
 
-        SongsModel model = songs.get(i);
+        SongsModel model = getItem(i);
         holder.commonName.setText(isAlbum ? model.getAlbum() : model.getArtist());
 
         Uri uri = Constants.getAlbumArtUri(model.getAlbumId());
@@ -61,19 +76,13 @@ public class CommonAdapter extends RecyclerView.Adapter<CommonAdapter.SongListVi
     }
 
     @Override
-    public int getItemCount() {
-        return songs.size();
-    }
-
-    @Override
     public String getSectionTitle(int position) {
-        return songs.get(position).getTitle().substring(0, 1);
+        return getItem(position).getTitle().substring(0, 1);
     }
 
     public void setList(List<SongsModel> songs, boolean isAlbum) {
-        this.songs = songs;
+        submitList(songs);
         this.isAlbum = isAlbum;
-        notifyDataSetChanged();
     }
 
     class SongListViewHolder extends RecyclerView.ViewHolder {
@@ -86,11 +95,23 @@ public class CommonAdapter extends RecyclerView.Adapter<CommonAdapter.SongListVi
             commonName = itemView.findViewById(R.id.common_name);
             albumArt = itemView.findViewById(R.id.album_art);
 
+            itemView.setOnClickListener(view -> {
+                Intent intent = new Intent(context, CommonActivity.class);
+                intent.setAction(isAlbum ? "album" : "artist");
+                intent.putExtra(isAlbum ? "album_name" : "artist_name", isAlbum ? getItem().getAlbum() : getItem().getArtist());
+                intent.putExtra("album_id", getItem().getAlbumId());
+                context.startActivity(intent);
+            });
+
 /*            itemView.setOnClickListener(v -> {
                 if (listener != null && getAdapterPosition() != 0) {
                     listener.onItemClick(songs.get(getAdapterPosition()));
                 }
             });*/
+        }
+
+        private SongsModel getItem() {
+            return CommonAdapter.this.getItem(getAdapterPosition());
         }
     }
 

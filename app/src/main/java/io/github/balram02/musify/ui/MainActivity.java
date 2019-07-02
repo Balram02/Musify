@@ -9,13 +9,16 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,13 +35,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
+import com.google.gson.Gson;
 
 import java.util.Date;
 import java.util.List;
@@ -52,8 +53,6 @@ import io.github.balram02.musify.models.SongsModel;
 import io.github.balram02.musify.utils.Preferences;
 import io.github.balram02.musify.viewModels.SharedViewModel;
 
-import static io.github.balram02.musify.constants.Constants.BROADCAST_ACTION_PAUSE;
-import static io.github.balram02.musify.constants.Constants.BROADCAST_ACTION_PLAY;
 import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_NEW_SONG;
 import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_PAUSE;
 import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_PLAY;
@@ -68,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
     private final String TAG = Constants.TAG;
 
-    private LocalReceiver localReceiver;
     private Toolbar toolbar;
 
     private SharedViewModel sharedViewModel;
@@ -106,12 +104,14 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     private Handler handler;
 
     public MusicPlayerService musicPlayerService;
+
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.d(TAG, "onServiceConnected: ");
             isBound = true;
             musicPlayerService = ((MusicPlayerService.PlayerServiceBinder) iBinder).getBoundService();
+            musicPlayerService.getMediaControllerCompat().registerCallback(controllerCompatCallback);
             setUpLastDetails();
         }
 
@@ -119,6 +119,35 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         public void onServiceDisconnected(ComponentName name) {
             Log.d(TAG, "onServiceDisconnected: ");
             isBound = false;
+        }
+    };
+
+    private MediaControllerCompat.Callback controllerCompatCallback = new MediaControllerCompat.Callback() {
+        @Override
+        public void onMetadataChanged(MediaMetadataCompat metadata) {
+            super.onMetadataChanged(metadata);
+
+            if (bottomSheetLayout.getVisibility() == View.GONE) {
+                bottomSheetLayout.setVisibility(View.VISIBLE);
+            }
+
+            SongsModel model = new Gson().fromJson(metadata.getString("song_model_object"), SongsModel.class);
+            setFavoritesDrawable(model.isFavorite());
+            setAlbumArt(model.getAlbumId());
+            peekSongName.setText(model.getTitle());
+            bottomSheetSongName.setText(model.getTitle());
+            bottomSheetSongArtist.setText(model.getArtist());
+            bottomSheetSeekbar.setMax(musicPlayerService.getDuration());
+            bottomSheetSongDuration.setText(Constants.convertMilliseconds(model.getDuration()));
+            addObserverOnFavorite();
+            updateSeekBarProgress();
+            model.setLastAccessedTimestamp(new Date().getTime());
+            sharedViewModel.update(model);
+        }
+
+        @Override
+        public void onPlaybackStateChanged(PlaybackStateCompat state) {
+            setPlayPauseDrawable(state.getState() == PlaybackStateCompat.STATE_PLAYING);
         }
     };
 
@@ -340,6 +369,8 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         setFragment(commonFragment);
         setTitle(fragmentType.equals(FragmentListener.ALBUM_FRAGMENT) ? "Albums" : "Artists");
         commonFragment.setRecyclerViewAdapterType(fragmentType);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     public void setFragment(Fragment fragment) {
@@ -403,6 +434,8 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                 break;
         }
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
         return true;
     }
 
@@ -418,7 +451,8 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         if (id == R.id.action_settings) {
             startActivity(new Intent(MainActivity.this, SettingsActivity.class));
             return true;
-        }
+        } else if (id == android.R.id.home)
+            onBackPressed();
         return super.onOptionsItemSelected(item);
     }
 
@@ -426,11 +460,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     protected void onStart() {
         super.onStart();
         Log.d(TAG, "onStart: MainActivity");
-        localReceiver = new LocalReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(BROADCAST_ACTION_PLAY);
-        filter.addAction(BROADCAST_ACTION_PAUSE);
-        LocalBroadcastManager.getInstance(this).registerReceiver(localReceiver, filter);
 
         // Handles headphones coming unplugged. cannot be done through a manifest receiver
         IntentFilter globalFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
@@ -457,12 +486,12 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy: MainActivity");
+        musicPlayerService.getMediaControllerCompat().unregisterCallback(controllerCompatCallback);
         if (isBound) {
             unbindService(mServiceConnection);
             isBound = false;
         }
         PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(PREFERENCES_ACTIVITY_STATE, false).apply();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(localReceiver);
         unregisterReceiver(mNoisyReceiver);
     }
 
@@ -492,10 +521,10 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         if (bottomSheet.getState() == BottomSheetBehavior.STATE_EXPANDED)
             bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
-        else if (activeFragment instanceof CommonFragment)
+        else if (activeFragment instanceof CommonFragment) {
             setFragment(libraryFragment);
-
-        else if (!(activeFragment instanceof AllSongsFragment))
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        } else if (!(activeFragment instanceof AllSongsFragment))
             navigationView.setSelectedItemId(R.id.music);
         else
             super.onBackPressed();
@@ -503,22 +532,16 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
     public void setAlbumArt(long albumArtId) {
 
-        Uri uri = Constants.getAlbumArtUri(albumArtId);
-
-        Picasso.get().load(uri).into(bottomSheetAlbumArt, new Callback() {
-            @Override
-            public void onSuccess() {
-                bottomSheetAlbumArt.setBackground(null);
-                bottomSheetAlbumArt.setPadding(0, 0, 0, 0);
-            }
-
-            @Override
-            public void onError(Exception e) {
-                bottomSheetAlbumArt.setImageResource(R.drawable.ic_music_placeholder_white);
-                bottomSheetAlbumArt.setBackground(getDrawable(R.drawable.background_square_stroke_white_16dp));
-                bottomSheetAlbumArt.setPadding(30, 30, 30, 30);
-            }
-        });
+        Bitmap bitmap = Constants.getAlbumArt(this, albumArtId);
+        if (bitmap != null) {
+            bottomSheetAlbumArt.setImageBitmap(bitmap);
+            bottomSheetAlbumArt.setBackground(null);
+            bottomSheetAlbumArt.setPadding(0, 0, 0, 0);
+        } else {
+            bottomSheetAlbumArt.setImageResource(R.drawable.ic_music_placeholder_white);
+            bottomSheetAlbumArt.setBackground(getDrawable(R.drawable.background_square_stroke_white_16dp));
+            bottomSheetAlbumArt.setPadding(30, 30, 30, 30);
+        }
     }
 
     public void setQueueListInService(boolean isShuffled) {
@@ -634,42 +657,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         else
             bottomSheetShuffle.setImageResource(R.drawable.ic_shuffle_no_24dp);
         Log.d(TAG, "setShuffleDrawable: " + state);
-    }
-
-    public class LocalReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            if (intent.getAction() != null) {
-
-                if (bottomSheetLayout.getVisibility() == View.GONE) {
-                    bottomSheetLayout.setVisibility(View.VISIBLE);
-                }
-
-                switch (intent.getAction()) {
-                    case BROADCAST_ACTION_PLAY:
-
-                        SongsModel model = (SongsModel) intent.getSerializableExtra("song_details");
-                        setFavoritesDrawable(model.isFavorite());
-                        setAlbumArt(model.getAlbumId());
-                        peekSongName.setText(model.getTitle());
-                        bottomSheetSongName.setText(model.getTitle());
-                        bottomSheetSongArtist.setText(model.getArtist());
-                        bottomSheetSeekbar.setMax(musicPlayerService.getDuration());
-                        bottomSheetSongDuration.setText(Constants.convertMilliseconds(model.getDuration()));
-                        addObserverOnFavorite();
-                        updateSeekBarProgress();
-                        setPlayPauseDrawable(true);
-                        model.setLastAccessedTimestamp(new Date().getTime());
-                        sharedViewModel.update(model);
-                        break;
-
-                    case BROADCAST_ACTION_PAUSE:
-                        setPlayPauseDrawable(false);
-                        break;
-                }
-            }
-        }
     }
 
     private BroadcastReceiver mNoisyReceiver = new BroadcastReceiver() {

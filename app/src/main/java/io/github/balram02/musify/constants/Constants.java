@@ -28,10 +28,6 @@ public class Constants {
     public static final String INTENT_ACTION_NEXT = "intent_action_next";
     public static final String INTENT_ACTION_CLOSE = "intent_action_close";
 
-    //    Local Broadcast Actions
-    public static final String BROADCAST_ACTION_PLAY = "broadcast_action_play";
-    public static final String BROADCAST_ACTION_PAUSE = "broadcast_action_pause";
-
     //    Repeat states
     public static final int PREFERENCES_REPEAT_STATE_NONE = 0;
     public static final int PREFERENCES_REPEAT_STATE_ALL = -1;
@@ -40,8 +36,6 @@ public class Constants {
     //    Shuffle states
     public static final boolean PREFERENCES_SHUFFLE_STATE_YES = true;
     public static final boolean PREFERENCES_SHUFFLE_STATE_NO = false;
-
-    public static final int INTENT_THEME_REQUEST = 200;
 
     public static final String PREFERENCES_ACTIVITY_STATE = "isForeground";
 

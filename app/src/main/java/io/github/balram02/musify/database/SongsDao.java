@@ -64,4 +64,10 @@ public interface SongsDao {
 
     @Query("SELECT * FROM songs_table GROUP BY artist")
     LiveData<List<SongsModel>> getArtist();
+
+    @Query("SELECT * FROM songs_table WHERE album = :album ORDER BY title ASC")
+    LiveData<List<SongsModel>> getSongsByAlbums(String album);
+
+    @Query("SELECT * FROM songs_table WHERE artist = :artist ORDER BY title ASC")
+    LiveData<List<SongsModel>> getSongsByArtist(String artist);
 }

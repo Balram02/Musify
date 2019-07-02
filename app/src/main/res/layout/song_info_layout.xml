@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/blackOverlay"
+    android:background="?colorOverlay"
     android:paddingStart="20dp"
     android:paddingEnd="20dp"
-    app:cardBackgroundColor="@color/blackOverlay"
+    app:cardBackgroundColor="?colorOverlay"
     app:layout_behavior="@string/bottom_sheet_behavior">
 
     <LinearLayout
@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 android:text="Album"
-                android:textColor="@color/dark_gray" />
+                android:textColor="?textColorPrimaryLight" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -61,7 +61,7 @@
                     android:gravity="start"
                     android:padding="5dp"
                     android:text="Song Album"
-                    android:textColor="@color/white"
+                    android:textColor="?textColorPrimary"
                     android:textSize="16sp" />
 
             </LinearLayout>
@@ -80,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 android:text="Title"
-                android:textColor="@color/dark_gray" />
+                android:textColor="?textColorPrimaryLight" />
 
             <TextView
                 android:id="@+id/info_song_title"
@@ -92,7 +92,7 @@
                 android:lines="1"
                 android:padding="5dp"
                 android:text="Song Title"
-                android:textColor="@color/white"
+                android:textColor="?textColorPrimary"
                 android:textSize="16sp" />
 
         </LinearLayout>
@@ -110,7 +110,7 @@
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 android:text="Artist"
-                android:textColor="@color/dark_gray" />
+                android:textColor="?textColorPrimaryLight" />
 
             <TextView
                 android:id="@+id/info_song_artist"
@@ -122,7 +122,7 @@
                 android:lines="1"
                 android:padding="5dp"
                 android:text="Song Artist"
-                android:textColor="@color/white"
+                android:textColor="?textColorPrimary"
                 android:textSize="16sp" />
 
         </LinearLayout>
@@ -139,7 +139,7 @@
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 android:text="Location on device"
-                android:textColor="@color/dark_gray" />
+                android:textColor="?textColorPrimaryLight" />
 
             <TextView
                 android:id="@+id/info_song_path"
@@ -149,7 +149,7 @@
                 android:gravity="start"
                 android:padding="5dp"
                 android:text="Song Location"
-                android:textColor="@color/white"
+                android:textColor="?textColorPrimary"
                 android:textSize="16sp" />
 
         </LinearLayout>
