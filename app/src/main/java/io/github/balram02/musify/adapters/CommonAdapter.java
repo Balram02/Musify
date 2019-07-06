@@ -1,6 +1,6 @@
 package io.github.balram02.musify.adapters;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,7 +29,7 @@ import io.github.balram02.musify.ui.CommonActivity;
 public class CommonAdapter extends ListAdapter<SongsModel, CommonAdapter.SongListViewHolder> implements SectionTitleProvider {
 
     private OnItemClickListener listener;
-    private Context context;
+    private Activity context;
     private boolean isAlbum;
 
     private static DiffUtil.ItemCallback<SongsModel> diffCallback = new DiffUtil.ItemCallback<SongsModel>() {
@@ -43,7 +44,7 @@ public class CommonAdapter extends ListAdapter<SongsModel, CommonAdapter.SongLis
         }
     };
 
-    public CommonAdapter(Context context) {
+    public CommonAdapter(Activity context) {
         super(diffCallback);
         this.context = context;
     }
@@ -100,14 +101,10 @@ public class CommonAdapter extends ListAdapter<SongsModel, CommonAdapter.SongLis
                 intent.setAction(isAlbum ? "album" : "artist");
                 intent.putExtra(isAlbum ? "album_name" : "artist_name", isAlbum ? getItem().getAlbum() : getItem().getArtist());
                 intent.putExtra("album_id", getItem().getAlbumId());
-                context.startActivity(intent);
+                ActivityOptionsCompat optionsCompat = ActivityOptionsCompat
+                        .makeSceneTransitionAnimation(context, albumArt, "album_art");
+                context.startActivity(intent, optionsCompat.toBundle());
             });
-
-/*            itemView.setOnClickListener(v -> {
-                if (listener != null && getAdapterPosition() != 0) {
-                    listener.onItemClick(songs.get(getAdapterPosition()));
-                }
-            });*/
         }
 
         private SongsModel getItem() {

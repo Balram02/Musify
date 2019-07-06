@@ -59,6 +59,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     public void albumArtCheckbox(View v) {
         Preferences.DefaultSettings.setAlbumArtOnLockScreen(this, !albumCheckbox.isChecked());
+        Toast.makeText(this, "Kindly pause and play once to see updated settings", Toast.LENGTH_LONG).show();
     }
 
     @Override

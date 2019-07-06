@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
@@ -45,6 +44,7 @@ public class CommonActivity extends AppCompatActivity implements OnAdapterItemCl
 
         songsAdapter = new SongsAdapter(this);
         recyclerView.setAdapter(songsAdapter);
+        songsAdapter.setOnItemClickListener(this);
 
         sharedViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
 
@@ -87,6 +87,7 @@ public class CommonActivity extends AppCompatActivity implements OnAdapterItemCl
 
     @Override
     public void onItemClick(SongsModel model) {
-        Toast.makeText(this, "Kya hai be", Toast.LENGTH_SHORT).show();
+//        musicPlayerService
+//        Toast.makeText(this, "Kya hai be", Toast.LENGTH_SHORT).show();
     }
 }

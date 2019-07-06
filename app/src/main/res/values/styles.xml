@@ -15,6 +15,7 @@
         <item name="colorRipple">@color/colorRipple1</item>
         <item name="drawableTintColor">@color/white</item>
         <item name="albumTint">@color/albumTint1</item>
+        <item name="android:windowContentTransitions">true</item>
         <!--<item name="backgroundColor"></item>-->
 
     </style>
@@ -38,6 +39,7 @@
         <item name="colorRipple">@color/colorRipple2</item>
         <item name="drawableTintColor">@color/black</item>
         <item name="albumTint">@color/albumTint2</item>
+        <item name="android:windowContentTransitions">true</item>
         <!--<item name="backgroundColor"></item>-->
 
     </style>

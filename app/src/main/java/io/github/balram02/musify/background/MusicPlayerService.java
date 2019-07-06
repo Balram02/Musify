@@ -60,6 +60,7 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
 
     public static final String CHANNEL_ID = "512";
     public static final int NOTIFICATION_ID = 512;
+    private static boolean playingFromFav = false;
 //    private boolean wasPaused;
 
     //    intents for notification
@@ -349,7 +350,7 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
         notificationExpanded.setOnClickPendingIntent(R.id.root_layout, activityPendingIntent);
 
         notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(pauseButton ? R.drawable.play_icon_white_24dp : R.drawable.pause_icon_white_24dp)
+                .setSmallIcon(pauseButton ? R.drawable.notification_play_icon_white_24dp : R.drawable.notification_pause_icon_white_24dp)
                 .setStyle(new androidx.media.app.NotificationCompat.DecoratedMediaCustomViewStyle().setMediaSession(mediaSessionCompat.getSessionToken()))
                 .setCustomContentView(notificationCollapsed)
                 .setCustomBigContentView(notificationExpanded)
@@ -391,14 +392,16 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
         this.songsQueueList = songsQueueList;
 
         if (isShuffled) {
-            currentSongPosition = new Random().nextInt(songsQueueList.size());
-            this.songsQueueList.add(currentSongPosition, this.model);
+            int index = this.songsQueueList.indexOf(this.model);
+            if (index == -1) {
+                currentSongPosition = new Random().nextInt(songsQueueList.size());
+                this.songsQueueList.add(currentSongPosition, this.model);
+            } else currentSongPosition = index;
         } else
             currentSongPosition = this.songsQueueList.indexOf(model);
 
-        currentSongPosition = new Random().nextInt(songsQueueList.size());
-        this.songsQueueList.add(currentSongPosition, this.model != null ? model :
-                Preferences.SongDetails.getLastSongDetails(this));
+//        currentSongPosition = new Random().nextInt(songsQueueList.size());
+//        this.songsQueueList.add(currentSongPosition, this.model != null ? model : Preferences.SongDetails.getLastSongDetails(this));
     }
 
     public void setSongDetails(List<SongsModel> songsQueueList, SongsModel model, SharedViewModel mViewModel) {
@@ -454,19 +457,18 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
                 createNotification(true);
             }
 
-            if (Preferences.DefaultSettings.getAlbumArtOnLockScreen(this)) {
-                Bitmap bitmap = Constants.getAlbumArt(this, model.getAlbumId());
-                mediaSessionCompat.setMetadata(new MediaMetadataCompat.Builder()
-                        .putString(MediaMetadataCompat.METADATA_KEY_TITLE, model.getTitle())
-                        .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, model.getArtist())
-                        .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, model.getAlbum())
-                        .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, model.getDuration())
-                        .putString("song_model_object", new Gson().toJson(model))
-                        .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap != null ? bitmap : drawableToBitmap())
-                        .build());
-            } else {
-                mediaSessionCompat.setMetadata(new MediaMetadataCompat.Builder().build());
-            }
+            Bitmap bitmap = Constants.getAlbumArt(this, model.getAlbumId());
+            MediaMetadataCompat.Builder builder = new MediaMetadataCompat.Builder()
+                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, model.getTitle())
+                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, model.getArtist())
+                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, model.getAlbum())
+                    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, model.getDuration())
+                    .putString("song_model_object", new Gson().toJson(model));
+
+            if (Preferences.DefaultSettings.getAlbumArtOnLockScreen(this))
+                builder.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap != null ? bitmap : drawableToBitmap());
+            mediaSessionCompat.setMetadata(builder.build());
+
             mediaSessionCompat.setActive(true);
             setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
 
@@ -477,7 +479,7 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
 
     private Bitmap drawableToBitmap() {
 
-        Drawable drawable = getResources().getDrawable(R.drawable.ic_music_placeholder_white);
+        Drawable drawable = getDrawable(R.drawable.ic_music_placeholder_white);
 
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
@@ -587,6 +589,14 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
 
     public MediaControllerCompat getMediaControllerCompat() {
         return mediaControllerCompat;
+    }
+
+    public boolean isPlayingFromFav() {
+        return playingFromFav;
+    }
+
+    public void setPlayingFromFav(boolean playingFromFav) {
+        MusicPlayerService.playingFromFav = playingFromFav;
     }
 
     private int getBufferPercentage() {

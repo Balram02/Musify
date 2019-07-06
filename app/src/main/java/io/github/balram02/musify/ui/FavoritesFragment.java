@@ -66,8 +66,11 @@ public class FavoritesFragment extends Fragment {
         recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
         favoritesAdapter = new FavoritesAdapter(context);
         recyclerView.setAdapter(favoritesAdapter);
+        v.findViewById(R.id.shuffle_play).setOnClickListener(view -> {
+            musicPlayerServiceListener.onPlayFromFavorites(null, true);
+        });
         favoritesAdapter.setOnItemClickerListener(model -> {
-            musicPlayerServiceListener.onUpdateService(mViewModel.getShuffleSongsQueue(), model, mViewModel);
+            musicPlayerServiceListener.onPlayFromFavorites(model, false);
         });
         return v;
     }

@@ -7,20 +7,21 @@
     android:background="?attr/primaryColorDark"
     android:orientation="vertical">
 
+    <include layout="@layout/toolbar" />
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/primaryColorDark"
+        android:paddingTop="?attr/actionBarSize" />
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinator"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottom_nav_view"
-        android:layout_marginBottom="3dp">
-
-        <include layout="@layout/toolbar" />
-
-        <FrameLayout
-            android:id="@+id/fragment_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?attr/primaryColorDark"
-            android:paddingTop="?attr/actionBarSize" />
+        android:layout_marginBottom="2dp">
 
         <include layout="@layout/music_player_bottom_sheet_layout" />
 

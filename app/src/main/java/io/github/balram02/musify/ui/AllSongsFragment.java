@@ -32,7 +32,6 @@ import io.github.balram02.musify.R;
 import io.github.balram02.musify.adapters.SongsAdapter;
 import io.github.balram02.musify.listeners.MusicPlayerServiceListener;
 import io.github.balram02.musify.models.SongsModel;
-import io.github.balram02.musify.utils.Preferences;
 import io.github.balram02.musify.viewModels.SharedViewModel;
 
 import static io.github.balram02.musify.constants.Constants.TAG;
@@ -87,12 +86,7 @@ public class AllSongsFragment extends Fragment {
         recyclerView.setAdapter(songsAdapter);
 
         songsAdapter.setOnItemClickListener(model -> {
-            boolean state = Preferences.DefaultSettings.getShuffleState(context);
-            if (state) {
-                musicPlayerServiceListener.onUpdateService(mViewModel.getShuffleSongsQueue(), model, mViewModel);
-            } else {
-                musicPlayerServiceListener.onUpdateService(mViewModel.getAllSongsQueue(), model, mViewModel);
-            }
+            musicPlayerServiceListener.onUpdateService(model);
         });
 
 /*        refreshLayout.setOnRefreshListener(() -> {

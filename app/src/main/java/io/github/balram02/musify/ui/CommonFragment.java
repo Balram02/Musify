@@ -50,7 +50,7 @@ public class CommonFragment extends Fragment {
         fastScroller = v.findViewById(R.id.fast_scroller);
 //        refreshLayout = v.findViewById(R.id.refresh_layout);
         recyclerView.setHasFixedSize(true);
-        commonAdapter = new CommonAdapter(context);
+        commonAdapter = new CommonAdapter(getActivity());
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setAdapter(commonAdapter);
         fastScroller.setRecyclerView(recyclerView);

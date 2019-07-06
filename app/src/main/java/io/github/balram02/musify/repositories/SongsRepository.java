@@ -28,16 +28,20 @@ public class SongsRepository {
     private LiveData<List<SongsModel>> songsByAlbums;
     private LiveData<List<SongsModel>> songsByArtist;
 
-    private List<SongsModel> songQueue;
+    private List<SongsModel> songsQueue;
     private List<SongsModel> allSongsQueue;
+    private List<SongsModel> favSongsShuffleQueueList;
+    private List<SongsModel> favSongsQueueList;
 
     public SongsRepository(Application application) {
         songsDB = SongsDatabase.getInstance(application);
         songsDao = songsDB.songDao();
         songs = songsDao.getAllSongs();
-        songQueue = songsDao.getShuffleSongsQueue();
+        songsQueue = songsDao.getShuffleSongsQueue();
         allSongsQueue = songsDao.getAllSongsQueue();
         favoriteSongs = songsDao.getFavoriteSongs();
+        favSongsQueueList = songsDao.getFavoritesQueueList();
+        favSongsShuffleQueueList = songsDao.getFavoritesShuffleQueueList();
         recentSongs = songsDao.getRecentlyPlayedSongs();
         songsByAlbums = songsDao.getAlbums();
         songsByArtist = songsDao.getArtist();
@@ -64,11 +68,19 @@ public class SongsRepository {
     }
 
     public List<SongsModel> getShuffleSongsQueue() {
-        return songQueue;
+        return songsQueue;
     }
 
     public LiveData<List<SongsModel>> getFavoriteSong() {
         return favoriteSongs;
+    }
+
+    public List<SongsModel> getFavoritesQueueList() {
+        return favSongsQueueList;
+    }
+
+    public List<SongsModel> getFavoritesShuffleQueueList() {
+        return favSongsShuffleQueueList;
     }
 
     public LiveData<Boolean> isFavorite(int id) {
@@ -93,6 +105,10 @@ public class SongsRepository {
 
     public LiveData<List<SongsModel>> getSongsByArtist(String artistName) {
         return songsDao.getSongsByArtist(artistName);
+    }
+
+    public List<SongsModel> getSearchQueryResults(String queryText){
+        return songsDao.getSearchQueryResults(queryText);
     }
 
     private void performTask(int operation, SongsModel songsModel) {

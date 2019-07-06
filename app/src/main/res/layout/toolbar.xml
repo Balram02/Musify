@@ -4,8 +4,9 @@
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
+    android:layout_alignParentTop="true"
     android:layout_marginStart="5dp"
     android:layout_marginEnd="5dp"
-    app:titleTextColor="?textColorPrimary"
     android:background="@drawable/curved_toolbar_background"
-    android:elevation="12dp" />
+    android:elevation="12dp"
+    app:titleTextColor="?textColorPrimary" />

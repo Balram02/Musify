@@ -15,11 +15,14 @@ public class SharedViewModel extends AndroidViewModel {
 
     private SongsRepository repository;
     private LiveData<List<SongsModel>> songs;
-    private List<SongsModel> songsQueue;
-    private List<SongsModel> allSongsQueue;
     private LiveData<List<SongsModel>> recentSongs;
     private LiveData<List<SongsModel>> songsByAlbums;
     private LiveData<List<SongsModel>> songsByArtist;
+
+    private List<SongsModel> songsQueue;
+    private List<SongsModel> allSongsQueue;
+    private List<SongsModel> favSongsQueueList;
+    private List<SongsModel> favSongsShuffleQueueList;
 
     public SharedViewModel(@NonNull Application application) {
         super(application);
@@ -30,6 +33,8 @@ public class SharedViewModel extends AndroidViewModel {
         recentSongs = repository.getRecentlyPlayedSongs();
         songsByAlbums = repository.getAlbums();
         songsByArtist = repository.getArtist();
+        favSongsQueueList = repository.getFavoritesQueueList();
+        favSongsShuffleQueueList = repository.getFavoritesShuffleQueueList();
     }
 
     public void update(SongsModel songsModel) {
@@ -60,6 +65,15 @@ public class SharedViewModel extends AndroidViewModel {
         return repository.getFavoriteSong();
     }
 
+    public List<SongsModel> getFavoritesQueueList() {
+        return favSongsQueueList;
+    }
+
+    public List<SongsModel> getFavoritesShuffleQueueList() {
+        return favSongsShuffleQueueList;
+    }
+
+
     public LiveData<List<SongsModel>> getRecentlyPlayedSongs() {
         return recentSongs;
     }
@@ -78,6 +92,10 @@ public class SharedViewModel extends AndroidViewModel {
 
     public LiveData<List<SongsModel>> getSongsByArtist(String artistName) {
         return repository.getSongsByArtist(artistName);
+    }
+
+    public List<SongsModel> getSearchQueryResults(String queryText) {
+        return repository.getSearchQueryResults(queryText);
     }
 
 }

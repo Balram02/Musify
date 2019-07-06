@@ -7,10 +7,24 @@
 
     <include layout="@layout/nothing_found_layout" />
 
+    <Button
+        android:id="@+id/shuffle_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/background_circle_stroke_accent"
+        android:backgroundTint="?colorAccent"
+        android:padding="15dp"
+        android:text="Shuflle &amp; Play"
+        android:textColor="?textColorPrimary" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/favorites_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/shuffle_play"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:reverseLayout="false" />
 
@@ -18,6 +32,8 @@
         android:id="@+id/fast_scroller"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:layout_alignTop="@id/favorites_recycler_view"
+        android:layout_alignBottom="@id/favorites_recycler_view"
         android:layout_alignParentEnd="true"
         android:orientation="vertical"
         app:fastscroll__bubbleColor="?attr/colorAccent" />

@@ -43,6 +43,7 @@ import com.google.gson.Gson;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.background.MusicPlayerService;
@@ -103,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     private boolean isBound;
     private Handler handler;
 
-    public MusicPlayerService musicPlayerService;
+    public static MusicPlayerService musicPlayerService;
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -364,6 +365,10 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                 .add(R.id.fragment_container, commonFragment, "common_fragment").hide(commonFragment).commit();
     }
 
+    public Toolbar getToolbar() {
+        return toolbar;
+    }
+
     @Override
     public void setCommonFragmentType(String fragmentType) {
         setFragment(commonFragment);
@@ -386,8 +391,9 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             activeFragment = fragment;
 
 
-            if (fragment instanceof SearchFragment)
-                toolbar.setVisibility(View.GONE);
+            if (fragment instanceof SearchFragment) {
+//                toolbar.setVisibility(View.GONE);
+            }
             else {
                 if (fragment instanceof AllSongsFragment)
                     setTitle(R.string.app_name);
@@ -407,8 +413,30 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     }
 
     @Override
-    public void onUpdateService(List<SongsModel> list, SongsModel currentModel, SharedViewModel mViewModel) {
-        musicPlayerService.setSongDetails(list, currentModel, mViewModel);
+    public void onUpdateService(SongsModel currentModel) {
+        boolean state = Preferences.DefaultSettings.getShuffleState(this);
+        if (state) {
+            musicPlayerService.setSongDetails(sharedViewModel.getShuffleSongsQueue(), currentModel, sharedViewModel);
+        } else {
+            musicPlayerService.setSongDetails(sharedViewModel.getAllSongsQueue(), currentModel, sharedViewModel);
+        }
+        Log.d(TAG, "onUpdateService: " + state);
+        musicPlayerService.setPlayingFromFav(false);
+        startMyService(INTENT_ACTION_NEW_SONG);
+    }
+
+    @Override
+    public void onPlayFromFavorites(SongsModel currentModel, boolean shuffleFav) {
+        List<SongsModel> list;
+        if (shuffleFav) {
+            list = sharedViewModel.getFavoritesShuffleQueueList();
+            if (currentModel == null)
+                currentModel = list.get(new Random().nextInt(list.size()));
+            musicPlayerService.setSongDetails(list, currentModel, sharedViewModel);
+        } else {
+            musicPlayerService.setSongDetails(sharedViewModel.getFavoritesQueueList(), currentModel, sharedViewModel);
+        }
+        musicPlayerService.setPlayingFromFav(true);
         startMyService(INTENT_ACTION_NEW_SONG);
     }
 
@@ -546,8 +574,9 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
     public void setQueueListInService(boolean isShuffled) {
 
-        musicPlayerService.setSongsQueueList(isShuffled,
-                isShuffled ? sharedViewModel.getShuffleSongsQueue() : sharedViewModel.getAllSongsQueue());
+        musicPlayerService.setSongsQueueList(isShuffled, isShuffled ?
+                musicPlayerService.isPlayingFromFav() ? sharedViewModel.getFavoritesShuffleQueueList() : sharedViewModel.getShuffleSongsQueue() :
+                musicPlayerService.isPlayingFromFav() ? sharedViewModel.getFavoritesQueueList() : sharedViewModel.getAllSongsQueue());
     }
 
     public void onClickPreviousButton(View view) {

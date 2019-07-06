@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/notification_album_art"
-        android:layout_width="150dp"
-        android:layout_height="100dp"
+        android:layout_width="130dp"
+        android:layout_height="150dp"
         android:layout_centerVertical="true"
         android:padding="2dp"
         android:scaleType="fitCenter"
@@ -52,7 +52,7 @@
 
     <LinearLayout
         android:id="@+id/notification_controls"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="45dp"
         android:layout_below="@id/notification_song_header"
         android:layout_toEndOf="@id/notification_album_art"
@@ -63,7 +63,7 @@
             android:id="@+id/notification_previous_icon"
             android:layout_width="50dp"
             android:layout_height="match_parent"
-            app:srcCompat="@drawable/notification_next_icon_white_24dp" />
+            app:srcCompat="@drawable/notification_previous_icon_white_24dp" />
 
         <ImageView
             android:id="@+id/notification_play_pause_icon"
