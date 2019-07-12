@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -21,9 +21,10 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:text="Search Results"
-            android:textColor="@color/white"
+            android:textColor="?textColorPrimary"
             android:textSize="19sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <ListView
             android:id="@+id/search_list_view"
@@ -34,27 +35,42 @@
             android:nestedScrollingEnabled="true"
             tools:listheader="Search Results" />
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/search_list_view"
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/recent_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:text="Recently played"
-                android:textColor="@color/white"
+                android:textColor="?textColorPrimary"
                 android:textSize="19sp"
                 android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/no_recent_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/recent_list_view"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:text="No recently played song found"
+                android:textColor="?textColorPrimaryLight"
+                android:textSize="17sp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recent_list_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/recent_text"
                 android:fadeScrollbars="true"
                 android:nestedScrollingEnabled="true"
                 android:orientation="horizontal"
@@ -62,8 +78,8 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/recycler_view_recent_item" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
     </RelativeLayout>
 
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

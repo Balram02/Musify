@@ -16,6 +16,6 @@
     <item
         android:id="@+id/favorites"
         android:icon="@drawable/ic_favorite_filled_white_24dp"
-        android:title="Favorite" />
+        android:title="Favorites" />
 
 </menu>

@@ -25,12 +25,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -68,8 +68,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
     private final String TAG = Constants.TAG;
 
-    private Toolbar toolbar;
-
     private SharedViewModel sharedViewModel;
 
     private TextView peekSongName;
@@ -99,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
     private BottomSheetBehavior bottomSheet;
     private LinearLayout bottomSheetLayout;
-    private LinearLayout bottomPeek;
+    private RelativeLayout bottomPeek;
 
     private boolean isBound;
     private Handler handler;
@@ -156,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         if (Preferences.DefaultSettings.geActiveTheme(this) == Preferences.DEFAULT_DARK_THEME)
             getTheme().applyStyle(R.style.AppTheme, true);
         else
-            getTheme().applyStyle(R.style.AppTheme2, true);
+            getTheme().applyStyle(R.style.AppThemeLight, true);
     }
 
     @Override
@@ -167,8 +165,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
         setContentView(R.layout.activity_main);
 
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(findViewById(R.id.toolbar));
         navigationView = findViewById(R.id.bottom_nav_view);
         navigationView.setOnNavigationItemSelectedListener(this);
 
@@ -365,10 +362,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                 .add(R.id.fragment_container, commonFragment, "common_fragment").hide(commonFragment).commit();
     }
 
-    public Toolbar getToolbar() {
-        return toolbar;
-    }
-
     @Override
     public void setCommonFragmentType(String fragmentType) {
         setFragment(commonFragment);
@@ -391,18 +384,15 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             activeFragment = fragment;
 
 
-            if (fragment instanceof SearchFragment) {
-//                toolbar.setVisibility(View.GONE);
-            }
-            else {
-                if (fragment instanceof AllSongsFragment)
-                    setTitle(R.string.app_name);
-                else if (fragment instanceof LibraryFragment)
-                    setTitle("Music Library");
-                else if (fragment instanceof FavoritesFragment)
-                    setTitle("Favorites");
-                toolbar.setVisibility(View.VISIBLE);
-            }
+            if (fragment instanceof AllSongsFragment)
+                setTitle(R.string.app_name);
+            else if (fragment instanceof LibraryFragment)
+                setTitle("Library");
+            else if (fragment instanceof FavoritesFragment)
+                setTitle("Favorites");
+            else if (fragment instanceof SearchFragment)
+                setTitle("Search");
+
 
 //            Log.d(TAG, "setFragment: " + fragment.getTag());
 
@@ -430,7 +420,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         List<SongsModel> list;
         if (shuffleFav) {
             list = sharedViewModel.getFavoritesShuffleQueueList();
-            if (currentModel == null)
+            if (currentModel == null && list.size() != 0)
                 currentModel = list.get(new Random().nextInt(list.size()));
             musicPlayerService.setSongDetails(list, currentModel, sharedViewModel);
         } else {

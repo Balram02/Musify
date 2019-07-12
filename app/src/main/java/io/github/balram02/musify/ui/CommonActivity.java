@@ -11,13 +11,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.adapters.SongsAdapter;
+import io.github.balram02.musify.background.MusicPlayerService;
 import io.github.balram02.musify.constants.Constants;
 import io.github.balram02.musify.listeners.OnAdapterItemClickListener;
 import io.github.balram02.musify.models.SongsModel;
 import io.github.balram02.musify.utils.Preferences;
 import io.github.balram02.musify.viewModels.SharedViewModel;
+
+import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_NEW_SONG;
+import static io.github.balram02.musify.ui.MainActivity.musicPlayerService;
 
 public class CommonActivity extends AppCompatActivity implements OnAdapterItemClickListener {
 
@@ -29,6 +35,10 @@ public class CommonActivity extends AppCompatActivity implements OnAdapterItemCl
     private SongsAdapter songsAdapter;
 
     private SharedViewModel sharedViewModel;
+
+    private String action;
+
+    private List<SongsModel> currentList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +59,7 @@ public class CommonActivity extends AppCompatActivity implements OnAdapterItemCl
         sharedViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
 
         Intent intent = getIntent();
-        String action = intent.getAction();
+        action = intent.getAction();
         String name = null;
         if (action != null) {
             if (action.equals("album")) {
@@ -57,6 +67,7 @@ public class CommonActivity extends AppCompatActivity implements OnAdapterItemCl
                 sharedViewModel.getSongsByAlbums(name).observe(this, songsModels -> {
                     songsAdapter.submitList(songsModels);
                     songsCount.setText(String.valueOf(songsModels.size()));
+                    currentList = songsModels;
                 });
 
             } else if (action.equals("artist")) {
@@ -64,6 +75,7 @@ public class CommonActivity extends AppCompatActivity implements OnAdapterItemCl
                 sharedViewModel.getSongsByArtist(name).observe(this, songsModels -> {
                     songsAdapter.submitList(songsModels);
                     songsCount.setText(String.valueOf(songsModels.size()));
+                    currentList = songsModels;
                 });
             }
             albumArtistName.setText(name);
@@ -82,12 +94,19 @@ public class CommonActivity extends AppCompatActivity implements OnAdapterItemCl
         if (Preferences.DefaultSettings.geActiveTheme(this) == Preferences.DEFAULT_DARK_THEME)
             getTheme().applyStyle(R.style.AppTheme, true);
         else
-            getTheme().applyStyle(R.style.AppTheme2, true);
+            getTheme().applyStyle(R.style.AppThemeLight, true);
     }
 
     @Override
     public void onItemClick(SongsModel model) {
-//        musicPlayerService
-//        Toast.makeText(this, "Kya hai be", Toast.LENGTH_SHORT).show();
+//        if (action.equals("album")) {
+//            musicPlayerService.setSongDetails(currentList, model, sharedViewModel);
+//        } else if (action.equals("artist")) {
+        musicPlayerService.setSongDetails(currentList, model, sharedViewModel);
+//        }
+        musicPlayerService.setPlayingFromFav(false);
+        Intent serviceIntent = new Intent(this, MusicPlayerService.class);
+        serviceIntent.setAction(INTENT_ACTION_NEW_SONG);
+        startService(serviceIntent);
     }
 }

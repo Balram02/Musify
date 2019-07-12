@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -44,6 +46,7 @@ public class SearchFragment extends Fragment {
     private ArrayAdapter<SongsModel> arrayAdapter;
 
     private RecentAdapter recentAdapter;
+    private TextView noRecent;
 
     private View v;
 
@@ -66,16 +69,61 @@ public class SearchFragment extends Fragment {
         v = inflater.inflate(R.layout.search_fragment, container, false);
         searchListView = v.findViewById(R.id.search_list_view);
         recentRecyclerView = v.findViewById(R.id.recent_list_view);
+
+        noRecent = v.findViewById(R.id.no_recent_text);
+
         recentRecyclerView.setHasFixedSize(true);
 
         recentAdapter = new RecentAdapter(context);
         recentRecyclerView.setAdapter(recentAdapter);
 
-        arrayAdapter = new ArrayAdapter<>(context, R.layout.recycler_view_song_list_item, R.id.song_name);
+        arrayAdapter = new ArrayAdapter<SongsModel>(context, R.layout.recycler_view_song_list_item, R.id.song_name) {
+            @NonNull
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                Holder holder;
+                View v = convertView;
+
+                if (v == null) {
+                    v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_view_song_item, parent, false);
+                    holder = new Holder();
+                    holder.title = v.findViewById(R.id.song_name);
+                    holder.listLayout = v.findViewById(R.id.list_layout);
+                    v.setTag(holder);
+                } else {
+                    holder = (Holder) v.getTag();
+                }
+                holder.setClickListeners(position);
+                SongsModel model = getItem(position);
+                holder.title.setText(model.getTitle());
+
+                return v;
+            }
+
+            class Holder {
+                private TextView title;
+                private RelativeLayout listLayout;
+
+                void setClickListeners(int position) {
+
+                    SongsModel model = getItem(position);
+
+                    listLayout.setOnClickListener(view -> {
+                        musicPlayerServiceListener.onUpdateService(model);
+                    });
+                }
+            }
+        };
+
         searchListView.setAdapter(arrayAdapter);
 
         recentAdapter.setOnItemClickListener(model -> {
             musicPlayerServiceListener.onUpdateService(model);
+        });
+
+        searchListView.setOnItemClickListener((adapterView, view, i, l) -> {
+            musicPlayerServiceListener.onUpdateService((SongsModel) adapterView.getItemAtPosition(i));
+            Log.d(TAG, "onCreateView: " + i);
         });
 
         return v;
@@ -118,7 +166,6 @@ public class SearchFragment extends Fragment {
     }
 
     private void updateSearchList(List<SongsModel> list) {
-        Log.d(TAG, "updateSearchList: " + list.toString());
         arrayAdapter.clear();
         arrayAdapter.addAll(list);
         arrayAdapter.notifyDataSetChanged();
@@ -132,6 +179,10 @@ public class SearchFragment extends Fragment {
         mViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
         mViewModel.getRecentlyPlayedSongs().observe(getViewLifecycleOwner(), songsModels -> {
             recentAdapter.submitList(songsModels);
+            if (songsModels.size() == 0)
+                noRecent.setVisibility(View.VISIBLE);
+            else
+                noRecent.setVisibility(View.GONE);
         });
     }
 

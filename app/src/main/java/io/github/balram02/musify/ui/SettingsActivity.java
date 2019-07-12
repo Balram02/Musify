@@ -1,5 +1,8 @@
 package io.github.balram02.musify.ui;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
@@ -42,13 +45,22 @@ public class SettingsActivity extends AppCompatActivity {
         Linkify.addLinks(contributor, Linkify.WEB_URLS);
         contributor.setMovementMethod(LinkMovementMethod.getInstance());
 
+        findViewById(R.id.rate_app).setOnClickListener(view -> {
+            final String appPackageName = getPackageName();
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+            } catch (ActivityNotFoundException e) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+            }
+        });
+
     }
 
     private void setActivityTheme() {
         if (Preferences.DefaultSettings.geActiveTheme(this) == Preferences.DEFAULT_DARK_THEME)
             getTheme().applyStyle(R.style.AppTheme, true);
         else
-            getTheme().applyStyle(R.style.AppTheme2, true);
+            getTheme().applyStyle(R.style.AppThemeLight, true);
     }
 
     public void themeSwitchCompat(View v) {

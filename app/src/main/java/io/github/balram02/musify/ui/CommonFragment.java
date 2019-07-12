@@ -89,7 +89,7 @@ public class CommonFragment extends Fragment {
                 }
             });
         }
-
+        recyclerView.scrollTo(0,0);
     }
 
     @Override

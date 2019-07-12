@@ -56,7 +56,7 @@ public interface SongsDao {
     @Query("SELECT is_favorite from songs_table WHERE id = :id")
     LiveData<Boolean> isFavorite(int id);
 
-    @Query("SELECT * FROM songs_table WHERE accessed_timestamp != 0 AND accessed_timestamp <= datetime() LIMIT 10")
+    @Query("SELECT * FROM songs_table WHERE accessed_timestamp != 0 AND accessed_timestamp <= datetime() ORDER BY accessed_timestamp LIMIT 10")
     LiveData<List<SongsModel>> getRecentlyPlayedSongs();
 
     @Query("SELECT * FROM songs_table GROUP BY album")
@@ -73,6 +73,6 @@ public interface SongsDao {
 
     @Query("SELECT * FROM songs_table " + "WHERE title LIKE '%' || :queryText || '%' OR " +
             "album LIKE '%' || :queryText || '%' OR " +
-            "artist LIKE '%' || :queryText || '%' LIMIT 5")
+            "artist LIKE '%' || :queryText || '%' LIMIT 10")
     List<SongsModel> getSearchQueryResults(String queryText);
 }

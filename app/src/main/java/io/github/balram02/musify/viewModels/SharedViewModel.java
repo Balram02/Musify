@@ -22,7 +22,7 @@ public class SharedViewModel extends AndroidViewModel {
     private List<SongsModel> songsQueue;
     private List<SongsModel> allSongsQueue;
     private List<SongsModel> favSongsQueueList;
-    private List<SongsModel> favSongsShuffleQueueList;
+//    private List<SongsModel> favSongsShuffleQueueList;
 
     public SharedViewModel(@NonNull Application application) {
         super(application);
@@ -34,7 +34,6 @@ public class SharedViewModel extends AndroidViewModel {
         songsByAlbums = repository.getAlbums();
         songsByArtist = repository.getArtist();
         favSongsQueueList = repository.getFavoritesQueueList();
-        favSongsShuffleQueueList = repository.getFavoritesShuffleQueueList();
     }
 
     public void update(SongsModel songsModel) {
@@ -70,7 +69,7 @@ public class SharedViewModel extends AndroidViewModel {
     }
 
     public List<SongsModel> getFavoritesShuffleQueueList() {
-        return favSongsShuffleQueueList;
+        return repository.getFavoritesShuffleQueueList();
     }
 
 

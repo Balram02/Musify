@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.futuremind.recyclerviewfastscroll.FastScroller;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.adapters.FavoritesAdapter;
@@ -36,6 +37,7 @@ public class FavoritesFragment extends Fragment {
     private MusicPlayerServiceListener musicPlayerServiceListener;
     private FastScroller fastScroller;
     private TextView nothingMsg;
+    private FloatingActionButton floatingPlay;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -63,10 +65,11 @@ public class FavoritesFragment extends Fragment {
         fastScroller = v.findViewById(R.id.fast_scroller);
         nothing = v.findViewById(R.id.nothing_layout);
         nothingMsg = v.findViewById(R.id.nothing_msg);
+        floatingPlay = v.findViewById(R.id.shuffle_play);
         recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
         favoritesAdapter = new FavoritesAdapter(context);
         recyclerView.setAdapter(favoritesAdapter);
-        v.findViewById(R.id.shuffle_play).setOnClickListener(view -> {
+        floatingPlay.setOnClickListener(view -> {
             musicPlayerServiceListener.onPlayFromFavorites(null, true);
         });
         favoritesAdapter.setOnItemClickerListener(model -> {
@@ -86,8 +89,10 @@ public class FavoritesFragment extends Fragment {
             if (size == 0 && nothing.getVisibility() == View.GONE) {
                 nothingMsg.setText("You don't have any favorites");
                 nothing.setVisibility(View.VISIBLE);
+                floatingPlay.setVisibility(View.GONE);
             } else if (size != 0 && nothing.getVisibility() == View.VISIBLE) {
                 nothing.setVisibility(View.GONE);
+                floatingPlay.setVisibility(View.VISIBLE);
             }
 
         });

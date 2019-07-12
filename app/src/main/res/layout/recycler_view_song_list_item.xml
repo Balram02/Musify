@@ -18,18 +18,20 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_toStartOf="@id/song_menu">
 
-            <ImageView
+            <io.github.balram02.musify.ui.ResponsiveImageView
                 android:id="@+id/song_album_art_icon"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_margin="10dp"
+                android:layout_margin="2dp"
                 android:padding="2dp"
                 app:srcCompat="@drawable/ic_music_placeholder_white" />
 
             <LinearLayout
+                android:id="@+id/details_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -82,7 +84,7 @@
             android:layout_centerVertical="true"
             android:clickable="true"
             android:focusable="true"
-            android:foreground="?attr/selectableItemBackground"
+            android:foreground="?actionBarItemBackground"
             android:paddingStart="5dp"
             android:paddingTop="8dp"
             android:paddingEnd="5dp"

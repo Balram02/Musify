@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,18 +7,21 @@
 
     <include layout="@layout/nothing_found_layout" />
 
-    <Button
-        android:id="@+id/shuffle_play"
+    <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/background_circle_stroke_accent"
-        android:backgroundTint="?colorAccent"
-        android:padding="15dp"
-        android:text="Shuflle &amp; Play"
-        android:textColor="?textColorPrimary" />
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="65dp">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/shuffle_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/play_icon_white_24dp"
+            app:elevation="0dp" />
+
+    </FrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/favorites_recycler_view"
@@ -32,10 +35,11 @@
         android:id="@+id/fast_scroller"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_alignTop="@id/favorites_recycler_view"
-        android:layout_alignBottom="@id/favorites_recycler_view"
         android:layout_alignParentEnd="true"
         android:orientation="vertical"
-        app:fastscroll__bubbleColor="?attr/colorAccent" />
+        app:fastscroll__bubbleColor="?attr/colorAccent"
+        app:layout_anchor="@id/favorites_recycler_view"
+        app:layout_anchorGravity="end|center"
+        app:layout_insetEdge="bottom" />
 
-</RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -30,7 +30,6 @@ public class SongsRepository {
 
     private List<SongsModel> songsQueue;
     private List<SongsModel> allSongsQueue;
-    private List<SongsModel> favSongsShuffleQueueList;
     private List<SongsModel> favSongsQueueList;
 
     public SongsRepository(Application application) {
@@ -41,7 +40,6 @@ public class SongsRepository {
         allSongsQueue = songsDao.getAllSongsQueue();
         favoriteSongs = songsDao.getFavoriteSongs();
         favSongsQueueList = songsDao.getFavoritesQueueList();
-        favSongsShuffleQueueList = songsDao.getFavoritesShuffleQueueList();
         recentSongs = songsDao.getRecentlyPlayedSongs();
         songsByAlbums = songsDao.getAlbums();
         songsByArtist = songsDao.getArtist();
@@ -80,7 +78,7 @@ public class SongsRepository {
     }
 
     public List<SongsModel> getFavoritesShuffleQueueList() {
-        return favSongsShuffleQueueList;
+        return songsDao.getFavoritesShuffleQueueList();
     }
 
     public LiveData<Boolean> isFavorite(int id) {
@@ -107,7 +105,7 @@ public class SongsRepository {
         return songsDao.getSongsByArtist(artistName);
     }
 
-    public List<SongsModel> getSearchQueryResults(String queryText){
+    public List<SongsModel> getSearchQueryResults(String queryText) {
         return songsDao.getSearchQueryResults(queryText);
     }
 

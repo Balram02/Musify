@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -61,6 +62,7 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
     public static final String CHANNEL_ID = "512";
     public static final int NOTIFICATION_ID = 512;
     private static boolean playingFromFav = false;
+    public static final int DESTROY_SERVICE = 40004;
 //    private boolean wasPaused;
 
     //    intents for notification
@@ -102,6 +104,8 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
     @Override
     public void onAudioFocusChange(int focusChange) {
 
+        Log.d(TAG, "onAudioFocusChange: " + focusChange);
+
         switch (focusChange) {
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                 if (isPlaying()) {
@@ -115,7 +119,7 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
                 break;
             case AudioManager.AUDIOFOCUS_LOSS:
                 if (isPlaying()) {
-                    pause();
+                    onDestroy();
                 }
                 break;
         }
@@ -234,6 +238,12 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
 
         MediaButtonReceiver.handleIntent(mediaSessionCompat, intent);
 
+        if (intent.getExtras() != null) {
+            int notId = intent.getIntExtra(getPackageName(), 0);
+            if (notId == NOTIFICATION_ID)
+                onDestroy();
+            Log.d(TAG, "onStartCommand: " + notId + " , " + intent.getExtras());
+        }
         if (intent.getAction() != null && !intent.getAction().isEmpty()) {
 
             switch (intent.getAction()) {
@@ -349,6 +359,10 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
         notificationExpanded.setOnClickPendingIntent(R.id.notification_close_icon, closePendingIntent);
         notificationExpanded.setOnClickPendingIntent(R.id.root_layout, activityPendingIntent);
 
+        Intent intent = new Intent(this, MusicPlayerService.class);
+        intent.putExtra(getPackageName(), NOTIFICATION_ID);
+        PendingIntent pendingIntent = PendingIntent.getService(this, NOTIFICATION_ID, intent, 0);
+
         notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(pauseButton ? R.drawable.notification_play_icon_white_24dp : R.drawable.notification_pause_icon_white_24dp)
                 .setStyle(new androidx.media.app.NotificationCompat.DecoratedMediaCustomViewStyle().setMediaSession(mediaSessionCompat.getSessionToken()))
@@ -356,6 +370,7 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
                 .setCustomBigContentView(notificationExpanded)
                 .setColorized(true)
                 .setColor(getResources().getColor(R.color.transparentBlack))
+                .setDeleteIntent(pendingIntent)
                 .build();
 
         Bitmap art = Constants.getAlbumArt(this, model.getAlbumId());
@@ -479,7 +494,7 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
 
     private Bitmap drawableToBitmap() {
 
-        Drawable drawable = getDrawable(R.drawable.ic_music_placeholder_white);
+        Drawable drawable = getDrawable(R.drawable.notification_ic_music_placeholder_white);
 
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
@@ -526,6 +541,7 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy: ");
+        player.stop();
         stopForeground(true);
     }
 
@@ -631,6 +647,16 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
     public boolean onUnbind(Intent intent) {
         Log.d(TAG, "onUnbind: ");
         return super.onUnbind(intent);
+    }
+
+    public class NotificationDismissReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int notId = intent.getIntExtra(getPackageName(), 0);
+            if (notId == NOTIFICATION_ID)
+                onDestroy();
+            Log.d(TAG, "onReceive: " + notId + intent.getExtras());
+        }
     }
 
 }
