@@ -11,6 +11,7 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,13 +25,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -39,7 +40,10 @@ import androidx.lifecycle.ViewModelProviders;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.Date;
 import java.util.List;
@@ -96,8 +100,11 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     private BottomNavigationView navigationView;
 
     private BottomSheetBehavior bottomSheet;
-    private LinearLayout bottomSheetLayout;
+    private RelativeLayout bottomSheetLayout;
+    private ConstraintLayout bottomSheetConstraintLayout;
     private RelativeLayout bottomPeek;
+
+    private SongsModel currentSongModel;
 
     private boolean isBound;
     private Handler handler;
@@ -142,6 +149,8 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             updateSeekBarProgress();
             model.setLastAccessedTimestamp(new Date().getTime());
             sharedViewModel.update(model);
+
+            currentSongModel = model;
         }
 
         @Override
@@ -170,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         navigationView.setOnNavigationItemSelectedListener(this);
 
         bottomSheetLayout = findViewById(R.id.bottom_sheet);
+        bottomSheetConstraintLayout = findViewById(R.id.constraintLayout);
         bottomSheet = BottomSheetBehavior.from(bottomSheetLayout);
         bottomPeek = findViewById(R.id.bottom_sheet_peek);
 
@@ -233,6 +243,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
                 bottomPeekUpArrow.setRotation(slideOffset * 180f);
                 bottomPeek.setAlpha(1f - (slideOffset * 1.5f));
+                bottomSheetConstraintLayout.setAlpha(slideOffset * 1.2f);
             }
         });
 
@@ -255,6 +266,8 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             setPlayPauseDrawable(true);
             Log.d(TAG, "setUpLastDetails: service is active ");
 
+            currentSongModel = musicPlayerService.getSongModel();
+
         } else {
             SongsModel lastSongModel = Preferences.SongDetails.getLastSongDetails(this);
             if (lastSongModel != null) {
@@ -272,6 +285,9 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                 boolean shuffleState = Preferences.DefaultSettings.getShuffleState(this);
                 setShuffleDrawable(shuffleState);
                 setQueueListInService(shuffleState);
+
+                currentSongModel = lastSongModel;
+
             } else {
                 bottomSheetLayout.setVisibility(View.GONE);
             }
@@ -567,6 +583,64 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         musicPlayerService.setSongsQueueList(isShuffled, isShuffled ?
                 musicPlayerService.isPlayingFromFav() ? sharedViewModel.getFavoritesShuffleQueueList() : sharedViewModel.getShuffleSongsQueue() :
                 musicPlayerService.isPlayingFromFav() ? sharedViewModel.getFavoritesQueueList() : sharedViewModel.getAllSongsQueue());
+    }
+
+    public void showCurrentSongMenu(View view) {
+
+        BottomSheetDialog dialogFragment = new BottomSheetDialog(this);
+        dialogFragment.setContentView(R.layout.song_menu_layout);
+
+        ((TextView) dialogFragment.findViewById(R.id.title)).setText(currentSongModel.getTitle());
+        ImageView favImage = dialogFragment.findViewById(R.id.fav_img);
+        TextView favText = dialogFragment.findViewById(R.id.fav_text);
+
+        boolean isFav = currentSongModel.isFavorite();
+        if (isFav) {
+            favText.setText("Remove from favorites");
+            favImage.setImageResource((R.drawable.ic_favorite_border_white_24dp));
+        } else {
+            favText.setText("Add to favorites");
+            favImage.setImageResource(R.drawable.ic_favorite_filled_white_24dp);
+        }
+
+        dialogFragment.findViewById(R.id.add_to_fav).setOnClickListener(v1 -> {
+            currentSongModel.setFavorite(!isFav);
+            sharedViewModel.update(currentSongModel);
+            dialogFragment.dismiss();
+        });
+
+        dialogFragment.findViewById(R.id.song_info_layout).setOnClickListener(v1 -> {
+
+            BottomSheetDialog infoDialogFragment = new BottomSheetDialog(this);
+            infoDialogFragment.setContentView(R.layout.song_info_layout);
+
+            Uri uri = Constants.getAlbumArtUri(currentSongModel.getAlbumId());
+
+            Picasso.get().load(uri).into(infoDialogFragment.findViewById(R.id.info_album_art), new Callback() {
+                @Override
+                public void onSuccess() {
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    ((ImageView) infoDialogFragment.findViewById(R.id.info_album_art))
+                            .setImageResource(R.drawable.ic_music_placeholder_white);
+                }
+            });
+
+            ((TextView) infoDialogFragment.findViewById(R.id.info_song_album)).setText(currentSongModel.getAlbum());
+            ((TextView) infoDialogFragment.findViewById(R.id.info_song_title)).setText(currentSongModel.getTitle());
+            ((TextView) infoDialogFragment.findViewById(R.id.info_song_artist)).setText(currentSongModel.getArtist());
+            ((TextView) infoDialogFragment.findViewById(R.id.info_song_path)).setText(currentSongModel.getPath());
+            infoDialogFragment.findViewById(R.id.info_back_arrow).setOnClickListener(v2 -> infoDialogFragment.dismiss());
+
+            infoDialogFragment.show();
+
+        });
+
+        dialogFragment.show();
+
+
     }
 
     public void onClickPreviousButton(View view) {

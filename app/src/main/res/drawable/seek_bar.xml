@@ -3,7 +3,7 @@
         <shape android:shape="line">
             <stroke
                 android:width="4dp"
-                android:color="?attr/colorOverlay" />
+                android:color="?textColorPrimaryLight" />
             <corners android:radius="200dp" />
         </shape>
     </item>
@@ -14,7 +14,7 @@
                 <corners android:radius="200dp" />
                 <stroke
                     android:width="4dp"
-                    android:color="?attr/colorAccent" />
+                    android:color="?colorAccent" />
             </shape>
         </clip>
     </item>

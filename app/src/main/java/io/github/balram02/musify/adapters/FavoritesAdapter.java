@@ -51,7 +51,7 @@ public class FavoritesAdapter extends ListAdapter<SongsModel, FavoritesAdapter.F
     @NonNull
     @Override
     public FavoritesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_view_song_list_item, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_view_song_item, parent, false);
         return new FavoritesViewHolder(v);
     }
 

@@ -77,7 +77,7 @@ public class SearchFragment extends Fragment {
         recentAdapter = new RecentAdapter(context);
         recentRecyclerView.setAdapter(recentAdapter);
 
-        arrayAdapter = new ArrayAdapter<SongsModel>(context, R.layout.recycler_view_song_list_item, R.id.song_name) {
+        arrayAdapter = new ArrayAdapter<SongsModel>(context, R.layout.recycler_view_song_item, R.id.song_name) {
             @NonNull
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -179,10 +179,10 @@ public class SearchFragment extends Fragment {
         mViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
         mViewModel.getRecentlyPlayedSongs().observe(getViewLifecycleOwner(), songsModels -> {
             recentAdapter.submitList(songsModels);
-            if (songsModels.size() == 0)
-                noRecent.setVisibility(View.VISIBLE);
-            else
+            if (songsModels.size() != 0)
                 noRecent.setVisibility(View.GONE);
+            else
+                noRecent.setVisibility(View.VISIBLE);
         });
     }
 

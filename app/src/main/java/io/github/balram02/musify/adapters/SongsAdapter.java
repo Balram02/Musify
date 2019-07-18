@@ -53,7 +53,7 @@ public class SongsAdapter extends ListAdapter<SongsModel, SongsAdapter.SongListV
     @NonNull
     @Override
     public SongListViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recycler_view_song_list_item, viewGroup, false);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recycler_view_song_item, viewGroup, false);
         return new SongListViewHolder(v);
     }
 

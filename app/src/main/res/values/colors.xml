@@ -11,7 +11,7 @@
     <color name="colorTextPrimaryDark1">@android:color/black</color>
     <color name="colorOverlay1">#272727</color>
     <color name="colorTint1">#272727</color>
-    <color name="colorRipple1">#40FFFFFF</color>
+    <color name="colorRipple1">#00c4b3</color>
     <color name="albumTint1">#80272727</color>
     <!--**********************************-->
 
