@@ -18,8 +18,6 @@ import io.github.balram02.musify.viewModels.SharedViewModel;
 
 public class LibraryFragment extends Fragment {
 
-    private Context context;
-
     private SharedViewModel mViewModel;
     private CardView albumsCardView, artistCardView;
 
@@ -28,7 +26,6 @@ public class LibraryFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        this.context = context;
         fragmentListener = (FragmentListener) context;
     }
 
@@ -55,9 +52,4 @@ public class LibraryFragment extends Fragment {
         mViewModel = ViewModelProviders.of(this).get(SharedViewModel.class);
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        context = null;
-    }
 }

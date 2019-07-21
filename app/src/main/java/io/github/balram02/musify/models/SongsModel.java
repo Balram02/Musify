@@ -11,15 +11,15 @@ import java.io.Serializable;
 @Entity(tableName = "songs_table")
 public class SongsModel implements Serializable {
 
-    @PrimaryKey(autoGenerate = true)
-    private int id;
+    @NonNull
+    @PrimaryKey
+    private String path;
     private String title;
     private String album;
     @ColumnInfo(name = "album_id")
     private long albumId;
     private String artist;
     private String genre;
-    private String path;
     private long duration;
     @ColumnInfo(name = "is_favorite")
     private boolean favorite = false;
@@ -36,10 +36,6 @@ public class SongsModel implements Serializable {
         this.duration = duration;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
     }
@@ -50,11 +46,6 @@ public class SongsModel implements Serializable {
 
     public void setAlbumId(long albumId) {
         this.albumId = albumId;
-    }
-
-
-    public int getId() {
-        return id;
     }
 
     public String getTitle() {
@@ -77,6 +68,7 @@ public class SongsModel implements Serializable {
         return genre;
     }
 
+    @NonNull
     public String getPath() {
         return path;
     }

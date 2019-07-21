@@ -17,7 +17,7 @@
         android:id="@+id/nothing_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No Music found on your device."
+        android:text="@string/no_music_message_text"
         android:textColor="?textColorPrimary"
         android:textSize="20sp" />
 

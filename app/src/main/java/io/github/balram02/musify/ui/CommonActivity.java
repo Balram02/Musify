@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -83,7 +84,16 @@ public class CommonActivity extends AppCompatActivity implements OnAdapterItemCl
             Picasso.get()
                     .load(Constants.getAlbumArtUri(intent.getLongExtra("album_id", -1)))
                     .placeholder(R.drawable.ic_music_placeholder_white)
-                    .into(albumArt);
+                    .into(albumArt, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            albumArt.setImageResource(R.drawable.ic_music_placeholder_white);
+                        }
+                    });
         }
 
         findViewById(R.id.back_arrow).setOnClickListener(view -> onBackPressed());
@@ -99,12 +109,8 @@ public class CommonActivity extends AppCompatActivity implements OnAdapterItemCl
 
     @Override
     public void onItemClick(SongsModel model) {
-//        if (action.equals("album")) {
-//            musicPlayerService.setSongDetails(currentList, model, sharedViewModel);
-//        } else if (action.equals("artist")) {
-        musicPlayerService.setSongDetails(currentList, model, sharedViewModel);
-//        }
         musicPlayerService.setPlayingFromFav(false);
+        musicPlayerService.setSongDetails(currentList, model, sharedViewModel, false);
         Intent serviceIntent = new Intent(this, MusicPlayerService.class);
         serviceIntent.setAction(INTENT_ACTION_NEW_SONG);
         startService(serviceIntent);

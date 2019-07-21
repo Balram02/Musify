@@ -19,21 +19,14 @@ public class SharedViewModel extends AndroidViewModel {
     private LiveData<List<SongsModel>> songsByAlbums;
     private LiveData<List<SongsModel>> songsByArtist;
 
-    private List<SongsModel> songsQueue;
-    private List<SongsModel> allSongsQueue;
-    private List<SongsModel> favSongsQueueList;
-//    private List<SongsModel> favSongsShuffleQueueList;
 
     public SharedViewModel(@NonNull Application application) {
         super(application);
         repository = new SongsRepository(application);
         songs = repository.getAllSongs();
-        songsQueue = repository.getShuffleSongsQueue();
-        allSongsQueue = repository.getAllSongsQueue();
         recentSongs = repository.getRecentlyPlayedSongs();
         songsByAlbums = repository.getAlbums();
         songsByArtist = repository.getArtist();
-        favSongsQueueList = repository.getFavoritesQueueList();
     }
 
     public void update(SongsModel songsModel) {
@@ -49,15 +42,15 @@ public class SharedViewModel extends AndroidViewModel {
     }
 
     public List<SongsModel> getAllSongsQueue() {
-        return allSongsQueue;
+        return repository.getAllSongsQueue();
     }
 
     public List<SongsModel> getShuffleSongsQueue() {
-        return songsQueue;
+        return repository.getShuffleSongsQueue();
     }
 
-    public LiveData<Boolean> isFavorite(int id) {
-        return repository.isFavorite(id);
+    public LiveData<Boolean> isFavorite(String path) {
+        return repository.isFavorite(path);
     }
 
     public LiveData<List<SongsModel>> getFavoriteSong() {
@@ -65,13 +58,12 @@ public class SharedViewModel extends AndroidViewModel {
     }
 
     public List<SongsModel> getFavoritesQueueList() {
-        return favSongsQueueList;
+        return repository.getFavoritesQueueList();
     }
 
     public List<SongsModel> getFavoritesShuffleQueueList() {
         return repository.getFavoritesShuffleQueueList();
     }
-
 
     public LiveData<List<SongsModel>> getRecentlyPlayedSongs() {
         return recentSongs;

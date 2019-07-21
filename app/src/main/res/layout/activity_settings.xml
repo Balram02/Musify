@@ -7,11 +7,11 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <include layout="@layout/toolbar" />
@@ -23,7 +23,7 @@
                 android:layout_marginTop="15dp"
                 android:layout_marginEnd="5dp"
                 android:layout_marginBottom="10dp"
-                android:text="Album Art"
+                android:text="@string/album_art_text"
                 android:textColor="?attr/colorAccent"
                 android:textSize="18sp" />
 
@@ -35,7 +35,7 @@
                 android:layoutDirection="rtl"
                 android:onClick="albumArtCheckbox"
                 android:padding="8dp"
-                android:text="Do not show album art on lock screen"
+                android:text="@string/album_art_message_text"
                 android:textAlignment="textStart"
                 android:textColor="?attr/textColorPrimary"
                 android:textSize="16sp" />
@@ -54,7 +54,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="10dp"
-                android:text="App Theme"
+                android:text="@string/app_theme_text"
                 android:textColor="?attr/colorAccent"
                 android:textSize="18sp" />
 
@@ -65,7 +65,7 @@
                 android:layout_margin="8dp"
                 android:onClick="themeSwitchCompat"
                 android:padding="10dp"
-                android:text="Use Light Theme"
+                android:text="@string/use_light_theme_text"
                 android:textColor="?attr/textColorPrimary"
                 android:textSize="16sp" />
 
@@ -89,7 +89,7 @@
                     android:layout_height="wrap_content"
                     android:paddingStart="15dp"
                     android:paddingEnd="15dp"
-                    android:text="Rate this App"
+                    android:text="@string/rate_this_app_text"
                     android:textColor="?attr/textColorPrimary"
                     android:textSize="16sp" />
 
@@ -100,7 +100,7 @@
                     android:layout_below="@id/heading"
                     android:paddingStart="15dp"
                     android:paddingEnd="25dp"
-                    android:text="Your feedback is most valuable to this project "
+                    android:text="@string/rate_this_app_message_text"
                     android:textColor="?attr/textColorPrimaryLight"
                     android:textSize="14sp" />
 
@@ -151,7 +151,6 @@
 
             </RelativeLayout>
 
-
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -165,7 +164,7 @@
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
-                android:text="Icon Credits"
+                android:text="@string/icon_credits_text"
                 android:textColor="?attr/textColorPrimary"
                 android:textSize="16sp" />
 
@@ -176,7 +175,7 @@
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="10dp"
                 android:autoLink="web"
-                android:text="www.Icons8.com"
+                android:text="@string/icon_credit_link"
                 android:textColor="?attr/textColorPrimary"
                 android:textSize="15sp" />
 
@@ -186,7 +185,7 @@
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
-                android:text="Logo made with"
+                android:text="@string/logo_credit_text"
                 android:textColor="?attr/textColorPrimary"
                 android:textSize="16sp" />
 
@@ -197,9 +196,22 @@
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="10dp"
                 android:autoLink="web"
-                android:text="www.designevo.com"
+                android:text="@string/logo_credit_link"
                 android:textColor="?attr/textColorPrimary"
                 android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:padding="5dp"
+                android:gravity="bottom|center_horizontal"
+                android:text="@string/thank_you_message_text"
+                android:textAlignment="center"
+                android:textColor="?attr/textColorPrimaryLight"
+                android:textSize="14sp" />
 
         </LinearLayout>
 

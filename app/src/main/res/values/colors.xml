@@ -37,11 +37,6 @@
 
     <color name="gray">#4e4e4e</color>
 
-    <!--Spotify color codes-->
-    <color name="spotifyBlack">#191414</color>
-    <color name="spotifyGreen">#1DB954</color>
-    <color name="spotifyWhite">#FFFFFF</color>
-
     <color name="transparent">#00000000</color>
 
     <color name="transparentBlack">#9A000000</color>

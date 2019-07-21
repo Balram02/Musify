@@ -36,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
-                android:text="Album"
+                android:text="@string/album"
                 android:textColor="?textColorPrimaryLight" />
 
             <LinearLayout
@@ -60,7 +60,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="start"
                     android:padding="5dp"
-                    android:text="Song Album"
+                    android:text="@string/album"
                     android:textColor="?textColorPrimary"
                     android:textSize="16sp" />
 
@@ -79,7 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
-                android:text="Title"
+                android:text="@string/title_text"
                 android:textColor="?textColorPrimaryLight" />
 
             <TextView
@@ -91,7 +91,7 @@
                 android:gravity="start"
                 android:lines="1"
                 android:padding="5dp"
-                android:text="Song Title"
+                android:text="@string/title_text"
                 android:textColor="?textColorPrimary"
                 android:textSize="16sp" />
 
@@ -109,7 +109,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
-                android:text="Artist"
+                android:text="@string/artist"
                 android:textColor="?textColorPrimaryLight" />
 
             <TextView
@@ -121,7 +121,7 @@
                 android:gravity="start"
                 android:lines="1"
                 android:padding="5dp"
-                android:text="Song Artist"
+                android:text="@string/artist"
                 android:textColor="?textColorPrimary"
                 android:textSize="16sp" />
 
@@ -138,7 +138,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
-                android:text="Location on device"
+                android:text="@string/location_on_device_text"
                 android:textColor="?textColorPrimaryLight" />
 
             <TextView
@@ -148,11 +148,12 @@
                 android:layout_marginStart="10dp"
                 android:gravity="start"
                 android:padding="5dp"
-                android:text="Song Location"
+                android:text="@string/location_on_device_text"
                 android:textColor="?textColorPrimary"
                 android:textSize="16sp" />
 
         </LinearLayout>
 
     </LinearLayout>
+
 </androidx.cardview.widget.CardView>

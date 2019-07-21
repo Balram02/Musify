@@ -44,7 +44,7 @@
             android:layout_marginBottom="20dp"
             android:ellipsize="end"
             android:maxLines="3"
-            android:text="Song Name"
+            android:text="@string/song_name_text"
             android:textAlignment="center"
             android:textColor="?textColorPrimary"
             android:textSize="16sp" />
@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="5dp"
                 android:layout_marginBottom="5dp"
-                android:text="02:59" />
+                android:text="@string/initial_song_position" />
 
         </RelativeLayout>
 

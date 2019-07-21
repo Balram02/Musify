@@ -1,12 +1,15 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <!--<style name="AppTheme" parent="Theme.AppCompat.NoActionBar">-->
-    <style name="AppTheme" parent="AccentThemeDark">
+    <!-- Default Dark Theme. -->
 
+    <!-- Dark Theme Accent color-->
+    <style name="AccentThemeDark" parent="@style/Theme.AppCompat.NoActionBar">
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme" parent="AccentThemeDark">
         <item name="primaryColor">@color/colorBackgroundDark1</item>
         <item name="primaryColorDark">@color/colorBackground1</item>
-        <!--<item name="colorAccent">@color/colorAccent</item>-->
         <item name="textColorPrimary">@color/colorTextPrimary1</item>
         <item name="textColorPrimaryLight">@color/colorTextPrimaryLight1</item>
         <item name="textColorPrimaryDark">@color/colorTextPrimaryDark1</item>
@@ -16,38 +19,30 @@
         <item name="drawableTintColor">@color/white</item>
         <item name="albumTint">@color/albumTint1</item>
         <item name="android:windowContentTransitions">true</item>
-        <!--<item name="clickable">@drawable/clickable_effect</item>-->
-        <!--<item name="backgroundColor"></item>-->
+        <item name="android:fontFamily">@font/nunito_regular</item>
 
     </style>
 
-    <style name="AccentThemeDark" parent="@style/Theme.AppCompat.NoActionBar">
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
+    <!-- Light Theme. -->
 
+    <!-- Light Theme Accent color-->
     <style name="AccentThemeLight" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <!--<style name="AppTheme2" parent="@style/Theme.AppCompat.Light.NoActionBar">-->
-
     <style name="AppThemeLight" parent="AccentThemeLight">
-
         <item name="primaryColor">@color/colorBackground2</item>
         <item name="primaryColorDark">@color/colorBackgroundDark2</item>
-        <!--<item name="colorAccent">@color/colorAccent</item>-->
         <item name="textColorPrimary">@color/colorTextPrimary2</item>
         <item name="textColorPrimaryLight">@color/colorTextPrimaryLight2</item>
         <item name="textColorPrimaryDark">@color/colorTextPrimaryDark2</item>
         <item name="colorOverlay">@color/colorOverlay2</item>
         <item name="colorTint">@color/colorTint2</item>
-        <item name="colorRipple">@color/colorRipple2</item>
+        <item name="colorRipple">@color/colorRipple1</item>
         <item name="drawableTintColor">@color/black</item>
         <item name="albumTint">@color/albumTint2</item>
         <item name="android:windowContentTransitions">true</item>
-        <!--<item name="clickable">@drawable/clickable_effect</item>-->
-        <!--<item name="backgroundColor"></item>-->
-
+        <item name="android:fontFamily">@font/nunito_regular</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -58,11 +53,5 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
-    <style name="ProgressBar" parent="@style/AppTheme">
-        <item name="colorPrimary">@color/colorBackground2</item>
-        <item name="colorPrimaryDark">@color/colorBackgroundDark2</item>
-        <item name="colorAccent">@color/spotifyGreen</item>
-    </style>
 
 </resources>

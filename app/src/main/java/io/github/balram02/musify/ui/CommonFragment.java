@@ -1,6 +1,5 @@
 package io.github.balram02.musify.ui;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,8 +13,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.futuremind.recyclerviewfastscroll.FastScroller;
-
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.adapters.CommonAdapter;
 import io.github.balram02.musify.listeners.FragmentListener;
@@ -28,17 +25,9 @@ public class CommonFragment extends Fragment {
     private RecyclerView recyclerView;
     private CommonAdapter commonAdapter;
     //    private SwipeRefreshLayout refreshLayout;
-    private Context context;
     private LinearLayout nothing;
 
     private SharedViewModel mViewModel;
-    private FastScroller fastScroller;
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        this.context = context;
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -47,13 +36,11 @@ public class CommonFragment extends Fragment {
 
         recyclerView = v.findViewById(R.id.recycler_view);
         nothing = v.findViewById(R.id.nothing_layout);
-        fastScroller = v.findViewById(R.id.fast_scroller);
 //        refreshLayout = v.findViewById(R.id.refresh_layout);
         recyclerView.setHasFixedSize(true);
         commonAdapter = new CommonAdapter(getActivity());
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setAdapter(commonAdapter);
-        fastScroller.setRecyclerView(recyclerView);
 
         return v;
     }
@@ -89,12 +76,6 @@ public class CommonFragment extends Fragment {
                 }
             });
         }
-        recyclerView.scrollTo(0,0);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        this.context = null;
+        recyclerView.scrollTo(0, 0);
     }
 }

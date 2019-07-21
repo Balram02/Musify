@@ -251,6 +251,8 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
     public void setUpLastDetails() {
 
+        boolean shuffleState = Preferences.DefaultSettings.getShuffleState(this);
+
         if (musicPlayerService != null && musicPlayerService.isPlaying()) {
 
             if (bottomSheetLayout.getVisibility() == View.GONE)
@@ -262,10 +264,9 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             bottomSheetSongArtist.setText(musicPlayerService.getArtistName());
             bottomSheetSeekbar.setMax(musicPlayerService.getDuration());
             bottomSheetSongDuration.setText(Constants.convertMilliseconds(musicPlayerService.getDuration()));
+            setAlbumArt(musicPlayerService.getAlbumId());
             updateSeekBarProgress();
             setPlayPauseDrawable(true);
-            Log.d(TAG, "setUpLastDetails: service is active ");
-
             currentSongModel = musicPlayerService.getSongModel();
 
         } else {
@@ -282,36 +283,32 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
                 bottomSheetSongCurrentPosition.setText(
                         Constants.convertMilliseconds(Preferences.SongDetails.getLastSongCurrentPosition(this)));
                 setAlbumArt(lastSongModel.getAlbumId());
-                boolean shuffleState = Preferences.DefaultSettings.getShuffleState(this);
-                setShuffleDrawable(shuffleState);
-                setQueueListInService(shuffleState);
-
+                setQueueListInService();
                 currentSongModel = lastSongModel;
-
             } else {
                 bottomSheetLayout.setVisibility(View.GONE);
             }
 
-            Log.d(TAG, "setUpLastDetails: service is inactive ");
             setPlayPauseDrawable(false);
         }
 
         addObserverOnFavorite();
 
+        setShuffleDrawable(shuffleState);
         setRepeatDrawable(Preferences.DefaultSettings.getRepeatState(this));
     }
 
     public void addObserverOnFavorite() {
 
-        int id = -1;
+        String path = "";
         if (musicPlayerService != null && musicPlayerService.getSongModel() != null) {
-            id = musicPlayerService.getSongId();
+            path = musicPlayerService.getSongPath();
         } else if (Preferences.SongDetails.getLastSongDetails(this) != null) {
-            id = Preferences.SongDetails.getLastSongDetails(this).getId();
+            path = Preferences.SongDetails.getLastSongDetails(this).getPath();
         }
 
-        if (id != -1) {
-            sharedViewModel.isFavorite(id).observe(this, isFavorite -> {
+        if (!path.equals("") || !path.isEmpty()) {
+            sharedViewModel.isFavorite(path).observe(this, isFavorite -> {
                 SongsModel model = Preferences.SongDetails.getLastSongDetails(this);
                 if (musicPlayerService != null && musicPlayerService.getSongModel() != null) {
                     musicPlayerService.setFavorite(isFavorite);
@@ -409,9 +406,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             else if (fragment instanceof SearchFragment)
                 setTitle("Search");
 
-
-//            Log.d(TAG, "setFragment: " + fragment.getTag());
-
             if (bottomSheet.getState() == BottomSheetBehavior.STATE_EXPANDED)
                 bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
@@ -422,11 +416,11 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     public void onUpdateService(SongsModel currentModel) {
         boolean state = Preferences.DefaultSettings.getShuffleState(this);
         if (state) {
-            musicPlayerService.setSongDetails(sharedViewModel.getShuffleSongsQueue(), currentModel, sharedViewModel);
+            musicPlayerService.setSongDetails(sharedViewModel.getShuffleSongsQueue(), currentModel, sharedViewModel, true);
         } else {
-            musicPlayerService.setSongDetails(sharedViewModel.getAllSongsQueue(), currentModel, sharedViewModel);
+            musicPlayerService.setSongDetails(sharedViewModel.getAllSongsQueue(), currentModel, sharedViewModel, false);
         }
-        Log.d(TAG, "onUpdateService: " + state);
+        Log.d(TAG, "onUpdateService: shuffle state = " + state);
         musicPlayerService.setPlayingFromFav(false);
         startMyService(INTENT_ACTION_NEW_SONG);
     }
@@ -438,9 +432,9 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             list = sharedViewModel.getFavoritesShuffleQueueList();
             if (currentModel == null && list.size() != 0)
                 currentModel = list.get(new Random().nextInt(list.size()));
-            musicPlayerService.setSongDetails(list, currentModel, sharedViewModel);
+            musicPlayerService.setSongDetails(list, currentModel, sharedViewModel, true);
         } else {
-            musicPlayerService.setSongDetails(sharedViewModel.getFavoritesQueueList(), currentModel, sharedViewModel);
+            musicPlayerService.setSongDetails(sharedViewModel.getFavoritesQueueList(), currentModel, sharedViewModel, false);
         }
         musicPlayerService.setPlayingFromFav(true);
         startMyService(INTENT_ACTION_NEW_SONG);
@@ -495,7 +489,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         super.onStart();
         Log.d(TAG, "onStart: MainActivity");
 
-        // Handles headphones coming unplugged. cannot be done through a manifest receiver
         IntentFilter globalFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         registerReceiver(mNoisyReceiver, globalFilter);
 
@@ -506,14 +499,14 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume: ");
+//        Log.d(TAG, "onResume: ");
         PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(PREFERENCES_ACTIVITY_STATE, true).apply();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause: ");
+//        Log.d(TAG, "onPause: ");
     }
 
     @Override
@@ -578,8 +571,8 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         }
     }
 
-    public void setQueueListInService(boolean isShuffled) {
-
+    public void setQueueListInService() {
+        boolean isShuffled = Preferences.DefaultSettings.getShuffleState(this);
         musicPlayerService.setSongsQueueList(isShuffled, isShuffled ?
                 musicPlayerService.isPlayingFromFav() ? sharedViewModel.getFavoritesShuffleQueueList() : sharedViewModel.getShuffleSongsQueue() :
                 musicPlayerService.isPlayingFromFav() ? sharedViewModel.getFavoritesQueueList() : sharedViewModel.getAllSongsQueue());
@@ -683,8 +676,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         }
 
         setFavoritesDrawable(!isFavorite);
-
-        Log.d(TAG, "onClickFavoriteButton: from " + isFavorite + " = " + !isFavorite);
     }
 
     public void onClickRepeatButton(View view) {
@@ -716,7 +707,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             Preferences.DefaultSettings.setShuffleState(this, PREFERENCES_SHUFFLE_STATE_NO);
             setShuffleDrawable(PREFERENCES_SHUFFLE_STATE_NO);
         }
-        setQueueListInService(!state);
+        setQueueListInService();
     }
 
     private void setPlayPauseDrawable(boolean isPlaying) {
@@ -727,7 +718,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     private void setFavoritesDrawable(boolean isFavorite) {
         peekFavorite.setImageResource(isFavorite ? R.drawable.ic_favorite_filled_white_24dp : R.drawable.ic_favorite_border_white_24dp);
         bottomSheetFavorite.setImageResource(isFavorite ? R.drawable.ic_favorite_filled_white_24dp : R.drawable.ic_favorite_border_white_24dp);
-        Log.d(TAG, "setFavoritesDrawable: " + isFavorite);
     }
 
     private void setRepeatDrawable(int state) {
@@ -749,7 +739,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             bottomSheetShuffle.setImageResource(R.drawable.ic_shuffle_yes_24dp);
         else
             bottomSheetShuffle.setImageResource(R.drawable.ic_shuffle_no_24dp);
-        Log.d(TAG, "setShuffleDrawable: " + state);
     }
 
     private BroadcastReceiver mNoisyReceiver = new BroadcastReceiver() {
@@ -760,5 +749,4 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             }
         }
     };
-
 }

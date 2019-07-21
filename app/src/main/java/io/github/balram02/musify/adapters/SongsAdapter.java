@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.futuremind.recyclerviewfastscroll.SectionTitleProvider;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -27,7 +26,7 @@ import io.github.balram02.musify.listeners.OnAdapterItemClickListener;
 import io.github.balram02.musify.models.SongsModel;
 import io.github.balram02.musify.viewModels.SharedViewModel;
 
-public class SongsAdapter extends ListAdapter<SongsModel, SongsAdapter.SongListViewHolder> implements SectionTitleProvider {
+public class SongsAdapter extends ListAdapter<SongsModel, SongsAdapter.SongListViewHolder> {
 
     private OnAdapterItemClickListener listener;
     private Context context;
@@ -35,7 +34,7 @@ public class SongsAdapter extends ListAdapter<SongsModel, SongsAdapter.SongListV
     private static DiffUtil.ItemCallback<SongsModel> diffCallback = new DiffUtil.ItemCallback<SongsModel>() {
         @Override
         public boolean areItemsTheSame(@NonNull SongsModel oldItem, @NonNull SongsModel newItem) {
-            return oldItem.getId() == newItem.getId();
+            return oldItem.getPath().equals(newItem.getPath());
         }
 
         @Override
@@ -77,11 +76,6 @@ public class SongsAdapter extends ListAdapter<SongsModel, SongsAdapter.SongListV
                 holder.songAlbumArt.setImageResource(R.drawable.ic_music_placeholder_white);
             }
         });
-    }
-
-    @Override
-    public String getSectionTitle(int position) {
-        return getItem(position).getTitle().substring(0, 1);
     }
 
     public class SongListViewHolder extends RecyclerView.ViewHolder {

@@ -34,7 +34,7 @@ public class FavoritesAdapter extends ListAdapter<SongsModel, FavoritesAdapter.F
     private static DiffUtil.ItemCallback<SongsModel> diffCallback = new DiffUtil.ItemCallback<SongsModel>() {
         @Override
         public boolean areItemsTheSame(@NonNull SongsModel oldItem, @NonNull SongsModel newItem) {
-            return oldItem.getId() == newItem.getId();
+            return oldItem.getPath().equals(newItem.getPath());
         }
 
         @Override

@@ -4,12 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal"
     android:fillViewport="true"
-    tools:context=".ui.SearchFragment">
+    android:overScrollMode="always"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginTop="5dp"
         android:orientation="vertical">
 
@@ -20,66 +22,66 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:text="Search Results"
+            android:text="@string/search_results_text"
             android:textColor="?textColorPrimary"
             android:textSize="19sp"
             android:textStyle="bold"
             android:visibility="gone" />
 
-        <ListView
+        <TextView
+            android:id="@+id/zero_search_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="5dp"
+            android:text="@string/no_song_found_message_text"
+            android:textColor="?textColorPrimaryLight"
+            android:textSize="16sp"
+            android:visibility="gone" />
+
+        <io.github.balram02.musify.ui.NestedScrollableListView
             android:id="@+id/search_list_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/search_text"
             android:layout_margin="5dp"
             android:nestedScrollingEnabled="true"
             tools:listheader="Search Results" />
 
-        <RelativeLayout
+        <TextView
+            android:id="@+id/recent_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/recently_played_text"
+            android:textColor="?textColorPrimary"
+            android:textSize="19sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/no_recent_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/no_recent_message_text"
+            android:textColor="?textColorPrimaryLight"
+            android:textSize="17sp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recent_list_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/search_list_view"
-            android:orientation="vertical">
+            android:fadeScrollbars="true"
+            android:nestedScrollingEnabled="true"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/recycler_view_recent_item" />
 
-            <TextView
-                android:id="@+id/recent_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:text="Recently played"
-                android:textColor="?textColorPrimary"
-                android:textSize="19sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/no_recent_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/recent_list_view"
-                android:layout_centerHorizontal="true"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:text="No recently played song found"
-                android:textColor="?textColorPrimaryLight"
-                android:textSize="17sp" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recent_list_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/recent_text"
-                android:fadeScrollbars="true"
-                android:nestedScrollingEnabled="true"
-                android:orientation="horizontal"
-                android:padding="10dp"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/recycler_view_recent_item" />
-
-        </RelativeLayout>
-
-    </RelativeLayout>
+    </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

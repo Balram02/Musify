@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.futuremind.recyclerviewfastscroll.SectionTitleProvider;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -26,16 +25,15 @@ import io.github.balram02.musify.constants.Constants;
 import io.github.balram02.musify.models.SongsModel;
 import io.github.balram02.musify.ui.CommonActivity;
 
-public class CommonAdapter extends ListAdapter<SongsModel, CommonAdapter.SongListViewHolder> implements SectionTitleProvider {
+public class CommonAdapter extends ListAdapter<SongsModel, CommonAdapter.SongListViewHolder> {
 
-    private OnItemClickListener listener;
     private Activity context;
     private boolean isAlbum;
 
     private static DiffUtil.ItemCallback<SongsModel> diffCallback = new DiffUtil.ItemCallback<SongsModel>() {
         @Override
         public boolean areItemsTheSame(@NonNull SongsModel oldItem, @NonNull SongsModel newItem) {
-            return oldItem.getId() == newItem.getId();
+            return oldItem.getPath().equals(newItem.getPath());
         }
 
         @Override
@@ -76,11 +74,6 @@ public class CommonAdapter extends ListAdapter<SongsModel, CommonAdapter.SongLis
         });
     }
 
-    @Override
-    public String getSectionTitle(int position) {
-        return getItem(position).getTitle().substring(0, 1);
-    }
-
     public void setList(List<SongsModel> songs, boolean isAlbum) {
         submitList(songs);
         this.isAlbum = isAlbum;
@@ -111,13 +104,4 @@ public class CommonAdapter extends ListAdapter<SongsModel, CommonAdapter.SongLis
             return CommonAdapter.this.getItem(getAdapterPosition());
         }
     }
-
-    public interface OnItemClickListener {
-        void onItemClick(SongsModel model);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        this.listener = listener;
-    }
-
 }

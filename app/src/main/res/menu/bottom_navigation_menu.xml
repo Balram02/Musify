@@ -4,18 +4,18 @@
     <item
         android:id="@+id/music"
         android:icon="@drawable/ic_music_note_white_24dp"
-        android:title="Music" />
+        android:title="@string/music" />
     <item
         android:id="@+id/search"
         android:icon="@drawable/ic_search_white_24dp"
-        android:title="Search" />
+        android:title="@string/search" />
     <item
         android:id="@+id/library"
         android:icon="@drawable/ic_library_music_white_24dp"
-        android:title="Library" />
+        android:title="@string/library" />
     <item
         android:id="@+id/favorites"
         android:icon="@drawable/ic_favorite_filled_white_24dp"
-        android:title="Favorites" />
+        android:title="@string/favorites" />
 
 </menu>

@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,12 +37,13 @@ public class SearchFragment extends Fragment {
     private Context context;
 
     private MusicPlayerServiceListener musicPlayerServiceListener;
-    private ListView searchListView;
+    private NestedScrollableListView searchListView;
 
     private RecyclerView recentRecyclerView;
 
     private SearchView searchView;
     private ArrayAdapter<SongsModel> arrayAdapter;
+    private TextView zeroSearch;
 
     private RecentAdapter recentAdapter;
     private TextView noRecent;
@@ -71,6 +71,7 @@ public class SearchFragment extends Fragment {
         recentRecyclerView = v.findViewById(R.id.recent_list_view);
 
         noRecent = v.findViewById(R.id.no_recent_text);
+        zeroSearch = v.findViewById(R.id.zero_search_result);
 
         recentRecyclerView.setHasFixedSize(true);
 
@@ -123,7 +124,6 @@ public class SearchFragment extends Fragment {
 
         searchListView.setOnItemClickListener((adapterView, view, i, l) -> {
             musicPlayerServiceListener.onUpdateService((SongsModel) adapterView.getItemAtPosition(i));
-            Log.d(TAG, "onCreateView: " + i);
         });
 
         return v;
@@ -140,7 +140,9 @@ public class SearchFragment extends Fragment {
         }
         searchView.setOnCloseListener(() -> {
             arrayAdapter.clear();
-            return true;
+            zeroSearch.setVisibility(View.GONE);
+            v.findViewById(R.id.search_text).setVisibility(View.GONE);
+            return false;
         });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -155,10 +157,10 @@ public class SearchFragment extends Fragment {
                 if (newText.isEmpty()) {
                     arrayAdapter.clear();
                     v.findViewById(R.id.search_text).setVisibility(View.GONE);
+                    zeroSearch.setVisibility(View.GONE);
                 } else {
                     v.findViewById(R.id.search_text).setVisibility(View.VISIBLE);
                     updateSearchList(mViewModel.getSearchQueryResults(newText));
-
                 }
                 return true;
             }
@@ -169,6 +171,10 @@ public class SearchFragment extends Fragment {
         arrayAdapter.clear();
         arrayAdapter.addAll(list);
         arrayAdapter.notifyDataSetChanged();
+        if (list.size() == 0)
+            zeroSearch.setVisibility(View.VISIBLE);
+        else
+            zeroSearch.setVisibility(View.GONE);
     }
 
 

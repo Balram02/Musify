@@ -47,7 +47,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="20dp"
-                    android:text="Albums"
+                    android:text="@string/albums_text"
                     android:textColor="?attr/textColorPrimary"
                     android:textSize="20sp" />
 
@@ -82,7 +82,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|bottom"
                 android:layout_marginBottom="20dp"
-                android:text="Artists"
+                android:text="@string/artists_text"
                 android:textColor="?attr/textColorPrimary"
                 android:textSize="20sp" />
 

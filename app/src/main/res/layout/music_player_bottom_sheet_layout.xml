@@ -56,7 +56,7 @@
                 android:paddingEnd="5dp"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+                android:text="@string/lorem_ipsum_text"
                 android:textColor="?attr/textColorPrimary"
                 android:textSize="16sp" />
 
@@ -86,14 +86,16 @@
 
     </RelativeLayout>
 
-    <!--TODO: set alpha to 0 in constraint layout-->
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:alpha="1"
-        android:layout_below="@id/bottom_sheet_layout">
+        android:layout_below="@id/bottom_sheet_layout"
+        android:alpha="0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bottom_sheet_layout">
 
         <ImageView
             android:id="@+id/bottom_sheet_album_art"
@@ -129,7 +131,7 @@
                 android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+                android:text="@string/lorem_ipsum_text"
                 android:textAlignment="center"
                 android:textColor="?attr/textColorPrimary"
                 android:textSize="20sp" />
@@ -145,7 +147,7 @@
                 android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+                android:text="@string/lorem_ipsum_text"
                 android:textAlignment="center"
                 android:textColor="?attr/textColorPrimary"
                 android:textSize="16sp" />
@@ -209,7 +211,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
             android:layout_marginTop="5dp"
-            android:text="00:00"
+            android:text="@string/initial_song_position"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/bottom_sheet_seek_bar" />
 
@@ -219,7 +221,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="15dp"
-            android:text="00:00"
+            android:text="@string/initial_song_position"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/bottom_sheet_seek_bar" />
 
@@ -260,10 +262,10 @@
             android:layout_width="0dp"
             android:layout_height="65dp"
             android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
             android:background="@drawable/background_circle_stroke_accent"
             android:clickable="true"
             android:focusable="true"
-            android:layout_marginBottom="20dp"
             android:foreground="?actionBarItemBackground"
             android:onClick="onClickPlayPauseButton"
             android:scaleType="fitCenter"

@@ -4,7 +4,6 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -53,6 +52,7 @@ import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_NEXT;
 import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_PAUSE;
 import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_PLAY;
 import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_PREVIOUS;
+import static io.github.balram02.musify.constants.Constants.PREFERENCES_REPEAT_STATE_ALL;
 import static io.github.balram02.musify.constants.Constants.PREFERENCES_REPEAT_STATE_NONE;
 import static io.github.balram02.musify.constants.Constants.PREFERENCES_REPEAT_STATE_ONE;
 import static io.github.balram02.musify.constants.Constants.TAG;
@@ -106,11 +106,6 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                 if (isPlaying()) {
                     pause();
-                }
-                break;
-            case AudioManager.AUDIOFOCUS_GAIN:
-                if (!isPlaying()) {
-                    start();
                 }
                 break;
             case AudioManager.AUDIOFOCUS_LOSS:
@@ -294,10 +289,10 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
 
         notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(pauseButton ? R.drawable.notification_play_icon_white_24dp : R.drawable.notification_pause_icon_white_24dp)
-//                .setStyle(new androidx.media.app.NotificationCompat.DecoratedMediaCustomViewStyle()
-//                        .setMediaSession(mediaSessionCompat.getSessionToken()))
+                .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
+                        .setMediaSession(mediaSessionCompat.getSessionToken()))
                 .setColorized(true)
-                .setColor(getResources().getColor(R.color.blackTint))
+                .setColor(getResources().getColor(R.color.black))
                 .setCustomContentView(notificationCollapsed)
                 .setCustomBigContentView(notificationExpanded)
                 .build();
@@ -398,20 +393,17 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
         } else
             currentSongPosition = this.songsQueueList.indexOf(model);
 
-//        currentSongPosition = new Random().nextInt(songsQueueList.size());
-//        this.songsQueueList.add(currentSongPosition, this.model != null ? model : Preferences.SongDetails.getLastSongDetails(this));
     }
 
-    public void setSongDetails(List<SongsModel> songsQueueList, SongsModel model, SharedViewModel mViewModel) {
+    public void setSongDetails(List<SongsModel> songsQueueList, SongsModel model, SharedViewModel mViewModel, boolean shuffle) {
         this.model = model;
         this.mViewModel = mViewModel;
         this.songsQueueList = songsQueueList;
 
-        if (Preferences.DefaultSettings.getShuffleState(this)) {
-            currentSongPosition = new Random().nextInt(songsQueueList.size());
-            this.songsQueueList.add(currentSongPosition, this.model);
-        } else
-            currentSongPosition = this.songsQueueList.indexOf(model);
+        setSongsQueueList(shuffle, this.songsQueueList);
+
+        Log.d(TAG, "setSongDetails: shuffle state = " + shuffle);
+        Log.d(TAG, "setSongDetails: " + this.songsQueueList.toString());
 
         Log.d(TAG, "setSongDetails: position = " + currentSongPosition);
     }
@@ -516,8 +508,14 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
         else
             currentSongPosition -= 1;
 
-        setSongModel(songsQueueList.get(currentSongPosition));
-        setDataSourceAndPrepare();
+        try {
+            Log.d(TAG, "playPrevious: current position = " + currentSongPosition);
+            Log.d(TAG, "playPrevious: list size = " + songsQueueList.size());
+            setSongModel(songsQueueList.get(currentSongPosition));
+            setDataSourceAndPrepare();
+        } catch (Exception e) {
+            Log.d(TAG, "playPrevious: " + e.toString());
+        }
 
     }
 
@@ -531,12 +529,15 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        Log.d(TAG, "onCompletion: " + isLooping());
+        Log.d(TAG, "onCompletion: looping = " + isLooping());
 
-        if (Preferences.DefaultSettings.getRepeatState(this) != PREFERENCES_REPEAT_STATE_NONE)
-            playNext();
-        else
+        if (Preferences.DefaultSettings.getRepeatState(this) == PREFERENCES_REPEAT_STATE_NONE)
             pause();
+        else if (Preferences.DefaultSettings.getRepeatState(this) == PREFERENCES_REPEAT_STATE_ALL)
+            playNext();
+        else if (Preferences.DefaultSettings.getRepeatState(this) == PREFERENCES_REPEAT_STATE_ONE) {
+            start();
+        }
     }
 
     public void setLooping(boolean looping) {
@@ -555,8 +556,8 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
         return model;
     }
 
-    public int getSongId() {
-        return model.getId();
+    public String getSongPath() {
+        return model.getPath();
     }
 
     public String getSongName() {
@@ -567,8 +568,16 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
         return (player.getDuration());
     }
 
+    public long getAlbumId() {
+        return model.getAlbumId();
+    }
+
     public int getCurrentPosition() {
         return (player.getCurrentPosition());
+    }
+
+    public boolean isQueueListEmpty() {
+        return songsQueueList == null || songsQueueList.isEmpty();
     }
 
     public void seekTo(int pos) {
@@ -625,22 +634,6 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
 
     private void release() {
         player.release();
-    }
-
-    @Override
-    public boolean onUnbind(Intent intent) {
-        Log.d(TAG, "onUnbind: ");
-        return super.onUnbind(intent);
-    }
-
-    public class NotificationDismissReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            int notId = intent.getIntExtra(getPackageName(), 0);
-            if (notId == NOTIFICATION_ID)
-                onDestroy();
-            Log.d(TAG, "onReceive: " + notId + intent.getExtras());
-        }
     }
 
 }

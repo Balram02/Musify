@@ -18,9 +18,9 @@
             android:id="@+id/album_art"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:transitionName="album_art"
             android:scaleType="fitXY"
-            android:tint="?albumTint" />
+            android:tint="?albumTint"
+            android:transitionName="album_art" />
 
         <TextView
             android:id="@+id/common_name"
@@ -32,7 +32,7 @@
             android:layout_marginBottom="20dp"
             android:ellipsize="end"
             android:maxLines="3"
-            android:text="Album Name"
+            android:text="@string/album"
             android:textAlignment="center"
             android:textColor="?textColorPrimary"
             android:textSize="16sp" />

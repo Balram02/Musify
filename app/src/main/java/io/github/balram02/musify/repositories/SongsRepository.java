@@ -23,23 +23,15 @@ public class SongsRepository {
     private SongsDatabase songsDB;
     private static SongsDao songsDao;
     private LiveData<List<SongsModel>> songs;
-    private LiveData<List<SongsModel>> favoriteSongs;
     private LiveData<List<SongsModel>> recentSongs;
     private LiveData<List<SongsModel>> songsByAlbums;
     private LiveData<List<SongsModel>> songsByArtist;
 
-    private List<SongsModel> songsQueue;
-    private List<SongsModel> allSongsQueue;
-    private List<SongsModel> favSongsQueueList;
 
     public SongsRepository(Application application) {
         songsDB = SongsDatabase.getInstance(application);
         songsDao = songsDB.songDao();
         songs = songsDao.getAllSongs();
-        songsQueue = songsDao.getShuffleSongsQueue();
-        allSongsQueue = songsDao.getAllSongsQueue();
-        favoriteSongs = songsDao.getFavoriteSongs();
-        favSongsQueueList = songsDao.getFavoritesQueueList();
         recentSongs = songsDao.getRecentlyPlayedSongs();
         songsByAlbums = songsDao.getAlbums();
         songsByArtist = songsDao.getArtist();
@@ -62,27 +54,27 @@ public class SongsRepository {
     }
 
     public List<SongsModel> getAllSongsQueue() {
-        return allSongsQueue;
+        return songsDao.getAllSongsQueue();
     }
 
     public List<SongsModel> getShuffleSongsQueue() {
-        return songsQueue;
+        return songsDao.getShuffleSongsQueue();
     }
 
     public LiveData<List<SongsModel>> getFavoriteSong() {
-        return favoriteSongs;
+        return songsDao.getFavoriteSongs();
     }
 
     public List<SongsModel> getFavoritesQueueList() {
-        return favSongsQueueList;
+        return songsDao.getFavoritesQueueList();
     }
 
     public List<SongsModel> getFavoritesShuffleQueueList() {
         return songsDao.getFavoritesShuffleQueueList();
     }
 
-    public LiveData<Boolean> isFavorite(int id) {
-        return songsDao.isFavorite(id);
+    public LiveData<Boolean> isFavorite(String path) {
+        return songsDao.isFavorite(path);
     }
 
     public LiveData<List<SongsModel>> getRecentlyPlayedSongs() {

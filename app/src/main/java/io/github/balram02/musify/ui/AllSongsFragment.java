@@ -26,8 +26,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.futuremind.recyclerviewfastscroll.FastScroller;
-
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.adapters.SongsAdapter;
 import io.github.balram02.musify.listeners.MusicPlayerServiceListener;
@@ -53,7 +51,6 @@ public class AllSongsFragment extends Fragment {
     private Bitmap favorite;
     private Bitmap unFavorite;
     private Paint paint;
-    private FastScroller fastScroller;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -77,7 +74,6 @@ public class AllSongsFragment extends Fragment {
         recyclerView = v.findViewById(R.id.recycler_view);
         totalSongsCard = v.findViewById(R.id.total_songs_card_view);
         totalSongs = v.findViewById(R.id.total_songs);
-        fastScroller = v.findViewById(R.id.fast_scroller);
         nothing = v.findViewById(R.id.nothing_layout);
 //        refreshLayout = v.findViewById(R.id.refresh_layout);
         recyclerView.setHasFixedSize(true);
@@ -176,7 +172,6 @@ public class AllSongsFragment extends Fragment {
         mViewModel.getAllSongs().observe(getViewLifecycleOwner(), songsModels -> {
             songsAdapter.submitList(songsModels);
             songsAdapter.onAttachedToRecyclerView(recyclerView);
-            fastScroller.setRecyclerView(recyclerView);
             int size = songsModels.size();
             totalSongs.setText(getString(R.string.songs_found_text, size));
             if (size == 0 && nothing.getVisibility() == View.GONE) {

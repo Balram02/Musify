@@ -34,7 +34,7 @@ public class RecentAdapter extends ListAdapter<SongsModel, RecentAdapter.RecentV
     private static DiffUtil.ItemCallback<SongsModel> diffCallback = new DiffUtil.ItemCallback<SongsModel>() {
         @Override
         public boolean areItemsTheSame(@NonNull SongsModel oldItem, @NonNull SongsModel newItem) {
-            return oldItem.getId() == newItem.getId();
+            return oldItem.getPath().equals(newItem.getPath());
         }
 
         @Override

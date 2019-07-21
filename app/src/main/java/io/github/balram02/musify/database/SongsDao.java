@@ -17,7 +17,7 @@ public interface SongsDao {
 
     /**************insert operations**************/
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(SongsModel songsModel);
 
 
@@ -53,8 +53,8 @@ public interface SongsDao {
     @Query("SELECT * FROM songs_table WHERE is_favorite = 1 ORDER BY RANDOM()")
     List<SongsModel> getFavoritesShuffleQueueList();
 
-    @Query("SELECT is_favorite from songs_table WHERE id = :id")
-    LiveData<Boolean> isFavorite(int id);
+    @Query("SELECT is_favorite from songs_table WHERE path = :path")
+    LiveData<Boolean> isFavorite(String path);
 
     @Query("SELECT * FROM songs_table WHERE accessed_timestamp != 0 AND accessed_timestamp <= datetime() ORDER BY accessed_timestamp DESC LIMIT 10")
     LiveData<List<SongsModel>> getRecentlyPlayedSongs();

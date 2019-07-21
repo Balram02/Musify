@@ -12,10 +12,6 @@ import java.io.FileDescriptor;
 
 public class Constants {
 
-    public static final String PREFERENCES_DETAILS = "updating_list";
-
-    public static final String REFRESH_SONG_LIST = "refresh_song_list";
-
     public static final int STORAGE_PERMISSION_REQUEST_CODE = 101;
 
     public static final String TAG = "MyTag";
@@ -29,9 +25,9 @@ public class Constants {
     public static final String INTENT_ACTION_CLOSE = "intent_action_close";
 
     //    Repeat states
-    public static final int PREFERENCES_REPEAT_STATE_NONE = 0;
-    public static final int PREFERENCES_REPEAT_STATE_ALL = -1;
-    public static final int PREFERENCES_REPEAT_STATE_ONE = 1;
+    public static final int PREFERENCES_REPEAT_STATE_NONE = 101;
+    public static final int PREFERENCES_REPEAT_STATE_ALL = 102;
+    public static final int PREFERENCES_REPEAT_STATE_ONE = 100;
 
     //    Shuffle states
     public static final boolean PREFERENCES_SHUFFLE_STATE_YES = true;

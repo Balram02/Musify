@@ -27,5 +27,38 @@
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
 
     <string name="become_contributor_text"><a href="https://github.com/Balram02/Musify">Become a contributor !</a></string>
+    <string name="music">Music</string>
+    <string name="search">Search</string>
+    <string name="library">Library</string>
+    <string name="favorites">Favorites</string>
+    <string name="song_count_common_activity">10</string>
+    <string name="lorem_ipsum_text">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</string>
+    <string name="album_art_text">Album Art</string>
+    <string name="album_art_message_text">Do not show album art on lock screen</string>
+    <string name="app_theme_text">App Theme</string>
+    <string name="use_light_theme_text">Use Light Theme</string>
+    <string name="rate_this_app_text">Rate this App</string>
+    <string name="rate_this_app_message_text">Your feedback is most valuable to this project</string>
+    <string name="icon_credits_text">Icon Credits</string>
+    <string name="icon_credit_link">www.Icons8.com</string>
+    <string name="logo_credit_text">Logo made with</string>
+    <string name="logo_credit_link">www.designevo.com</string>
+    <string name="thank_you_message_text">Thank you for using this App</string>
+    <string name="albums_text">Albums</string>
+    <string name="artists_text">Artists</string>
+    <string name="initial_song_position">00:00</string>
+    <string name="no_music_message_text">No Music found on your device.</string>
+    <string name="album">Album</string>
+    <string name="artist">Artist</string>
+    <string name="song_name_text">Song Name</string>
+    <string name="search_results_text">Search Results</string>
+    <string name="no_song_found_message_text">No Song found</string>
+    <string name="recently_played_text">Recently played</string>
+    <string name="no_recent_message_text">No recently played song found</string>
+    <string name="title_text">Title</string>
+    <string name="location_on_device_text">Location on device</string>
+    <string name="song_properties_text">Song Properties</string>
+    <string name="add_to_favorites_text">Add to Favorites</string>
+    <string name="search_text">Search</string>
 
 </resources>

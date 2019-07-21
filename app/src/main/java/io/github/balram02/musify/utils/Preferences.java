@@ -66,7 +66,7 @@ public class Preferences {
         // retrieve repeat state
         synchronized public static int getRepeatState(Context context) {
             return context.getSharedPreferences(SONGS_DETAILS, Context.MODE_PRIVATE)
-                    .getInt("repeat_state", PREFERENCES_REPEAT_STATE_NONE);
+                    .getInt("repeat_state", -1);
         }
 
         // retrieve shuffle state
