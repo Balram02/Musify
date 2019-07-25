@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset='utf-8'>
-      <meta name='viewport' content='width=device-width'>
-      <title>Privacy Policy</title>
-      <style> body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding:1em; } </style>
-    </head>
-    <body>
-    <h2>Privacy Policy</h2> <p>
+<h2>Privacy Policy</h2> <p>
                     Balram Kukreja built the Musify app as
                     an Open Source app. This SERVICE is provided by
                     Balram Kukreja at no cost and is intended for
@@ -114,6 +105,3 @@
                     my Privacy Policy, do not hesitate to contact
                     me at balramkukreja@gmail.com.
                   </p>
-    </body>
-    </html>
-      
