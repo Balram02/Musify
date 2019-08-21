@@ -1,4 +1,4 @@
-package io.github.balram02.musify.ui;
+package io.github.balram02.musify.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,7 +24,7 @@ import io.github.balram02.musify.utils.Preferences;
 import io.github.balram02.musify.viewModels.SharedViewModel;
 
 import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_NEW_SONG;
-import static io.github.balram02.musify.ui.MainActivity.musicPlayerService;
+import static io.github.balram02.musify.ui.activities.MainActivity.musicPlayerService;
 
 public class CommonActivity extends AppCompatActivity implements OnAdapterItemClickListener {
 

@@ -39,7 +39,7 @@
             android:textSize="16sp"
             android:visibility="gone" />
 
-        <io.github.balram02.musify.ui.NestedScrollableListView
+        <io.github.balram02.musify.ui.views.NestedScrollableListView
             android:id="@+id/search_list_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

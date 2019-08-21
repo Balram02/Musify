@@ -1,4 +1,4 @@
-package io.github.balram02.musify.ui;
+package io.github.balram02.musify.ui.activities;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;

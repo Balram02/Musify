@@ -23,7 +23,7 @@ import java.util.List;
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.constants.Constants;
 import io.github.balram02.musify.models.SongsModel;
-import io.github.balram02.musify.ui.CommonActivity;
+import io.github.balram02.musify.ui.activities.CommonActivity;
 
 public class CommonAdapter extends ListAdapter<SongsModel, CommonAdapter.SongListViewHolder> {
 

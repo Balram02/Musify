@@ -1,4 +1,4 @@
-package io.github.balram02.musify.ui;
+package io.github.balram02.musify.ui.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -27,6 +27,7 @@ import io.github.balram02.musify.R;
 import io.github.balram02.musify.adapters.RecentAdapter;
 import io.github.balram02.musify.listeners.MusicPlayerServiceListener;
 import io.github.balram02.musify.models.SongsModel;
+import io.github.balram02.musify.ui.views.NestedScrollableListView;
 import io.github.balram02.musify.viewModels.SharedViewModel;
 
 import static io.github.balram02.musify.constants.Constants.TAG;

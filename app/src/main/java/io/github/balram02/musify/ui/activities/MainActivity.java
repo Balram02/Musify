@@ -1,4 +1,4 @@
-package io.github.balram02.musify.ui;
+package io.github.balram02.musify.ui.activities;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -55,6 +55,11 @@ import io.github.balram02.musify.constants.Constants;
 import io.github.balram02.musify.listeners.FragmentListener;
 import io.github.balram02.musify.listeners.MusicPlayerServiceListener;
 import io.github.balram02.musify.models.SongsModel;
+import io.github.balram02.musify.ui.fragments.AllSongsFragment;
+import io.github.balram02.musify.ui.fragments.CommonFragment;
+import io.github.balram02.musify.ui.fragments.FavoritesFragment;
+import io.github.balram02.musify.ui.fragments.LibraryFragment;
+import io.github.balram02.musify.ui.fragments.SearchFragment;
 import io.github.balram02.musify.utils.Preferences;
 import io.github.balram02.musify.viewModels.SharedViewModel;
 

@@ -1,4 +1,4 @@
-package io.github.balram02.musify.ui;
+package io.github.balram02.musify.ui.fragments;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;

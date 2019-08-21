@@ -42,7 +42,7 @@ import java.util.Random;
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.constants.Constants;
 import io.github.balram02.musify.models.SongsModel;
-import io.github.balram02.musify.ui.MainActivity;
+import io.github.balram02.musify.ui.activities.MainActivity;
 import io.github.balram02.musify.utils.Preferences;
 import io.github.balram02.musify.viewModels.SharedViewModel;
 

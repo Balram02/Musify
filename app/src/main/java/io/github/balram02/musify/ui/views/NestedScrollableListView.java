@@ -1,4 +1,4 @@
-package io.github.balram02.musify.ui;
+package io.github.balram02.musify.ui.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
