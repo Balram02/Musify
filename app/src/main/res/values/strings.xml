@@ -60,5 +60,6 @@
     <string name="song_properties_text">Song Properties</string>
     <string name="add_to_favorites_text">Add to Favorites</string>
     <string name="search_text">Search</string>
+    <string name="action_refresh">Refresh</string>
 
 </resources>

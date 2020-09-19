@@ -52,6 +52,7 @@ import java.util.Random;
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.background.MusicPlayerService;
 import io.github.balram02.musify.constants.Constants;
+import io.github.balram02.musify.database.SongsDatabase;
 import io.github.balram02.musify.listeners.FragmentListener;
 import io.github.balram02.musify.listeners.MusicPlayerServiceListener;
 import io.github.balram02.musify.models.SongsModel;
@@ -483,6 +484,10 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+            return true;
+        } else if (id == R.id.action_refresh) {
+            new SongsDatabase.PopulateAsyncTask(SongsDatabase.getInstance(this)).execute(getApplicationContext());
+//            get
             return true;
         } else if (id == android.R.id.home)
             onBackPressed();
