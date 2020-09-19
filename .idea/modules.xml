@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Musify.iml" filepath="$PROJECT_DIR$/.idea/Musify.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Musify.iml" filepath="$PROJECT_DIR$/Musify.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Musify.iml" filepath="$PROJECT_DIR$/.idea/Musify.iml" group="Musify" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/app.iml" group="Musify/app" />
     </modules>
   </component>
 </project>
