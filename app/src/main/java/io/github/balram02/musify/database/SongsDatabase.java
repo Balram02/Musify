@@ -38,11 +38,11 @@ public abstract class SongsDatabase extends RoomDatabase {
         return instance;
     }
 
-    private static class PopulateAsyncTask extends AsyncTask<Context, Void, Void> {
+    public static class PopulateAsyncTask extends AsyncTask<Context, Void, Void> {
 
         private SongsDao songsDao;
 
-        PopulateAsyncTask(SongsDatabase database) {
+        public PopulateAsyncTask(SongsDatabase database) {
             songsDao = database.songDao();
         }
 

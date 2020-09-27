@@ -1,4 +1,7 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+    id 'org.sonarqube' version "3.0"
+}
 
 android {
     compileSdkVersion 29
@@ -6,8 +9,9 @@ android {
         applicationId 'io.github.balram02.musify'
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.0.1"
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -21,6 +25,10 @@ android {
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
@@ -28,7 +36,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
     implementation 'com.google.android.material:material:1.1.0-alpha08'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
@@ -47,4 +55,13 @@ dependencies {
 
     //Image loading library
     implementation 'com.squareup.picasso:picasso:2.71828'
+}
+
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "Balram02_Musify"
+        property "sonar.organization", "balram02"
+        property "sonar.host.url", "https://sonarcloud.io"
+    }
 }
