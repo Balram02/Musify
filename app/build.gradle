@@ -63,5 +63,7 @@ sonarqube {
         property "sonar.projectKey", "Balram02_Musify"
         property "sonar.organization", "balram02"
         property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.sources", "/home/runner/work/Musify/Musify/app/src/main/java"
+        property "sonar.java.source", "/home/runner/work/Musify/Musify/app/src/main/java"
     }
 }
