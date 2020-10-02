@@ -7,8 +7,7 @@ import com.google.gson.Gson;
 
 import io.github.balram02.musify.models.SongsModel;
 
-import static io.github.balram02.musify.constants.Constants.PREFERENCES_REPEAT_STATE_NONE;
-import static io.github.balram02.musify.constants.Constants.PREFERENCES_SHUFFLE_STATE_NO;
+import static io.github.balram02.musify.utils.Constants.PREFERENCES_SHUFFLE_STATE_NO;
 
 public class Preferences {
 

@@ -1,4 +1,4 @@
-package io.github.balram02.musify.ui.views;
+package io.github.balram02.musify.ui.custom;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.ListView;
 
 public class NestedScrollableListView extends ListView {
+
+    private int height;
 
     public NestedScrollableListView(Context context) {
         super(context);
@@ -21,7 +23,7 @@ public class NestedScrollableListView extends ListView {
 
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(Integer.MAX_VALUE >> 2, View.MeasureSpec.AT_MOST);
+        height = View.MeasureSpec.makeMeasureSpec(Integer.MAX_VALUE >> 2, View.MeasureSpec.AT_MOST);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 }

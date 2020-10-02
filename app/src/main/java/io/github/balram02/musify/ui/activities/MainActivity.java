@@ -51,7 +51,7 @@ import java.util.Random;
 
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.background.MusicPlayerService;
-import io.github.balram02.musify.constants.Constants;
+import io.github.balram02.musify.utils.Constants;
 import io.github.balram02.musify.database.SongsDatabase;
 import io.github.balram02.musify.listeners.FragmentListener;
 import io.github.balram02.musify.listeners.MusicPlayerServiceListener;
@@ -64,15 +64,15 @@ import io.github.balram02.musify.ui.fragments.SearchFragment;
 import io.github.balram02.musify.utils.Preferences;
 import io.github.balram02.musify.viewModels.SharedViewModel;
 
-import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_NEW_SONG;
-import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_PAUSE;
-import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_PLAY;
-import static io.github.balram02.musify.constants.Constants.PREFERENCES_ACTIVITY_STATE;
-import static io.github.balram02.musify.constants.Constants.PREFERENCES_REPEAT_STATE_ALL;
-import static io.github.balram02.musify.constants.Constants.PREFERENCES_REPEAT_STATE_NONE;
-import static io.github.balram02.musify.constants.Constants.PREFERENCES_REPEAT_STATE_ONE;
-import static io.github.balram02.musify.constants.Constants.PREFERENCES_SHUFFLE_STATE_NO;
-import static io.github.balram02.musify.constants.Constants.PREFERENCES_SHUFFLE_STATE_YES;
+import static io.github.balram02.musify.utils.Constants.INTENT_ACTION_NEW_SONG;
+import static io.github.balram02.musify.utils.Constants.INTENT_ACTION_PAUSE;
+import static io.github.balram02.musify.utils.Constants.INTENT_ACTION_PLAY;
+import static io.github.balram02.musify.utils.Constants.PREFERENCES_ACTIVITY_STATE;
+import static io.github.balram02.musify.utils.Constants.PREFERENCES_REPEAT_STATE_ALL;
+import static io.github.balram02.musify.utils.Constants.PREFERENCES_REPEAT_STATE_NONE;
+import static io.github.balram02.musify.utils.Constants.PREFERENCES_REPEAT_STATE_ONE;
+import static io.github.balram02.musify.utils.Constants.PREFERENCES_SHUFFLE_STATE_NO;
+import static io.github.balram02.musify.utils.Constants.PREFERENCES_SHUFFLE_STATE_YES;
 
 public class MainActivity extends AppCompatActivity implements OnNavigationItemSelectedListener, MusicPlayerServiceListener, FragmentListener {
 
@@ -369,15 +369,15 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     }
 
     private void addHiddenFragments() {
-        fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+        fragmentManager.beginTransaction().setCustomAnimations(R.anim.anim_fade_in, R.anim.anim_fade_out)
                 .add(R.id.fragment_container, allSongsFragment, "all_songs_fragment").hide(allSongsFragment).commit();
-        fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+        fragmentManager.beginTransaction().setCustomAnimations(R.anim.anim_fade_in, R.anim.anim_fade_out)
                 .add(R.id.fragment_container, libraryFragment, "library_fragment").hide(libraryFragment).commit();
-        fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+        fragmentManager.beginTransaction().setCustomAnimations(R.anim.anim_fade_in, R.anim.anim_fade_out)
                 .add(R.id.fragment_container, searchFragment, "search_fragment").hide(searchFragment).commit();
-        fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+        fragmentManager.beginTransaction().setCustomAnimations(R.anim.anim_fade_in, R.anim.anim_fade_out)
                 .add(R.id.fragment_container, favoritesFragment, "favorites_fragment").hide(favoritesFragment).commit();
-        fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+        fragmentManager.beginTransaction().setCustomAnimations(R.anim.anim_fade_in, R.anim.anim_fade_out)
                 .add(R.id.fragment_container, commonFragment, "common_fragment").hide(commonFragment).commit();
     }
 
@@ -394,10 +394,10 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         new Thread(() -> runOnUiThread(() -> {
 
             if (activeFragment == null) {
-                fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+                fragmentManager.beginTransaction().setCustomAnimations(R.anim.anim_fade_in, R.anim.anim_fade_out)
                         .show(fragment).commitAllowingStateLoss();
             } else {
-                fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+                fragmentManager.beginTransaction().setCustomAnimations(R.anim.anim_fade_in, R.anim.anim_fade_out)
                         .hide(activeFragment).show(fragment).commitAllowingStateLoss();
             }
             activeFragment = fragment;
@@ -475,7 +475,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
+        getMenuInflater().inflate(R.menu.view_menu_main, menu);
         return true;
     }
 
@@ -591,7 +591,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     public void showCurrentSongMenu(View view) {
 
         BottomSheetDialog dialogFragment = new BottomSheetDialog(this);
-        dialogFragment.setContentView(R.layout.song_menu_layout);
+        dialogFragment.setContentView(R.layout.view_song_menu);
 
         ((TextView) dialogFragment.findViewById(R.id.title)).setText(currentSongModel.getTitle());
         ImageView favImage = dialogFragment.findViewById(R.id.fav_img);
@@ -615,7 +615,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         dialogFragment.findViewById(R.id.song_info_layout).setOnClickListener(v1 -> {
 
             BottomSheetDialog infoDialogFragment = new BottomSheetDialog(this);
-            infoDialogFragment.setContentView(R.layout.song_info_layout);
+            infoDialogFragment.setContentView(R.layout.view_song_info);
 
             Uri uri = Constants.getAlbumArtUri(currentSongModel.getAlbumId());
 

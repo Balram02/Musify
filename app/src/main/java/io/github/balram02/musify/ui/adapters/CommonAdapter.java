@@ -1,4 +1,4 @@
-package io.github.balram02.musify.adapters;
+package io.github.balram02.musify.ui.adapters;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -21,7 +21,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import io.github.balram02.musify.R;
-import io.github.balram02.musify.constants.Constants;
+import io.github.balram02.musify.utils.Constants;
 import io.github.balram02.musify.models.SongsModel;
 import io.github.balram02.musify.ui.activities.CommonActivity;
 
@@ -50,7 +50,7 @@ public class CommonAdapter extends ListAdapter<SongsModel, CommonAdapter.SongLis
     @NonNull
     @Override
     public SongListViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recycler_view_common_item, viewGroup, false);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_rcv_common, viewGroup, false);
         return new SongListViewHolder(v);
     }
 

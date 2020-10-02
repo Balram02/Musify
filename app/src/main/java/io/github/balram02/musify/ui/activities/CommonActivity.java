@@ -15,15 +15,15 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import io.github.balram02.musify.R;
-import io.github.balram02.musify.adapters.SongsAdapter;
+import io.github.balram02.musify.ui.adapters.SongsAdapter;
 import io.github.balram02.musify.background.MusicPlayerService;
-import io.github.balram02.musify.constants.Constants;
+import io.github.balram02.musify.utils.Constants;
 import io.github.balram02.musify.listeners.OnAdapterItemClickListener;
 import io.github.balram02.musify.models.SongsModel;
 import io.github.balram02.musify.utils.Preferences;
 import io.github.balram02.musify.viewModels.SharedViewModel;
 
-import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_NEW_SONG;
+import static io.github.balram02.musify.utils.Constants.INTENT_ACTION_NEW_SONG;
 import static io.github.balram02.musify.ui.activities.MainActivity.musicPlayerService;
 
 public class CommonActivity extends AppCompatActivity implements OnAdapterItemClickListener {

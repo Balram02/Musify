@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/nothing_found_layout" />
+    <include layout="@layout/layout_nothing_found" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -22,7 +22,7 @@
             app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
             app:reverseLayout="false"
             app:spanCount="3"
-            tools:listitem="@layout/recycler_view_common_item" />
+            tools:listitem="@layout/item_rcv_common" />
 
     </RelativeLayout>
 

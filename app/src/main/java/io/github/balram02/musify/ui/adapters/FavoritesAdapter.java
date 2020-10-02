@@ -1,4 +1,4 @@
-package io.github.balram02.musify.adapters;
+package io.github.balram02.musify.ui.adapters;
 
 import android.content.Context;
 import android.net.Uri;
@@ -21,15 +21,15 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import io.github.balram02.musify.R;
-import io.github.balram02.musify.constants.Constants;
+import io.github.balram02.musify.utils.Constants;
 import io.github.balram02.musify.listeners.OnAdapterItemClickListener;
 import io.github.balram02.musify.models.SongsModel;
 import io.github.balram02.musify.viewModels.SharedViewModel;
 
-public class RecentAdapter extends ListAdapter<SongsModel, RecentAdapter.RecentViewHolder> {
+public class FavoritesAdapter extends ListAdapter<SongsModel, FavoritesAdapter.FavoritesViewHolder> {
 
-    private OnAdapterItemClickListener listener;
     private Context context;
+    private OnAdapterItemClickListener listener;
 
     private static DiffUtil.ItemCallback<SongsModel> diffCallback = new DiffUtil.ItemCallback<SongsModel>() {
         @Override
@@ -43,24 +43,24 @@ public class RecentAdapter extends ListAdapter<SongsModel, RecentAdapter.RecentV
         }
     };
 
-    public RecentAdapter(Context context) {
+    public FavoritesAdapter(Context context) {
         super(diffCallback);
         this.context = context;
     }
 
-
     @NonNull
     @Override
-    public RecentViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recycler_view_recent_item, viewGroup, false);
-        return new RecentViewHolder(v);
+    public FavoritesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rcv_song, parent, false);
+        return new FavoritesViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecentViewHolder holder, int i) {
+    public void onBindViewHolder(@NonNull FavoritesViewHolder holder, int i) {
 
         SongsModel model = getItem(i);
         holder.songName.setText(model.getTitle());
+        holder.songArtist.setText(model.getArtist());
         holder.songDuration.setText(Constants.convertMilliseconds(model.getDuration()));
 
         Uri uri = Constants.getAlbumArtUri(model.getAlbumId());
@@ -75,27 +75,28 @@ public class RecentAdapter extends ListAdapter<SongsModel, RecentAdapter.RecentV
                 holder.songAlbumArt.setImageResource(R.drawable.ic_music_placeholder_white);
             }
         });
+
     }
 
-    public class RecentViewHolder extends RecyclerView.ViewHolder {
+
+    class FavoritesViewHolder extends RecyclerView.ViewHolder {
 
         private TextView songName;
+        private TextView songArtist;
         private TextView songDuration;
         private RelativeLayout songItem;
         private ImageView songMenu;
         private SharedViewModel sharedViewModel;
         private ImageView songAlbumArt;
 
-        RecentViewHolder(@NonNull View itemView) {
+        FavoritesViewHolder(@NonNull View itemView) {
             super(itemView);
             songItem = itemView.findViewById(R.id.song_item);
             songName = itemView.findViewById(R.id.song_name);
+            songArtist = itemView.findViewById(R.id.song_artist);
             songDuration = itemView.findViewById(R.id.song_duration);
             songMenu = itemView.findViewById(R.id.song_menu);
-            songAlbumArt = itemView.findViewById(R.id.album_art);
-
-            if (sharedViewModel == null)
-                sharedViewModel = ViewModelProviders.of((FragmentActivity) context).get(SharedViewModel.class);
+            songAlbumArt = itemView.findViewById(R.id.song_album_art_icon);
 
             songItem.setOnClickListener(v -> {
                 if (listener != null && getAdapterPosition() != -1) {
@@ -103,27 +104,24 @@ public class RecentAdapter extends ListAdapter<SongsModel, RecentAdapter.RecentV
                 }
             });
 
+            if (sharedViewModel == null)
+                sharedViewModel = ViewModelProviders.of((FragmentActivity) context).get(SharedViewModel.class);
+
             songMenu.setOnClickListener(v -> {
 
                 BottomSheetDialog dialogFragment = new BottomSheetDialog(itemView.getContext());
-                dialogFragment.setContentView(R.layout.song_menu_layout);
+                dialogFragment.setContentView(R.layout.view_song_menu);
 
                 ((TextView) dialogFragment.findViewById(R.id.title)).setText(getItem().getTitle());
                 ImageView favImage = dialogFragment.findViewById(R.id.fav_img);
                 TextView favText = dialogFragment.findViewById(R.id.fav_text);
 
-                boolean isFav = getItem().isFavorite();
-                if (isFav) {
-                    favText.setText("Remove from favorites");
-                    favImage.setImageResource((R.drawable.ic_favorite_border_white_24dp));
-                } else {
-                    favText.setText("Add to favorites");
-                    favImage.setImageResource(R.drawable.ic_favorite_filled_white_24dp);
-                }
+                favText.setText("Remove from favorites");
+                favImage.setImageResource((R.drawable.ic_favorite_border_white_24dp));
 
                 dialogFragment.findViewById(R.id.add_to_fav).setOnClickListener(v1 -> {
                     SongsModel model = getItem();
-                    model.setFavorite(!isFav);
+                    model.setFavorite(false);
                     sharedViewModel.update(model);
                     dialogFragment.dismiss();
                 });
@@ -131,7 +129,7 @@ public class RecentAdapter extends ListAdapter<SongsModel, RecentAdapter.RecentV
                 dialogFragment.findViewById(R.id.song_info_layout).setOnClickListener(v1 -> {
 
                     BottomSheetDialog infoDialogFragment = new BottomSheetDialog(itemView.getContext());
-                    infoDialogFragment.setContentView(R.layout.song_info_layout);
+                    infoDialogFragment.setContentView(R.layout.view_song_info);
 
                     SongsModel model = getItem();
 
@@ -164,11 +162,12 @@ public class RecentAdapter extends ListAdapter<SongsModel, RecentAdapter.RecentV
         }
 
         public SongsModel getItem() {
-            return RecentAdapter.this.getItem(getAdapterPosition());
+            return FavoritesAdapter.this.getItem(getAdapterPosition());
         }
     }
 
-    public void setOnItemClickListener(OnAdapterItemClickListener listener) {
+    public void setOnItemClickerListener(OnAdapterItemClickListener listener) {
         this.listener = listener;
     }
+
 }

@@ -99,7 +99,7 @@
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:reverseLayout="false"
-            tools:listitem="@layout/recycler_view_song_item" />
+            tools:listitem="@layout/item_rcv_song" />
 
     </RelativeLayout>
 

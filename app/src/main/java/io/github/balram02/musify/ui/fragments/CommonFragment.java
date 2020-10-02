@@ -14,11 +14,11 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
 import io.github.balram02.musify.R;
-import io.github.balram02.musify.adapters.CommonAdapter;
+import io.github.balram02.musify.ui.adapters.CommonAdapter;
 import io.github.balram02.musify.listeners.FragmentListener;
 import io.github.balram02.musify.viewModels.SharedViewModel;
 
-import static io.github.balram02.musify.constants.Constants.TAG;
+import static io.github.balram02.musify.utils.Constants.TAG;
 
 public class CommonFragment extends Fragment {
 
@@ -32,7 +32,7 @@ public class CommonFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.common_fragment, container, false);
+        View v = inflater.inflate(R.layout.fragment_common, container, false);
 
         recyclerView = v.findViewById(R.id.recycler_view);
         nothing = v.findViewById(R.id.nothing_layout);

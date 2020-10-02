@@ -12,7 +12,7 @@ import io.github.balram02.musify.database.SongsDao;
 import io.github.balram02.musify.database.SongsDatabase;
 import io.github.balram02.musify.models.SongsModel;
 
-import static io.github.balram02.musify.constants.Constants.TAG;
+import static io.github.balram02.musify.utils.Constants.TAG;
 
 public class SongsRepository {
 

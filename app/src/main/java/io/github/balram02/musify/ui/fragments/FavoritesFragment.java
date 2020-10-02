@@ -17,11 +17,11 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
 import io.github.balram02.musify.R;
-import io.github.balram02.musify.adapters.FavoritesAdapter;
+import io.github.balram02.musify.ui.adapters.FavoritesAdapter;
 import io.github.balram02.musify.listeners.MusicPlayerServiceListener;
 import io.github.balram02.musify.viewModels.SharedViewModel;
 
-import static io.github.balram02.musify.constants.Constants.TAG;
+import static io.github.balram02.musify.utils.Constants.TAG;
 
 public class FavoritesFragment extends Fragment {
 
@@ -55,7 +55,7 @@ public class FavoritesFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.favorites_fragment, container, false);
+        View v = inflater.inflate(R.layout.fragment_favorites, container, false);
         recyclerView = v.findViewById(R.id.favorites_recycler_view);
         nothing = v.findViewById(R.id.nothing_layout);
         nothingMsg = v.findViewById(R.id.nothing_msg);

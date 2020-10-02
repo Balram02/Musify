@@ -31,7 +31,7 @@ public class LibraryFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.library_fragment, container, false);
+        View v = inflater.inflate(R.layout.fragment_library, container, false);
         artistCardView = v.findViewById(R.id.artist_card_view);
         albumsCardView = v.findViewById(R.id.albums_card_view);
 

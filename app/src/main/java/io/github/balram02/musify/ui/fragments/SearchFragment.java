@@ -24,13 +24,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import io.github.balram02.musify.R;
-import io.github.balram02.musify.adapters.RecentAdapter;
+import io.github.balram02.musify.ui.adapters.RecentAdapter;
 import io.github.balram02.musify.listeners.MusicPlayerServiceListener;
 import io.github.balram02.musify.models.SongsModel;
-import io.github.balram02.musify.ui.views.NestedScrollableListView;
+import io.github.balram02.musify.ui.custom.NestedScrollableListView;
 import io.github.balram02.musify.viewModels.SharedViewModel;
 
-import static io.github.balram02.musify.constants.Constants.TAG;
+import static io.github.balram02.musify.utils.Constants.TAG;
 
 public class SearchFragment extends Fragment {
 
@@ -67,7 +67,7 @@ public class SearchFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        v = inflater.inflate(R.layout.search_fragment, container, false);
+        v = inflater.inflate(R.layout.fragment_search, container, false);
         searchListView = v.findViewById(R.id.search_list_view);
         recentRecyclerView = v.findViewById(R.id.recent_list_view);
 
@@ -79,7 +79,7 @@ public class SearchFragment extends Fragment {
         recentAdapter = new RecentAdapter(context);
         recentRecyclerView.setAdapter(recentAdapter);
 
-        arrayAdapter = new ArrayAdapter<SongsModel>(context, R.layout.recycler_view_song_item, R.id.song_name) {
+        arrayAdapter = new ArrayAdapter<SongsModel>(context, R.layout.item_rcv_song, R.id.song_name) {
             @NonNull
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -87,7 +87,7 @@ public class SearchFragment extends Fragment {
                 View v = convertView;
 
                 if (v == null) {
-                    v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_view_song_item, parent, false);
+                    v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_song, parent, false);
                     holder = new Holder();
                     holder.title = v.findViewById(R.id.song_name);
                     holder.listLayout = v.findViewById(R.id.list_layout);
@@ -132,7 +132,7 @@ public class SearchFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.search_fragment_menu, menu);
+        inflater.inflate(R.menu.view_menu_search, menu);
 
         MenuItem searchItem = menu.findItem(R.id.search_action);
 

@@ -27,12 +27,12 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import io.github.balram02.musify.R;
-import io.github.balram02.musify.adapters.SongsAdapter;
+import io.github.balram02.musify.ui.adapters.SongsAdapter;
 import io.github.balram02.musify.listeners.MusicPlayerServiceListener;
 import io.github.balram02.musify.models.SongsModel;
 import io.github.balram02.musify.viewModels.SharedViewModel;
 
-import static io.github.balram02.musify.constants.Constants.TAG;
+import static io.github.balram02.musify.utils.Constants.TAG;
 
 
 public class AllSongsFragment extends Fragment {
@@ -69,7 +69,7 @@ public class AllSongsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.all_songs_fragment, container, false);
+        View v = inflater.inflate(R.layout.fragment_all_songs, container, false);
 
         recyclerView = v.findViewById(R.id.recycler_view);
         totalSongsCard = v.findViewById(R.id.total_songs_card_view);

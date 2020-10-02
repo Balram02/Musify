@@ -40,22 +40,22 @@ import java.util.List;
 import java.util.Random;
 
 import io.github.balram02.musify.R;
-import io.github.balram02.musify.constants.Constants;
+import io.github.balram02.musify.utils.Constants;
 import io.github.balram02.musify.models.SongsModel;
 import io.github.balram02.musify.ui.activities.MainActivity;
 import io.github.balram02.musify.utils.Preferences;
 import io.github.balram02.musify.viewModels.SharedViewModel;
 
-import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_CLOSE;
-import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_NEW_SONG;
-import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_NEXT;
-import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_PAUSE;
-import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_PLAY;
-import static io.github.balram02.musify.constants.Constants.INTENT_ACTION_PREVIOUS;
-import static io.github.balram02.musify.constants.Constants.PREFERENCES_REPEAT_STATE_ALL;
-import static io.github.balram02.musify.constants.Constants.PREFERENCES_REPEAT_STATE_NONE;
-import static io.github.balram02.musify.constants.Constants.PREFERENCES_REPEAT_STATE_ONE;
-import static io.github.balram02.musify.constants.Constants.TAG;
+import static io.github.balram02.musify.utils.Constants.INTENT_ACTION_CLOSE;
+import static io.github.balram02.musify.utils.Constants.INTENT_ACTION_NEW_SONG;
+import static io.github.balram02.musify.utils.Constants.INTENT_ACTION_NEXT;
+import static io.github.balram02.musify.utils.Constants.INTENT_ACTION_PAUSE;
+import static io.github.balram02.musify.utils.Constants.INTENT_ACTION_PLAY;
+import static io.github.balram02.musify.utils.Constants.INTENT_ACTION_PREVIOUS;
+import static io.github.balram02.musify.utils.Constants.PREFERENCES_REPEAT_STATE_ALL;
+import static io.github.balram02.musify.utils.Constants.PREFERENCES_REPEAT_STATE_NONE;
+import static io.github.balram02.musify.utils.Constants.PREFERENCES_REPEAT_STATE_ONE;
+import static io.github.balram02.musify.utils.Constants.TAG;
 
 public class MusicPlayerService extends MediaBrowserServiceCompat implements MediaPlayer.OnCompletionListener, AudioManager.OnAudioFocusChangeListener {
 
@@ -327,12 +327,12 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
     private void setNotificationIntentsAndLayouts() {
 
         if (notificationCollapsed == null) {
-            notificationCollapsed = new RemoteViews(getPackageName(), R.layout.notification_collapsed_layout);
+            notificationCollapsed = new RemoteViews(getPackageName(), R.layout.view_notification_collapse);
             notificationCollapsed.setImageViewResource(R.id.notification_previous_icon, R.drawable.notification_previous_icon_white_24dp);
             notificationCollapsed.setImageViewResource(R.id.notification_next_icon, R.drawable.notification_next_icon_white_24dp);
         }
         if (notificationExpanded == null) {
-            notificationExpanded = new RemoteViews(getPackageName(), R.layout.notification_expanded_layout);
+            notificationExpanded = new RemoteViews(getPackageName(), R.layout.view_notification_expand);
             notificationExpanded.setImageViewResource(R.id.notification_previous_icon, R.drawable.notification_previous_icon_white_24dp);
             notificationExpanded.setImageViewResource(R.id.notification_next_icon, R.drawable.notification_next_icon_white_24dp);
         }

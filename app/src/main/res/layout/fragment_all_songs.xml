@@ -24,7 +24,7 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:reverseLayout="false" />
 
-    <include layout="@layout/nothing_found_layout" />
+    <include layout="@layout/layout_nothing_found" />
 
     <!--</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>-->
 

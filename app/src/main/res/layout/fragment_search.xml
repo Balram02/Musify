@@ -39,7 +39,7 @@
             android:textSize="16sp"
             android:visibility="gone" />
 
-        <io.github.balram02.musify.ui.views.NestedScrollableListView
+        <io.github.balram02.musify.ui.custom.NestedScrollableListView
             android:id="@+id/search_list_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
             android:orientation="horizontal"
             android:padding="10dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/recycler_view_recent_item" />
+            tools:listitem="@layout/item_rcv_recents" />
 
     </LinearLayout>
 
