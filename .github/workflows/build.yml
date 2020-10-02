@@ -6,13 +6,12 @@ name: Java CI with Gradle
 on:
   push:
     branches:
-      - '*'
-      - '!master'
-      - '!release*'
+      - *
   pull_request:
+    types: [opened]
     branches:
-      - 'master'
-      - 'dev'
+      - dev
+      - master
 
 jobs:
   build:
