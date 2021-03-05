@@ -1,24 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/nothing_layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:visibility="gone">
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/icons8_nothing_found_100"
-        android:tint="?attr/drawableTintColor" />
-
-    <TextView
-        android:id="@+id/nothing_msg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/no_music_message_text"
-        android:textColor="?textColorPrimary"
-        android:textSize="20sp" />
-
-</LinearLayout>
+<androidx.appcompat.widget.AppCompatTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nothing_msg"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:layout_gravity="center"
+    android:text="@string/no_music_message_text"
+    android:textColor="?textColorPrimary"
+    android:textSize="20sp"
+    android:visibility="visible"
+    app:drawableTint="?attr/drawableTintColor"
+    app:drawableTopCompat="@drawable/icons8_nothing_found_100"
+    app:tint="?attr/drawableTintColor" />

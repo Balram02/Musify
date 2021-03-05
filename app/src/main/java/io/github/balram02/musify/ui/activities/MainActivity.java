@@ -10,6 +10,8 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
@@ -31,8 +33,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
@@ -44,6 +48,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.Date;
 import java.util.List;
@@ -576,7 +581,8 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
             bottomSheetAlbumArt.setPadding(0, 0, 0, 0);
         } else {
             bottomSheetAlbumArt.setImageResource(R.drawable.ic_music_placeholder_white);
-            bottomSheetAlbumArt.setBackground(getDrawable(R.drawable.background_square_stroke_white_16dp));
+            bottomSheetAlbumArt.setBackground(ContextCompat
+                    .getDrawable(getApplicationContext(), R.drawable.background_square_stroke_white_16dp));
             bottomSheetAlbumArt.setPadding(30, 30, 30, 30);
         }
     }
@@ -619,17 +625,40 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
             Uri uri = Constants.getAlbumArtUri(currentSongModel.getAlbumId());
 
-            Picasso.get().load(uri).into(infoDialogFragment.findViewById(R.id.info_album_art), new Callback() {
+            Target target = new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+
+                    Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+                    AppCompatTextView tv = infoDialogFragment.findViewById(R.id.info_song_album);
+                    if (tv != null)
+                        tv.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                }
+
+                @Override
+                public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                }
+            };
+
+            Picasso.get().load(uri).into(target);
+
+/*            Picasso.get().load(uri).into(infoDialogFragment.findViewById(R.id.info_album_art), new Callback() {
                 @Override
                 public void onSuccess() {
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    ((ImageView) infoDialogFragment.findViewById(R.id.info_album_art))
+                    ((AppCompatTextView) infoDialogFragment.findViewById(R.id.info_album_art))
                             .setImageResource(R.drawable.ic_music_placeholder_white);
                 }
-            });
+            });*/
 
             ((TextView) infoDialogFragment.findViewById(R.id.info_song_album)).setText(currentSongModel.getAlbum());
             ((TextView) infoDialogFragment.findViewById(R.id.info_song_title)).setText(currentSongModel.getTitle());
@@ -642,8 +671,6 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
         });
 
         dialogFragment.show();
-
-
     }
 
     public void onClickPreviousButton(View view) {
@@ -689,7 +716,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
     }
 
     public void onClickRepeatButton(View view) {
-        int state = PREFERENCES_REPEAT_STATE_NONE;
+        int state = PREFERENCES_REPEAT_STATE_ONE;
         switch (Preferences.DefaultSettings.getRepeatState(this)) {
             case PREFERENCES_REPEAT_STATE_NONE:
                 state = PREFERENCES_REPEAT_STATE_ALL;

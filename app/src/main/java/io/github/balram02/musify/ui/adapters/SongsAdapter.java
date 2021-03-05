@@ -1,6 +1,9 @@
 package io.github.balram02.musify.ui.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DiffUtil;
@@ -19,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import io.github.balram02.musify.R;
 import io.github.balram02.musify.utils.Constants;
@@ -140,7 +145,30 @@ public class SongsAdapter extends ListAdapter<SongsModel, SongsAdapter.SongListV
 
                     Uri uri = Constants.getAlbumArtUri(model.getAlbumId());
 
-                    Picasso.get().load(uri).into(infoDialogFragment.findViewById(R.id.info_album_art), new Callback() {
+                    Target target = new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+
+                            Drawable drawable = new BitmapDrawable(context.getResources(), bitmap);
+                            AppCompatTextView tv = infoDialogFragment.findViewById(R.id.info_song_album);
+                            if (tv != null)
+                                tv.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                        }
+
+                        @Override
+                        public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                        }
+                    };
+
+                    Picasso.get().load(uri).into(target);
+
+/*                    Picasso.get().load(uri).into(infoDialogFragment.findViewById(R.id.info_album_art), new Callback() {
                         @Override
                         public void onSuccess() {
                         }
@@ -150,7 +178,7 @@ public class SongsAdapter extends ListAdapter<SongsModel, SongsAdapter.SongListV
                             ((ImageView) infoDialogFragment.findViewById(R.id.info_album_art))
                                     .setImageResource(R.drawable.ic_music_placeholder_white);
                         }
-                    });
+                    });*/
 
                     ((TextView) infoDialogFragment.findViewById(R.id.info_song_album)).setText(model.getAlbum());
                     ((TextView) infoDialogFragment.findViewById(R.id.info_song_title)).setText(model.getTitle());

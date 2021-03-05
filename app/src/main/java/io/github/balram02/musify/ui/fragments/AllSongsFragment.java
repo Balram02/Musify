@@ -19,7 +19,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -44,7 +46,7 @@ public class AllSongsFragment extends Fragment {
     private Context context;
     private TextView totalSongs;
     private CardView totalSongsCard;
-    private LinearLayout nothing;
+    private AppCompatTextView nothing;
 
     private MusicPlayerServiceListener musicPlayerServiceListener;
 
@@ -74,7 +76,7 @@ public class AllSongsFragment extends Fragment {
         recyclerView = v.findViewById(R.id.recycler_view);
         totalSongsCard = v.findViewById(R.id.total_songs_card_view);
         totalSongs = v.findViewById(R.id.total_songs);
-        nothing = v.findViewById(R.id.nothing_layout);
+        nothing = v.findViewById(R.id.nothing_msg);
 //        refreshLayout = v.findViewById(R.id.refresh_layout);
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
@@ -153,7 +155,7 @@ public class AllSongsFragment extends Fragment {
 
     private Bitmap drawableToBitmap(boolean favorite) {
 
-        Drawable drawable = context.getDrawable(favorite ?
+        Drawable drawable = ContextCompat.getDrawable(context, favorite ?
                 R.drawable.ic_favorite_filled_white_24dp : R.drawable.ic_favorite_border_white_24dp);
 
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);

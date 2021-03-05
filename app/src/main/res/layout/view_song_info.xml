@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?colorOverlay"
     android:paddingStart="20dp"
     android:paddingEnd="20dp"
     app:cardBackgroundColor="?colorOverlay"
@@ -39,32 +38,22 @@
                 android:text="@string/album"
                 android:textColor="?textColorPrimaryLight" />
 
-            <LinearLayout
+            <!-- TODO: change drawable size -->
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/info_song_album"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="2dp"
+                android:drawableStart="@mipmap/ic_launcher_round"
+                android:drawablePadding="5dp"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:text="@string/album"
+                android:textColor="?textColorPrimary"
+                android:textSize="16sp">
 
-                <ImageView
-                    android:id="@+id/info_album_art"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:padding="5dp"
-                    android:src="@mipmap/ic_launcher_round" />
-
-                <TextView
-                    android:id="@+id/info_song_album"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="start"
-                    android:padding="5dp"
-                    android:text="@string/album"
-                    android:textColor="?textColorPrimary"
-                    android:textSize="16sp" />
-
-            </LinearLayout>
+            </androidx.appcompat.widget.AppCompatTextView>
 
         </LinearLayout>
 

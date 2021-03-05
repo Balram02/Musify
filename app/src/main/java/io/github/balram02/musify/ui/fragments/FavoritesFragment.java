@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -27,12 +28,12 @@ public class FavoritesFragment extends Fragment {
 
     private SharedViewModel mViewModel;
 
-    private LinearLayout nothing;
+//    private LinearLayout nothing;
     private RecyclerView recyclerView;
     private FavoritesAdapter favoritesAdapter;
     private Context context;
     private MusicPlayerServiceListener musicPlayerServiceListener;
-    private TextView nothingMsg;
+    private AppCompatTextView nothingMsg;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -57,7 +58,6 @@ public class FavoritesFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_favorites, container, false);
         recyclerView = v.findViewById(R.id.favorites_recycler_view);
-        nothing = v.findViewById(R.id.nothing_layout);
         nothingMsg = v.findViewById(R.id.nothing_msg);
         recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
         favoritesAdapter = new FavoritesAdapter(context);
@@ -75,11 +75,11 @@ public class FavoritesFragment extends Fragment {
         mViewModel.getFavoriteSong().observe(getViewLifecycleOwner(), songsModels -> {
             favoritesAdapter.submitList(songsModels);
             int size = songsModels.size();
-            if (size == 0 && nothing.getVisibility() == View.GONE) {
+            if (size == 0 && nothingMsg.getVisibility() == View.GONE) {
                 nothingMsg.setText("You don't have any favorites");
-                nothing.setVisibility(View.VISIBLE);
-            } else if (size != 0 && nothing.getVisibility() == View.VISIBLE) {
-                nothing.setVisibility(View.GONE);
+                nothingMsg.setVisibility(View.VISIBLE);
+            } else if (size != 0 && nothingMsg.getVisibility() == View.VISIBLE) {
+                nothingMsg.setVisibility(View.GONE);
             }
 
         });

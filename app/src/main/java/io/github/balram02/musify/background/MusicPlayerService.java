@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.media.MediaBrowserServiceCompat;
 import androidx.media.session.MediaButtonReceiver;
 
@@ -104,10 +105,6 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
 
         switch (focusChange) {
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                if (isPlaying()) {
-                    pause();
-                }
-                break;
             case AudioManager.AUDIOFOCUS_LOSS:
                 if (isPlaying()) {
                     pause();
@@ -469,7 +466,7 @@ public class MusicPlayerService extends MediaBrowserServiceCompat implements Med
 
     private Bitmap drawableToBitmap() {
 
-        Drawable drawable = getDrawable(R.drawable.notification_ic_music_placeholder_white);
+        Drawable drawable = ContextCompat.getDrawable(getApplicationContext(), R.drawable.notification_ic_music_placeholder_white);
 
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);

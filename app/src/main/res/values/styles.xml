@@ -20,6 +20,7 @@
         <item name="albumTint">@color/albumTint1</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:fontFamily">@font/nunito_regular</item>
+        <item name="android:windowBackground">@color/colorBackgroundDark1</item>
 
     </style>
 
@@ -43,11 +44,13 @@
         <item name="albumTint">@color/albumTint2</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:fontFamily">@font/nunito_regular</item>
+        <item name="android:windowBackground">@color/colorBackground2</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

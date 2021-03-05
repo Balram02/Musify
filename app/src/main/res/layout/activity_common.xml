@@ -5,7 +5,6 @@
     android:id="@+id/activity_common"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?primaryColor"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -17,11 +16,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:padding="15dp"
-            android:src="@drawable/ic_arrow_back_white_24dp" />
+            android:src="@drawable/ic_arrow_back_white_24dp"
+            tools:targetApi="m" />
 
         <TextView
             android:id="@+id/songs_count"
@@ -99,6 +99,7 @@
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:reverseLayout="false"
+            tools:itemCount="4"
             tools:listitem="@layout/item_rcv_song" />
 
     </RelativeLayout>

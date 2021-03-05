@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         android:focusable="true"
-        android:foreground="?attr/selectableItemBackground"
+        android:background="?android:attr/selectableItemBackground"
         android:padding="1dp">
 
         <RelativeLayout
@@ -76,6 +76,8 @@
             android:text="@string/initial_song_position"
             android:textSize="13sp" />
 
+        <!-- TODO: foreground alternative -->
+        <!--android:foreground="?actionBarItemBackground"-->
         <ImageView
             android:id="@+id/song_menu"
             android:layout_width="wrap_content"
@@ -84,7 +86,6 @@
             android:layout_centerVertical="true"
             android:clickable="true"
             android:focusable="true"
-            android:foreground="?actionBarItemBackground"
             android:paddingStart="5dp"
             android:paddingTop="8dp"
             android:paddingEnd="5dp"

@@ -3,11 +3,14 @@ package io.github.balram02.musify.database;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
@@ -60,7 +63,8 @@ public abstract class SongsDatabase extends RoomDatabase {
                 int artist = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
                 int genre = cursor.getColumnIndex(MediaStore.Audio.Genres.NAME);
                 int path = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
-                int duration = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
+//                Remove this
+//                int duration = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
                 SongsModel songsModel;
                 do {
                     String songTitle = cursor.getString(title);
@@ -69,7 +73,8 @@ public abstract class SongsDatabase extends RoomDatabase {
                     String songArtist = cursor.getString(artist);
 //                    String songGenre = cursor.getString(genre);
                     String songPath = cursor.getString(path);
-                    long songDuration = cursor.getLong(duration);
+                    //        TODO : remove this duration from song Model
+                    long songDuration = cursor.getLong(0);
                     songsModel = new SongsModel(songTitle, songAlbum, songAlbumId, songArtist, "", songPath, songDuration);
 
                     songsDao.insert(songsModel);

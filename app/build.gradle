@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.sonarqube' version "3.0"
 }
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 29
@@ -26,9 +27,9 @@ android {
         targetCompatibility = '1.8'
     }
 
-    lintOptions {
+/*    lintOptions {
         abortOnError false
-    }
+    }*/
 }
 
 dependencies {
@@ -55,6 +56,9 @@ dependencies {
 
     //Image loading library
     implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation "androidx.core:core-ktx:+"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.0.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 
@@ -66,4 +70,7 @@ sonarqube {
         property "sonar.sources", "/home/runner/work/Musify/Musify/app/src/main/java"
         property "sonar.java.source", "/home/runner/work/Musify/Musify/app/src/main/java"
     }
+}
+repositories {
+    mavenCentral()
 }

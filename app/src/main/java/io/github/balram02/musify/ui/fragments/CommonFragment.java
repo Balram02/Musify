@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,7 +26,7 @@ public class CommonFragment extends Fragment {
     private RecyclerView recyclerView;
     private CommonAdapter commonAdapter;
     //    private SwipeRefreshLayout refreshLayout;
-    private LinearLayout nothing;
+    private AppCompatTextView nothing;
 
     private SharedViewModel mViewModel;
 
@@ -35,7 +36,7 @@ public class CommonFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_common, container, false);
 
         recyclerView = v.findViewById(R.id.recycler_view);
-        nothing = v.findViewById(R.id.nothing_layout);
+        nothing = v.findViewById(R.id.nothing_msg);
 //        refreshLayout = v.findViewById(R.id.refresh_layout);
         recyclerView.setHasFixedSize(true);
         commonAdapter = new CommonAdapter(getActivity());

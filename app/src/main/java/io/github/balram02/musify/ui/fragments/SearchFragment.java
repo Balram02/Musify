@@ -90,7 +90,7 @@ public class SearchFragment extends Fragment {
                     v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_song, parent, false);
                     holder = new Holder();
                     holder.title = v.findViewById(R.id.song_name);
-                    holder.listLayout = v.findViewById(R.id.list_layout);
+//                    holder.listLayout = v.findViewById(R.id.list_layout);
                     v.setTag(holder);
                 } else {
                     holder = (Holder) v.getTag();
@@ -104,13 +104,13 @@ public class SearchFragment extends Fragment {
 
             class Holder {
                 private TextView title;
-                private RelativeLayout listLayout;
+//                private RelativeLayout listLayout;
 
                 void setClickListeners(int position) {
 
                     SongsModel model = getItem(position);
 
-                    listLayout.setOnClickListener(view -> {
+                    title.setOnClickListener(view -> {
                         musicPlayerServiceListener.onUpdateService(model);
                     });
                 }
